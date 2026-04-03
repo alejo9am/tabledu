@@ -1,0 +1,44 @@
+:root {
+  --font-ui: 'Comic Neue', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-display: 'Shantell Sans VF', var(--font-ui);
+
+  /* Palette colors (moved from index.css) */
+  --raspberry: #dd2d4aff;
+  --crushed-berry: #880d1eff;
+  --bubblegum-pink: #f26a8dff;
+  --pink-mist: #f49cbbff;
+  --light-cyan: #cbeef3ff;
+
+  /* Team token colors
+   */
+  --team-1: #ff6b6b;
+  --team-2: #4dabf7;
+  --team-3: #51cf66;
+  --team-4: #fcc419;
+
+  /* Neutral scale */
+  --neutral-0: #ffffff;
+  --neutral-50: #fbfcfe;
+  --neutral-100: #f4f6fb;
+  --neutral-200: #eef2f8;
+  --neutral-300: #e6e9f0;
+  --neutral-500: #cdd5e6;
+
+  /* Semantic tokens */
+  --color-bg: var(--neutral-100);
+  /* page background (neutral) */
+  --color-surface: var(--neutral-0);
+  /* cards, tiles */
+  --color-border: var(--neutral-300);
+  --color-text: #1a2238;
+  --color-muted-text: #4d5b7c;
+  --color-accent: var(--raspberry);
+  --color-muted: var(--pink-mist);
+  --color-contrast: var(--crushed-berry);
+  /* Base type scale */
+  --base-font-size: 20px;
+  /* adjust this to increase/decrease global font size */
+  --type-sm: 0.875rem;
+  --type-base: 1rem;
+  --type-lg: 1.125rem;
+}

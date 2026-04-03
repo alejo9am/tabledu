@@ -1,12 +1,7 @@
-import './App.css'
+import BoardPage from './pages/BoardPage/BoardPage'
 
 function App() {
-
-  return (
-    <>
-      <h1>Cyberpatrol</h1>
-    </>
-  )
+  return <BoardPage />
 }
 
 export default App
