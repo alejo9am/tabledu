@@ -36,16 +36,16 @@ const SPIRAL_COORDINATES = [
   { position: 30, row: 2, column: 3 },
 ]
 
-function BoardGrid({ teams, currentTeamId, boardLayout, categories }) {
+function BoardGrid({ teams, currentTeamId, boardCategory, categories }) {
 
   const teamsAtStart = teams.filter((team) => team.position === 0)
 
   // Returns icon and label for each playable tile.
   const getTileContent = (tileNumber) => {
     if (tileNumber === 30) {
-      return { icon: '🏁', label: 'Goal' }
+      return { icon: 'system/goal.png', label: 'Goal' }
     }
-    const tileData = boardLayout.find((tile) => tile.position === tileNumber)
+    const tileData = boardCategory.find((tile) => tile.position === tileNumber)
     const category = categories.find((cat) => cat.id === tileData?.category_id)
     return { icon: category?.icon, label: category?.name ?? 'Unknown' }
   }

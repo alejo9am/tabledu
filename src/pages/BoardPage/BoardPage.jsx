@@ -1,84 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import BoardGrid from './components/BoardGrid'
 import BoardSidebar from './components/BoardSidebar'
 import QuestionModal from './components/QuestionModal'
 import ChallengeModal from './components/ChallengeModal'
 import GameOverModal from './components/GameOverModal'
-
-const BOARD = {
-  name: 'Cyberpatrol',
-  description: 'Classic board with the original game rules and questions.',
-  score_correct: 3,
-  score_incorrect: -1,
-  score_attack: -5,
-  score_challenge_winner: 5,
-  score_challenge_loser: -3,
-  score_challenge_draw_defender: 1,
-  score_challenge_draw_attacker: -1
-}
-
+import { fetchFirstBoard, fetchCategories, fetchBoardCategory, fetchQuestions } from '../../utils/supabase'
 const TEAMS = [
   { id: 1, slug: 'team-1', name: 'Team 1', score: 0, position: 0 },
   { id: 2, slug: 'team-2', name: 'Team 2', score: 0, position: 0 },
   { id: 3, slug: 'team-3', name: 'Team 3', score: 0, position: 0 },
   { id: 4, slug: 'team-4', name: 'Team 4', score: 0, position: 0 },
 ]
-
-const CATEGORIES = [
-  { id: 1, name: 'Concepts', type: 'question', icon: '💡', description: 'True or false? Answer a question on core cybersecurity concepts.' },
-  { id: 2, name: 'Encryption', type: 'question', icon: '🔒', description: 'True or false? Answer a question on encryption and data security.' },
-  { id: 3, name: 'Protection', type: 'question', icon: '🛡️', description: 'True or false? Answer a question on cybersecurity protection measures.' },
-  { id: 4, name: 'History', type: 'question', icon: '⏳', description: 'True or false? Answer a question on the history of cybersecurity.' }, //hourglass clock
-  { id: 5, name: 'Pipe', type: 'special', icon: '🧪', description: 'Lucky break! Roll the dice again for another shot at advancing.' }, // tube pipe plumber
-  { id: 6, name: 'Challenge', type: 'special', icon: '⚔️', description: 'Duel time. Call out a rival and fight for points answering two questions.' }, //crossed swords
-  { id: 7, name: 'Attack', type: 'special', icon: '👾', description: 'Cyber attack! Your team loses 5 points. Tighten your defenses.' }, //hacker
-]
-
-// Layout of sequence of categories on the board (excluding start and goal, total of 30 tiles)
-const BOARD_LAYOUT = [
-  { category_id: 1, position: 1 },
-  { category_id: 2, position: 2 },
-  { category_id: 3, position: 3 },
-  { category_id: 4, position: 4 },
-  { category_id: 1, position: 5 },
-  { category_id: 5, position: 6 },
-  { category_id: 6, position: 7 },
-  { category_id: 2, position: 8 },
-  { category_id: 3, position: 9 },
-  { category_id: 4, position: 10 },
-  { category_id: 1, position: 11 },
-  { category_id: 2, position: 12 },
-  { category_id: 5, position: 13 },
-  { category_id: 7, position: 14 },
-  { category_id: 6, position: 15 },
-  { category_id: 3, position: 16 },
-  { category_id: 4, position: 17 },
-  { category_id: 1, position: 18 },
-  { category_id: 2, position: 19 },
-  { category_id: 3, position: 20 },
-  { category_id: 5, position: 21 },
-  { category_id: 6, position: 22 },
-  { category_id: 4, position: 23 },
-  { category_id: 1, position: 24 },
-  { category_id: 2, position: 25 },
-  { category_id: 3, position: 26 },
-  { category_id: 7, position: 27 },
-  { category_id: 4, position: 28 },
-  { category_id: 1, position: 29 }
-]
-
-const QUESTIONS = [
-  { id: 1, category_id: 1, text: 'answered true concept question 1', answer: true },
-  { id: 2, category_id: 1, text: 'unanswered false concept question 2', answer: false },
-  { id: 3, category_id: 2, text: 'answered true encryption question 1', answer: true },
-  { id: 4, category_id: 2, text: 'unanswered false encryption question 2', answer: false },
-  { id: 5, category_id: 3, text: 'unanswered true protection question 1', answer: true },
-  { id: 6, category_id: 3, text: 'answered false protection question 2', answer: false },
-  { id: 7, category_id: 4, text: 'unanswered true history question 1', answer: true },
-  { id: 8, category_id: 4, text: 'unanswered false history question 2', answer: false }
-]
-
 const ANSWERS = [
   { question_id: 1, game_id: 1, team_id: 1, is_correct: true },
   { question_id: 3, game_id: 1, team_id: 1, is_correct: false },
@@ -95,8 +28,11 @@ const TURN_PHASES = {
 }
 
 function BoardPage() {
-
+  const [board, setBoard] = useState(null)
   const [teams, setTeams] = useState(TEAMS)
+  const [categories, setCategories] = useState([])
+  const [boardCategory, setBoardCategory] = useState([])
+  const [questions, setQuestions] = useState([])
   const [currentTeamIndex, setCurrentTeamIndex] = useState(0)
   const [currentCategory, setCurrentCategory] = useState(null)
   const [currentQuestion, setCurrentQuestion] = useState(null)
@@ -104,13 +40,54 @@ function BoardPage() {
   const [turnPhase, setTurnPhase] = useState(TURN_PHASES.IDLE)
   const [challengeData, setChallengeData] = useState(null)
   const [winnerTeamId, setWinnerTeamId] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
 
-  const questionCategories = CATEGORIES.filter((category) => category.type === 'question')
+  const questionCategories = categories.filter((category) => category.type === 'question')
+
+  useEffect(() => {
+    const loadGameData = async () => {
+      try {
+        const [dbBoard, dbCategories, dbBoardCategory, dbQuestions] = await Promise.all([
+          fetchFirstBoard(),
+          fetchCategories(),
+          fetchBoardCategory(),
+          fetchQuestions()
+        ])
+        if (!dbBoard || dbCategories.length === 0 || dbBoardCategory.length === 0 || dbQuestions.length === 0) {
+          console.error('[BoardPage] Incomplete game data from Supabase.', {
+            boardFound: Boolean(dbBoard),
+            categoriesCount: dbCategories.length,
+            boardCategoryCount: dbBoardCategory.length,
+            questionsCount: dbQuestions.length,
+            hint: 'Check RLS policies/table data for boards, categories, board_category, and questions.'
+          })
+          setLoadError('Game data could not be loaded. Check your Supabase connection and RLS policies.')
+          return
+        }
+        setBoard(dbBoard)
+        setCategories(dbCategories)
+        setBoardCategory(dbBoardCategory)
+        setQuestions(dbQuestions)
+      } catch (error) {
+        console.error('[BoardPage] Failed to load game data from Supabase.', {
+          name: error?.name,
+          message: error?.message,
+          stack: error?.stack
+        })
+        setLoadError('Failed to load game data. Please try again.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadGameData()
+  }, [])
 
   const getRandomQuestionForCategory = (category) => {
     if (!category || category.type !== 'question') return null
 
-    const categoryQuestions = QUESTIONS.filter((question) => question.category_id === category.id)
+    const categoryQuestions = questions.filter((question) => question.category_id === category.id)
     if (categoryQuestions.length === 0) {
       console.warn(`[QuestionPool] No questions found for category "${category.name}".`)
       return null
@@ -219,16 +196,16 @@ function BoardPage() {
 
     if (activeCorrectCount > opponentCorrectCount) {
       outcome = 'active-wins'
-      activePointsDelta = BOARD.score_challenge_winner
-      opponentPointsDelta = BOARD.score_challenge_loser
+      activePointsDelta = board.score_challenge_winner
+      opponentPointsDelta = board.score_challenge_loser
     } else if (activeCorrectCount < opponentCorrectCount) {
       outcome = 'opponent-wins'
-      activePointsDelta = BOARD.score_challenge_loser
-      opponentPointsDelta = BOARD.score_challenge_winner
+      activePointsDelta = board.score_challenge_loser
+      opponentPointsDelta = board.score_challenge_winner
     } else {
       outcome = 'draw'
-      activePointsDelta = BOARD.score_challenge_draw_attacker
-      opponentPointsDelta = BOARD.score_challenge_draw_defender
+      activePointsDelta = board.score_challenge_draw_attacker
+      opponentPointsDelta = board.score_challenge_draw_defender
     }
 
     setTeams((previousTeams) => {
@@ -276,7 +253,7 @@ function BoardPage() {
     }
 
     const dieValue = Math.floor(Math.random() * 6) + 1
-    // const dieValue = 30 // fixed value for testing
+    // const dieValue = 7 // fixed value for testing
     setDieValue(dieValue)
 
     const currentTeamPosition = teams[currentTeamIndex].position
@@ -302,10 +279,10 @@ function BoardPage() {
       return
     }
 
-    const tileAtNextPosition = BOARD_LAYOUT.find((tile) => tile.position === nextPosition)
+    const tileAtNextPosition = boardCategory.find((tile) => tile.position === nextPosition)
     const categoryId = tileAtNextPosition?.category_id
     const nextCategory = categoryId
-      ? CATEGORIES.find((category) => category.id === categoryId) ?? null
+      ? categories.find((category) => category.id === categoryId) ?? null
       : null
     setCurrentCategory(nextCategory)
 
@@ -329,7 +306,7 @@ function BoardPage() {
     }
 
     const isCorrect = currentQuestion.answer === selectedAnswer
-    const pointsDelta = isCorrect ? BOARD.score_correct : BOARD.score_incorrect
+    const pointsDelta = isCorrect ? board.score_correct : board.score_incorrect
 
     setTeams((previousTeams) =>
       previousTeams.map((team) => {
@@ -373,7 +350,7 @@ function BoardPage() {
                 if (index === currentTeamIndex) {
                   return {
                     ...team,
-                    score: team.score + BOARD.score_attack
+                    score: team.score + board.score_attack
                   }
                 }
 
@@ -392,19 +369,44 @@ function BoardPage() {
     }
   }
 
+  if (isLoading) {
+    return (
+      <main className="board-screen board-screen--centered" aria-label="Loading game data">
+        <p className="board-screen__status-message">Loading game data…</p>
+      </main>
+    )
+  }
+  if (loadError) {
+    return (
+      <main className="board-screen board-screen--centered" aria-label="Error loading game">
+        <section className="board-error-view" role="alert" aria-live="assertive">
+          <p className="board-error-view__eyebrow">Data loading error</p>
+          <h2 className="board-error-view__title">We could not start the game</h2>
+          <p className="board-error-view__message">{loadError}</p>
+          <button
+            type="button"
+            className="board-error-view__button"
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </button>
+        </section>
+      </main>
+    )
+  }
   return (
 
     <main className="board-screen" aria-label="Game screen">
       <header className="board-screen__header">
-        <h1 className="board-screen__title">{BOARD.name.toUpperCase()}</h1>
+        <h1 className="board-screen__title">{board.name.toUpperCase()}</h1>
       </header>
 
       <section className="board-screen__content" aria-label="Main game area">
         <BoardGrid
           teams={teams}
           currentTeamId={teams[currentTeamIndex].id}
-          boardLayout={BOARD_LAYOUT}
-          categories={CATEGORIES}
+          boardCategory={boardCategory}
+          categories={categories}
         />
         <BoardSidebar
           teams={teams}

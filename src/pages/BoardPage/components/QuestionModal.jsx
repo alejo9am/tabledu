@@ -72,19 +72,15 @@ const QuestionModal = ({ onFinishTurn, onConfirmAnswer, questionText }) => {
               </p>
             </article>
 
-            <article className="challenge-result__question-card">
-              <p className="challenge-result__question-title">Question</p>
-              <p className="challenge-result__question-text">{questionText ?? 'Question unavailable.'}</p>
-              <div className="question-modal__answer-summary">
-                <p className="challenge-result__correct-answer">
-                  Correct answer: <strong>{result.correctAnswer ? 'TRUE' : 'FALSE'}</strong>
-                </p>
-                <span className={`question-modal__answer-badge ${result.isCorrect ? 'question-modal__answer-badge--ok' : 'question-modal__answer-badge--bad'}`}>
-                  <span className="question-modal__answer-badge-label">Your answer</span>
-                  <strong>{selectedAnswer ? 'TRUE' : 'FALSE'}</strong>
-                </span>
-              </div>
-            </article>
+            <div className="question-modal__answer-summary">
+              <p className="challenge-result__correct-answer">
+                Correct answer: <strong>{result.correctAnswer ? 'TRUE' : 'FALSE'}</strong>
+              </p>
+              <span className={`question-modal__answer-badge ${result.isCorrect ? 'question-modal__answer-badge--ok' : 'question-modal__answer-badge--bad'}`}>
+                <span className="question-modal__answer-badge-label">Your answer</span>
+                <strong>{selectedAnswer ? 'TRUE' : 'FALSE'}</strong>
+              </span>
+            </div>
           </section>
         )}
       </div>

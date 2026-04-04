@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { getCategoryIconPublicUrl } from '../../../utils/supabase'
 
 const ChallengeModal = ({
   currentTeamName,
@@ -15,6 +16,7 @@ const ChallengeModal = ({
   const [selectedOpponentId, setSelectedOpponentId] = useState(null)
   const [categoryMode, setCategoryMode] = useState(null)
   const [selectedCategoryId, setSelectedCategoryId] = useState(null)
+  const [failedIcons, setFailedIcons] = useState(new Set())
   const [phase, setPhase] = useState('setup')
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [questionAnswers, setQuestionAnswers] = useState([
@@ -177,16 +179,32 @@ const ChallengeModal = ({
 
               {categoryMode === 'specific' && (
                 <div className="challenge-modal__subcategories" role="group" aria-label="Specific category">
-                  {questionCategories.map((category) => (
-                    <button
-                      key={category.id}
-                      type="button"
-                      className={`challenge-modal__option-button challenge-modal__option-button--sub ${selectedCategoryId === category.id ? 'challenge-modal__option-button--selected' : ''}`}
-                      onClick={() => setSelectedCategoryId(category.id)}
-                    >
-                      {category.icon} {category.name}
-                    </button>
-                  ))}
+                  {questionCategories.map((category) => {
+                    const iconUrl = getCategoryIconPublicUrl(category.icon)
+
+                    return (
+                      <button
+                        key={category.id}
+                        type="button"
+                        className={`challenge-modal__category-card ${selectedCategoryId === category.id ? 'challenge-modal__category-card--selected' : ''}`}
+                        onClick={() => setSelectedCategoryId(category.id)}
+                      >
+                        <span className="challenge-modal__category-card-icon" aria-hidden="true">
+                          {iconUrl && !failedIcons.has(category.id) ? (
+                            <img
+                              src={iconUrl}
+                              alt=""
+                              loading="lazy"
+                              onError={() => setFailedIcons((prev) => { const next = new Set(prev); next.add(category.id); return next })}
+                            />
+                          ) : (
+                            category.name.charAt(0)
+                          )}
+                        </span>
+                        <span className="challenge-modal__category-card-name">{category.name}</span>
+                      </button>
+                    )
+                  })}
                 </div>
               )}
             </section>
