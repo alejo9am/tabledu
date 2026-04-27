@@ -1,18 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
 const CATEGORY_ICONS_BUCKET = 'category-icons'
-
-if (!supabaseUrl) {
-  console.error('[supabase] Missing configuration variable: VITE_SUPABASE_URL (client/.env).')
-}
-
-if (!supabaseKey) {
-  console.error('[supabase] Missing configuration variable: VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY (client/.env).')
-}
-
-export const supabase = createClient(supabaseUrl ?? '', supabaseKey ?? '')
 
 const throwIfSupabaseError = (error, entityName) => {
   if (error) {

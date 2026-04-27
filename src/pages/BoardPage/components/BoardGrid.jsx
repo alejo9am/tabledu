@@ -1,103 +1,85 @@
 import BoardTile from './BoardTile'
+import { cn } from '@/lib/utils'
 
-const BOARD_WIDTH = 6
-const BOARD_HEIGHT = 5
+const BOARD_WIDTH = 54
+const BOARD_HEIGHT = 48
 
 const SPIRAL_COORDINATES = [
-  { position: 1, row: 4, column: 0 },
-  { position: 2, row: 4, column: 1 },
-  { position: 3, row: 4, column: 2 },
-  { position: 4, row: 4, column: 3 },
-  { position: 5, row: 4, column: 4 },
-  { position: 6, row: 4, column: 5 },
-  { position: 7, row: 3, column: 5 },
-  { position: 8, row: 2, column: 5 },
-  { position: 9, row: 1, column: 5 },
-  { position: 10, row: 0, column: 5 },
-  { position: 11, row: 0, column: 4 },
-  { position: 12, row: 0, column: 3 },
-  { position: 13, row: 0, column: 2 },
-  { position: 14, row: 0, column: 1 },
-  { position: 15, row: 0, column: 0 },
-  { position: 16, row: 1, column: 0 },
-  { position: 17, row: 2, column: 0 },
-  { position: 18, row: 3, column: 0 },
-  { position: 19, row: 3, column: 1 },
-  { position: 20, row: 3, column: 2 },
-  { position: 21, row: 3, column: 3 },
-  { position: 22, row: 3, column: 4 },
-  { position: 23, row: 2, column: 4 },
-  { position: 24, row: 1, column: 4 },
-  { position: 25, row: 1, column: 3 },
-  { position: 26, row: 1, column: 2 },
-  { position: 27, row: 1, column: 1 },
-  { position: 28, row: 2, column: 1 },
-  { position: 29, row: 2, column: 2 },
-  { position: 30, row: 2, column: 3 },
+  { id: 0, row: 41, column: 1, rowspan: 8, colspan: 6 },
+  { id: 1, row: 41, column: 7, rowspan: 8, colspan: 8 },
+  { id: 2, row: 41, column: 15, rowspan: 8, colspan: 8 },
+  { id: 3, row: 41, column: 23, rowspan: 8, colspan: 8 },
+  { id: 4, row: 41, column: 31, rowspan: 8, colspan: 8 },
+  { id: 5, row: 41, column: 39, rowspan: 8, colspan: 8 },
+  { id: 6, row: 41, column: 47, rowspan: 9, colspan: 8},
+  { id: 7, row: 31, column: 47, rowspan: 10, colspan: 8 },
+  { id: 8, row: 20, column: 47, rowspan: 11, colspan: 8 },
+  { id: 9, row: 9, column: 47, rowspan: 11, colspan: 8 },
+  { id: 10, row: 1, column: 47, rowspan: 8, colspan: 8},
+  { id: 11, row: 1, column: 37, rowspan: 8, colspan: 10 },
+  { id: 12, row: 1, column: 28, rowspan: 8, colspan: 9 },
+  { id: 13, row: 1, column: 19, rowspan: 8, colspan: 9 },
+  { id: 14, row: 1, column: 9, rowspan: 8, colspan: 10 },
+  { id: 15, row: 1, column: 1, rowspan: 8, colspan: 8},
+  { id: 16, row: 9, column: 1, rowspan: 11, colspan: 8 },
+  { id: 17, row: 20, column: 1, rowspan: 11, colspan: 8 },
+  { id: 18, row: 31, column: 1, rowspan: 8, colspan: 8},
+  { id: 19, row: 31, column: 9, rowspan: 8, colspan: 10 },
+  { id: 20, row: 31, column: 19, rowspan: 8, colspan: 9 },
+  { id: 21, row: 31, column: 28, rowspan: 8, colspan: 9 },
+  { id: 22, row: 31, column: 37, rowspan: 8, colspan: 8},
+  { id: 23, row: 20, column: 37, rowspan: 11, colspan: 8 },
+  { id: 24, row: 11, column: 37, rowspan: 9, colspan: 8},
+  { id: 25, row: 11, column: 28, rowspan: 8, colspan: 9 },
+  { id: 26, row: 11, column: 19, rowspan: 8, colspan: 9 },
+  { id: 27, row: 11, column: 11, rowspan: 9, colspan: 8},
+  { id: 28, row: 20, column: 11, rowspan: 9, colspan: 8},
+  { id: 29, row: 21, column: 19, rowspan: 8, colspan: 9 },
+  { id: 30, row: 21, column: 28, rowspan: 8, colspan: 7 },
 ]
 
-function BoardGrid({ teams, currentTeamId, boardCategory, categories }) {
+function BoardGrid(
+  {
+    className,
+    teams,
+    currentTeamId,
+    boardCategory,
+    categories
+  }
+) {
 
-  const teamsAtStart = teams.filter((team) => team.position === 0)
-
-  // Returns icon and label for each playable tile.
-  const getTileContent = (tileNumber) => {
+  // Returns full Category object for each playable tile.
+  const getTileCategory = (tileNumber) => {
+    if (tileNumber === 0) {
+      return { name: 'Start' }
+    }
     if (tileNumber === 30) {
       return { icon: 'system/goal.png', label: 'Goal' }
     }
     const tileData = boardCategory.find((tile) => tile.position === tileNumber)
-    const category = categories.find((cat) => cat.id === tileData?.category_id)
-    return { icon: category?.icon, label: category?.name ?? 'Unknown' }
+    return categories.find((cat) => cat.id === tileData?.category_id)
   }
 
+  const currentTeam = currentTeamId
+    ? teams.find((team) => team.id === currentTeamId) ?? null
+    : null
+
   return (
-    <section className="board-grid" aria-label="Board">
-
-      <div className="board-start-tile" aria-label="Start tile">
-        <span className="board-start-tile__label">START</span>
-        <span className="board-start-tile__tokens">
-          {teamsAtStart.map((team) => (
-            <span
-              key={team.id}
-              className={`board-tile__token ${team.slug}`}
-              title={team.name}
-            />
-          ))}
-        </span>
-      </div>
-
-      <table className="board-grid__table">
-        <tbody>
-          {Array(BOARD_HEIGHT).fill(null).map((_, row) => (
-            <tr key={row}>
-              {Array(BOARD_WIDTH).fill(null).map((_, column) => {
-                const coordinate = SPIRAL_COORDINATES.find(
-                  (coord) => coord.row === row && coord.column === column,
-                )
-
-                if (!coordinate) {
-                  return <td key={`empty-${row}-${column}`} className="board-grid__cell" />
-                }
-
-                return (
-                  <td key={coordinate.position} className="board-grid__cell">
-                    <BoardTile
-                      tileNumber={coordinate.position}
-                      isGoal={coordinate.position === 30}
-                      icon={getTileContent(coordinate.position).icon}
-                      tileLabel={getTileContent(coordinate.position).label}
-                      teamsOnTile={teams.filter((team) => team.position === coordinate.position)}
-                      isActiveTile={teams.some(
-                        (team) => team.id === currentTeamId && team.position === coordinate.position,
-                      )}
-                    />
-                  </td>
-                )
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <section className={cn("grid grid-cols-54 grid-rows-48 gap-1", className)} aria-label="Board">
+      {SPIRAL_COORDINATES.map((tile) => (
+        <BoardTile
+          key={tile.id}
+          tileNumber={tile.id}
+          category={getTileCategory(tile.id)}
+          teamsOnTile={teams.filter((team) => team.position === tile.id)}
+          activeTeam={currentTeam?.position === tile.id ? currentTeam : null}
+          style={{
+            gridRow: `${tile.row} / span ${tile.rowspan}`,
+            gridColumn: `${tile.column} / span ${tile.colspan}`
+          }}
+        >
+        </BoardTile>
+      ))}
     </section>
   )
 }

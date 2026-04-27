@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react'
 
+import { Button } from '@/components/ui/button'
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Alert02Icon } from '@hugeicons/core-free-icons';
+
 import BoardGrid from './components/BoardGrid'
 import BoardSidebar from './components/BoardSidebar'
 import QuestionModal from './components/QuestionModal'
 import ChallengeModal from './components/ChallengeModal'
 import GameOverModal from './components/GameOverModal'
-import { fetchFirstBoard, fetchCategories, fetchBoardCategory, fetchQuestions } from '../../utils/supabase'
+import { fetchFirstBoard, fetchCategories, fetchBoardCategory, fetchQuestions } from '@/services/api'
+
 const TEAMS = [
-  { id: 1, slug: 'team-1', name: 'Team 1', score: 0, position: 0 },
-  { id: 2, slug: 'team-2', name: 'Team 2', score: 0, position: 0 },
-  { id: 3, slug: 'team-3', name: 'Team 3', score: 0, position: 0 },
-  { id: 4, slug: 'team-4', name: 'Team 4', score: 0, position: 0 },
+  { id: 1, slug: 'team-1', name: 'Team 1', score: 0, position: 0, color: '#a855f7' },
+  { id: 2, slug: 'team-2', name: 'Team 2', score: 0, position: 0, color: '#68ec68' },
+  { id: 3, slug: 'team-3', name: 'Team 3', score: 0, position: 0, color: '#5e9eff' },
+  { id: 4, slug: 'team-4', name: 'Team 4', score: 0, position: 0, color: '#e47a30' },
 ]
 const ANSWERS = [
   { question_id: 1, game_id: 1, team_id: 1, is_correct: true },
@@ -78,6 +83,7 @@ function BoardPage() {
         setLoadError('Failed to load game data. Please try again.')
       } finally {
         setIsLoading(false)
+        // setLoadError('Failed to load game data. Please try again.')
       }
     }
 
@@ -247,12 +253,14 @@ function BoardPage() {
     })
   }
 
-  const handleRollDice = () => {
-    if (turnPhase === TURN_PHASES.GAME_OVER) {
+  const handleRollDice = (rolledValue) => {
+    if (turnPhase !== TURN_PHASES.IDLE || turnPhase === TURN_PHASES.GAME_OVER) {
       return
     }
 
-    const dieValue = Math.floor(Math.random() * 6) + 1
+    const dieValue = Number.isInteger(rolledValue)
+      ? rolledValue
+      : Math.floor(Math.random() * 6) + 1
     // const dieValue = 7 // fixed value for testing
     setDieValue(dieValue)
 
@@ -371,44 +379,44 @@ function BoardPage() {
 
   if (isLoading) {
     return (
-      <main className="board-screen board-screen--centered" aria-label="Loading game data">
-        <p className="board-screen__status-message">Loading game data…</p>
+      <main className="w-screen h-screen bg-bg flex items-center justify-center">
+        <h2 className="text-xl font-medium">Loading game data…</h2>
       </main>
     )
   }
   if (loadError) {
     return (
-      <main className="board-screen board-screen--centered" aria-label="Error loading game">
-        <section className="board-error-view" role="alert" aria-live="assertive">
-          <p className="board-error-view__eyebrow">Data loading error</p>
-          <h2 className="board-error-view__title">We could not start the game</h2>
-          <p className="board-error-view__message">{loadError}</p>
-          <button
-            type="button"
-            className="board-error-view__button"
-            onClick={() => window.location.reload()}
-          >
-            Retry
-          </button>
-        </section>
+      <main className="flex flex-col items-center justify-center gap-2 w-screen h-screen bg-background animate-in fade-in zoom-in" aria-label="Error loading game">
+        <div className='flex-center bg-secondary size-12 rounded-full'>
+          <HugeiconsIcon icon={Alert02Icon} />
+        </div>
+        <h2 className="text-xl font-semibold text-wrap">Data loading error</h2>
+        <p className="text-lg mx-12 text-center">{loadError}</p>
+        <Button className="mt-2" size='lg' onClick={() => window.location.reload()}>
+          Retry
+        </Button>
       </main>
     )
   }
   return (
 
-    <main className="board-screen" aria-label="Game screen">
-      <header className="board-screen__header">
-        <h1 className="board-screen__title">{board.name.toUpperCase()}</h1>
+    <main className="flex flex-col max-w-screen h-screen" aria-label="Game screen">
+      <header className="p-12 flex items-center justify-center" aria-label="Game header">
+        <h1 className="text-5xl font-display font-extrabold text-primary">{board.name.toUpperCase()}</h1>
       </header>
 
-      <section className="board-screen__content" aria-label="Main game area">
-        <BoardGrid
-          teams={teams}
-          currentTeamId={teams[currentTeamIndex].id}
-          boardCategory={boardCategory}
-          categories={categories}
-        />
+      <section className="flex-1 flex flex-col gap-12 lg:gap-0 lg:flex-row" aria-label="Main game area">
+        <div className="flex justify-center lg:w-2/3 lg:mb-16 h-160 lg:h-auto">
+          <BoardGrid
+            className="w-[75%]"
+            teams={teams}
+            currentTeamId={teams[currentTeamIndex].id}
+            boardCategory={boardCategory}
+            categories={categories}
+          />
+        </div>
         <BoardSidebar
+          className="lg:w-1/3"
           teams={teams}
           currentTeamId={teams[currentTeamIndex].id}
           onNextTurn={handleNextTurn}

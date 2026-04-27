@@ -1,109 +1,99 @@
 import { useRef, useEffect, useState } from 'react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
-const QuestionModal = ({ onFinishTurn, onConfirmAnswer, questionText }) => {
+const QuestionModal = ({ onFinishTurn, onConfirmAnswer, questionText, currentTeamName }) => {
   const dialogRef = useRef(null)
   const [selectedAnswer, setSelectedAnswer] = useState(null)
   const [result, setResult] = useState(null)
 
   useEffect(() => {
     const dialog = dialogRef.current
-
-    if (!dialog) {
-      return
-    }
-
-    if (!dialog.open) {
-      dialog.showModal()
-    }
-
-    return () => {
-      if (dialog.open) {
-        dialog.close()
-      }
-    }
+    if (!dialog) return
+    if (!dialog.open) dialog.showModal()
+    return () => { if (dialog.open) dialog.close() }
   }, [])
 
   const handleConfirmAnswer = () => {
-    if (selectedAnswer === null || !onConfirmAnswer) {
-      return
-    }
-
+    if (selectedAnswer === null || !onConfirmAnswer) return
     const nextResult = onConfirmAnswer(selectedAnswer)
-    if (nextResult) {
-      setResult(nextResult)
-    }
+    if (nextResult) setResult(nextResult)
   }
 
   return (
-    <dialog ref={dialogRef} className="question-modal" aria-modal="true" aria-label="Question modal">
+    <dialog
+      ref={dialogRef}
+      className="fixed inset-0 m-auto w-full max-w-md rounded-2xl border border-border bg-card p-0 shadow-2xl backdrop:bg-foreground/40 backdrop:backdrop-blur-sm"
+      aria-modal="true"
+      aria-label="Question modal"
+    >
+      {/* Header */}
+      <header className="border-b border-border px-6 pt-6 pb-4">
+        {currentTeamName && (
+          <p className="mb-1 text-md font-medium text-muted-foreground">{currentTeamName}'s turn</p>
+        )}
+        <h2 className="font-display text-2xl font-bold text-primary">Question</h2>
+      </header>
 
-      <div className="question-modal__body">
-        <p className="question-modal__text">{questionText ?? 'No question available for this category.'}</p>
+      {/* Body */}
+      <div className="flex flex-col gap-6 px-6 py-6">
+        <p className="text-xl font-medium text-foreground leading-snug">
+          {questionText ?? 'No question available for this category.'}
+        </p>
 
         {!result && questionText && (
-          <div className="question-modal__answers" role="group" aria-label="Choose an answer">
-            <button
-              type="button"
-              className={`question-modal__answer-button question-modal__answer-button--true ${selectedAnswer === true ? 'question-modal__answer-button--selected' : ''}`}
-              onClick={() => setSelectedAnswer(true)}
-            >
-              TRUE
-            </button>
-            <button
-              type="button"
-              className={`question-modal__answer-button question-modal__answer-button--false ${selectedAnswer === false ? 'question-modal__answer-button--selected' : ''}`}
-              onClick={() => setSelectedAnswer(false)}
-            >
-              FALSE
-            </button>
+          <div className="grid grid-cols-2 gap-3" role="group" aria-label="Choose an answer">
+            {[true, false].map((value) => (
+              <Button
+                key={String(value)}
+                type="button"
+                onClick={() => setSelectedAnswer(value)}
+                variant={value
+                  ? (selectedAnswer === true ? 'answerTrueSelected' : 'answerTrue')
+                  : (selectedAnswer === false ? 'answerFalseSelected' : 'answerFalse')}
+                size="answer"
+              >
+                {value ? 'TRUE' : 'FALSE'}
+              </Button>
+            ))}
           </div>
         )}
 
         {result && (
-          <section className="question-modal__result question-modal__result--single" aria-live="polite">
-            <p className="challenge-modal__section-title">Question result</p>
+          <section className="flex flex-col gap-4" aria-live="polite">
+            <div className={cn(
+              "rounded-xl border-2 p-4 text-center",
+              result.isCorrect
+                ? "border-success-700 bg-success-200 text-success-700"
+                : "border-destructive bg-destructive-200 text-destructive-700"
+            )}>
+              <p className="text-xl font-bold">
+                {result.isCorrect ? 'Correct!' : 'Wrong answer.'}
+              </p>
+              <p className="mt-1 text-sm font-medium">
+                {result.pointsDelta > 0 ? `+${result.pointsDelta}` : result.pointsDelta} points
+              </p>
+            </div>
 
-            <article className="challenge-result__score-card">
-              <p className="challenge-result__team-name">
-                {result.isCorrect ? 'Correct answer!' : 'Wrong answer.'}
-              </p>
-              <p className="challenge-result__team-points">
-                Points: {result.pointsDelta > 0 ? `+${result.pointsDelta}` : result.pointsDelta}
-              </p>
-            </article>
-
-            <div className="question-modal__answer-summary">
-              <p className="challenge-result__correct-answer">
-                Correct answer: <strong>{result.correctAnswer ? 'TRUE' : 'FALSE'}</strong>
-              </p>
-              <span className={`question-modal__answer-badge ${result.isCorrect ? 'question-modal__answer-badge--ok' : 'question-modal__answer-badge--bad'}`}>
-                <span className="question-modal__answer-badge-label">Your answer</span>
-                <strong>{selectedAnswer ? 'TRUE' : 'FALSE'}</strong>
-              </span>
+            <div className="flex items-center justify-between rounded-lg bg-secondary px-4 py-3 text-sm">
+              <span className="text-muted-foreground">Correct answer</span>
+              <strong className="font-bold text-foreground">{result.correctAnswer ? 'TRUE' : 'FALSE'}</strong>
             </div>
           </section>
         )}
       </div>
 
-      <footer className="question-modal__actions">
+      {/* Footer */}
+      <footer className="flex justify-end gap-2 border-t border-border px-6 py-4">
         {!result && questionText && (
-          <button
-            className="question-modal__button"
-            type="button"
-            onClick={handleConfirmAnswer}
-            disabled={selectedAnswer === null}
-          >
-            CONFIRM
-          </button>
+          <Button onClick={handleConfirmAnswer} disabled={selectedAnswer === null} size="lg">
+            Confirm
+          </Button>
         )}
-
-        {/* REVIEW: After implementing repeating questions after every of them was used, this is useless */}
-        {!result && !questionText && (
-          <button className="question-modal__button question-modal__button--secondary" type="button" onClick={onFinishTurn}>Close</button>
-        )}
-
-        {result && (
-          <button className="question-modal__button question-modal__button--secondary" type="button" onClick={onFinishTurn}>Close</button>
+        {(!questionText || result) && (
+          <Button variant="secondary" size="lg" onClick={onFinishTurn}>
+            Close
+          </Button>
         )}
       </footer>
     </dialog>
