@@ -1,68 +1,93 @@
 import { useEffect, useRef, useState } from 'react'
-import { getCategoryIconPublicUrl } from '@/services/api'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
 
-export default function ChallengeModal({
-  currentTeamName,
-  opponentTeamName,
-  availableTeams,
-  questionCategories,
-  challengeQuestions,
-  challengeResult,
-  onConfirmSetup,
-  onQuestionsAnswered,
-  onClose
-}) {
+import { getCategoryIconPublicUrl } from '@/services/api'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { getRandomQuestionForCategory } from '@/utils/gameUtils'
+
+import { useGame } from '../context/GameContext'
+import { TURN_PHASES } from '../constants/turnPhases'
+
+export default function ChallengeModal() {
   const dialogRef = useRef(null)
+  const emptyQuestionAnswers = [
+    { activeTeamAnswer: null, opponentTeamAnswer: null },
+    { activeTeamAnswer: null, opponentTeamAnswer: null }
+  ]
+
   const [selectedOpponentId, setSelectedOpponentId] = useState(null)
   const [categoryMode, setCategoryMode] = useState(null)
   const [selectedCategoryId, setSelectedCategoryId] = useState(null)
   const [failedIcons, setFailedIcons] = useState(new Set())
   const [phase, setPhase] = useState('setup')
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [questionAnswers, setQuestionAnswers] = useState([
-    { activeTeamAnswer: null, opponentTeamAnswer: null },
-    { activeTeamAnswer: null, opponentTeamAnswer: null }
-  ])
+  const [opponentTeam, setOpponentTeam] = useState(null)
+  const [challengeQuestions, setChallengeQuestions] = useState([])
+  const [challengeResult, setChallengeResult] = useState(null)
+  const [questionAnswers, setQuestionAnswers] = useState(emptyQuestionAnswers)
+
+  const {
+    board,
+    teams,
+    answers,
+    questions,
+    currentTeam,
+    turnPhase,
+    questionCategories,
+    actions: { updateScore, saveAnswer },
+    handlers: { finishTurn }
+  } = useGame()
+
+  const currentTeamName = currentTeam?.name ?? null
+  const opponentTeamName = opponentTeam?.name ?? 'Opponent team'
+  const availableTeams = teams.filter((team) => team.id !== currentTeam?.id)
 
   useEffect(() => {
     const dialog = dialogRef.current
-
-    if (!dialog) {
-      return
-    }
-
-    if (!dialog.open) {
-      dialog.showModal()
-    }
-
-    return () => {
-      if (dialog.open) {
-        dialog.close()
-      }
-    }
-  }, [])
+    if (!dialog) return
+    if (turnPhase === TURN_PHASES.CHALLENGE && !dialog.open) dialog.showModal()
+    return () => { if (dialog && dialog.open) dialog.close() }
+  }, [turnPhase])
 
   // Boolean indicating whether the "Continue" button can be enabled in the setup phase
   const canConfirm = selectedOpponentId !== null && categoryMode !== null && (categoryMode === 'any' || selectedCategoryId !== null)
 
-  const handleConfirm = () => {
-    if (!canConfirm || !onConfirmSetup) {
+  const handleSetupConfirm = () => {
+    if (!canConfirm || !currentTeam) {
       return
     }
 
-    onConfirmSetup({
-      opponentTeamId: selectedOpponentId,
-      categoryId: categoryMode === 'any' ? null : selectedCategoryId
-    })
+    const nextOpponentTeam = teams.find((team) => team.id === selectedOpponentId) ?? null
 
+    if (!nextOpponentTeam) {
+      console.error(`[ChallengeSetup] Invalid opponent team ID: ${selectedOpponentId}`)
+      finishTurn()
+      return
+    }
+
+    const pickCategory = () => {
+      if (categoryMode === 'specific') {
+        return questionCategories.find((category) => category.id === selectedCategoryId) ?? null
+      }
+
+      return questionCategories[Math.floor(Math.random() * questionCategories.length)] ?? null
+    }
+
+    const q1 = getRandomQuestionForCategory(pickCategory(), questions, answers)
+    const q2 = getRandomQuestionForCategory(pickCategory(), questions, answers)
+    const selectedQuestions = [q1, q2].filter(Boolean)
+
+    if (selectedQuestions.length === 0) {
+      console.error('[ChallengeSetup] Failed to select valid questions for the challenge.')
+      finishTurn()
+      return
+    }
+
+    setOpponentTeam(nextOpponentTeam)
+    setChallengeQuestions(selectedQuestions)
+    setChallengeResult(null)
     setPhase('question')
     setCurrentQuestionIndex(0)
-    setQuestionAnswers([
-      { activeTeamAnswer: null, opponentTeamAnswer: null },
-      { activeTeamAnswer: null, opponentTeamAnswer: null }
-    ])
   }
 
   const handleSelectCategoryMode = (mode) => {
@@ -119,8 +144,8 @@ export default function ChallengeModal({
     return `${delta}`
   }
 
-  const handleConfirmQuestions = () => {
-    if (!canConfirmQuestion) {
+  const handleQuestionsConfirm = () => {
+    if (!canConfirmQuestion || !currentTeam || !opponentTeam) {
       return
     }
 
@@ -130,10 +155,71 @@ export default function ChallengeModal({
       return
     }
 
-    if (onQuestionsAnswered) {
-      onQuestionsAnswered(questionAnswers)
-      setPhase('result')
+    const correctnessTuples = challengeQuestions.map((question, index) => {
+      const answerSet = questionAnswers[index] ?? { activeTeamAnswer: null, opponentTeamAnswer: null }
+      const activeIsCorrect = question.answer === answerSet.activeTeamAnswer
+      const opponentIsCorrect = question.answer === answerSet.opponentTeamAnswer
+
+      saveAnswer({
+        questionId: question.id,
+        teamId: currentTeam.id,
+        isCorrect: activeIsCorrect
+      })
+
+      saveAnswer({
+        questionId: question.id,
+        teamId: opponentTeam.id,
+        isCorrect: opponentIsCorrect
+      })
+
+      return [activeIsCorrect, opponentIsCorrect]
+    })
+
+    const activeCorrectCount = correctnessTuples.filter(([activeIsCorrect]) => activeIsCorrect).length
+    const opponentCorrectCount = correctnessTuples.filter(([, opponentIsCorrect]) => opponentIsCorrect).length
+
+    let activePointsDelta = 0
+    let opponentPointsDelta = 0
+    let outcome = 'draw'
+
+    if (activeCorrectCount > opponentCorrectCount) {
+      outcome = 'active-wins'
+      activePointsDelta = board.score_challenge_winner
+      opponentPointsDelta = board.score_challenge_loser
+    } else if (activeCorrectCount < opponentCorrectCount) {
+      outcome = 'opponent-wins'
+      activePointsDelta = board.score_challenge_loser
+      opponentPointsDelta = board.score_challenge_winner
+    } else {
+      activePointsDelta = board.score_challenge_draw_attacker
+      opponentPointsDelta = board.score_challenge_draw_defender
     }
+
+    updateScore(currentTeam.id, activePointsDelta)
+    updateScore(opponentTeam.id, opponentPointsDelta)
+    setChallengeResult({
+      outcome,
+      activeCorrectCount,
+      opponentCorrectCount,
+      activePointsDelta,
+      opponentPointsDelta,
+      correctnessTuples
+    })
+    setPhase('result')
+  }
+
+  const handleClose = () => {
+    setSelectedOpponentId(null)
+    setCategoryMode(null)
+    setSelectedCategoryId(null)
+    setPhase('setup')
+    setCurrentQuestionIndex(0)
+    setOpponentTeam(null)
+    setChallengeQuestions([])
+    setChallengeResult(null)
+    setQuestionAnswers(emptyQuestionAnswers)
+
+    finishTurn()
   }
 
   const dialogClassName = cn(
@@ -148,8 +234,15 @@ export default function ChallengeModal({
       : 'border-border bg-secondary text-foreground hover:border-primary/50 hover:bg-primary-200'
   )
 
+  if (turnPhase !== TURN_PHASES.CHALLENGE) return null;
+
   return (
-    <dialog ref={dialogRef} className={dialogClassName} aria-modal="true" aria-label="Challenge setup modal">
+    <dialog
+      ref={dialogRef}
+      onCancel={(e) => e.preventDefault()} // evita que el modal se cierre al hacer click fuera o presionar Esc
+      className={dialogClassName}
+      aria-modal="true" aria-label="Challenge setup modal"
+    >
       {phase === 'setup' && (
         <>
           <header className="border-b border-border px-6 pt-6 pb-4">
@@ -242,7 +335,7 @@ export default function ChallengeModal({
           </div>
 
           <footer className="flex justify-end gap-2 border-t border-border px-6 py-4">
-            <Button type="button" onClick={handleConfirm} disabled={!canConfirm} size="lg">
+            <Button type="button" onClick={handleSetupConfirm} disabled={!canConfirm} size="lg">
               Continue
             </Button>
           </footer>
@@ -314,7 +407,7 @@ export default function ChallengeModal({
           </div>
 
           <footer className="flex justify-end gap-2 border-t border-border px-6 py-4">
-            <Button type="button" onClick={handleConfirmQuestions} disabled={!canConfirmQuestion} size="lg">
+            <Button type="button" onClick={handleQuestionsConfirm} disabled={!canConfirmQuestion} size="lg">
               {currentQuestionIndex === 0 ? 'Next question' : 'Finish answers'}
             </Button>
           </footer>
@@ -403,7 +496,7 @@ export default function ChallengeModal({
           </div>
 
           <footer className="flex justify-end gap-2 border-t border-border px-5 py-3">
-            <Button variant="secondary" type="button" onClick={onClose} size="lg">
+            <Button variant="secondary" type="button" onClick={handleClose} size="lg">
               Close
             </Button>
           </footer>

@@ -1,29 +1,58 @@
 import { useRef, useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { useGame } from '../context/GameContext'
+import { TURN_PHASES } from '../constants/turnPhases'
 
-const QuestionModal = ({ onFinishTurn, onConfirmAnswer, questionText, currentTeamName }) => {
+const QuestionModal = () => {
   const dialogRef = useRef(null)
   const [selectedAnswer, setSelectedAnswer] = useState(null)
   const [result, setResult] = useState(null)
+  const {
+    board,
+    currentTeam,
+    currentQuestion,
+    turnPhase,
+    actions: { updateScore, saveAnswer },
+    handlers: { finishTurn }
+  } = useGame()
+  const questionText = currentQuestion?.text ?? null
+  const currentTeamName = currentTeam?.name ?? null
 
   useEffect(() => {
     const dialog = dialogRef.current
     if (!dialog) return
-    if (!dialog.open) dialog.showModal()
-    return () => { if (dialog.open) dialog.close() }
-  }, [])
+    if (turnPhase === TURN_PHASES.QUESTION && !dialog.open) dialog.showModal()
+    return () => { if (dialog && dialog.open) dialog.close() }
+  }, [turnPhase])
 
   const handleConfirmAnswer = () => {
-    if (selectedAnswer === null || !onConfirmAnswer) return
-    const nextResult = onConfirmAnswer(selectedAnswer)
-    if (nextResult) setResult(nextResult)
+    if (selectedAnswer === null || !currentQuestion || !currentTeam) return
+
+    const isCorrect = currentQuestion.answer === selectedAnswer
+    const pointsDelta = isCorrect ? board.score_correct : board.score_incorrect
+
+    updateScore(currentTeam.id, pointsDelta)
+    saveAnswer({
+      questionId: currentQuestion.id,
+      teamId: currentTeam.id,
+      isCorrect
+    })
+
+    setResult({
+      isCorrect,
+      pointsDelta,
+      correctAnswer: currentQuestion.answer
+    })
   }
+
+  if (turnPhase !== TURN_PHASES.QUESTION) return null
 
   return (
     <dialog
       ref={dialogRef}
-      className="fixed inset-0 m-auto w-full max-w-md rounded-2xl border border-border bg-card p-0 shadow-2xl backdrop:bg-foreground/40 backdrop:backdrop-blur-sm"
+      onCancel={(e) => e.preventDefault()} // evita que el modal se cierre al hacer click fuera o presionar Esc
+      className="fixed inset-0 m-auto w-full max-w-md rounded-2xl border border-border bg-card p-0 shadow-2xl backdrop:bg-foreground/40 backdrop:backdrop-blur-sm animate-in fade-in zoom-in"
       aria-modal="true"
       aria-label="Question modal"
     >
@@ -91,7 +120,11 @@ const QuestionModal = ({ onFinishTurn, onConfirmAnswer, questionText, currentTea
           </Button>
         )}
         {(!questionText || result) && (
-          <Button variant="secondary" size="lg" onClick={onFinishTurn}>
+          <Button variant="secondary" size="lg" onClick={() => {
+            setSelectedAnswer(null)
+            setResult(null)
+            finishTurn()
+          }}>
             Close
           </Button>
         )}

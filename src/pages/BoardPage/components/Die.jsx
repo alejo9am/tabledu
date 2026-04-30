@@ -1,4 +1,9 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+
+import { Button } from '@/components/ui/button'
+
+import { useGame } from '../context/GameContext'
+import { TURN_PHASES } from '../constants/turnPhases'
 
 const ROLL_DURATION_MS = 2300
 const FACE_ROTATIONS = {
@@ -42,13 +47,18 @@ const FACE_DOTS = {
 
 const FACE_ORDER = [6, 1, 5, 2, 3, 4]
 
-const Dice = forwardRef(({ onRollDone }, ref) => {
+function Die() {
   const dieRef = useRef(null)
   const animationRef = useRef(null)
   const settleTimeoutRef = useRef(null)
-  const isRollingRef = useRef(false)
   const currentRotationRef = useRef(FACE_ROTATIONS[6])
   const [dieTransform, setDieTransform] = useState(toTransform(FACE_ROTATIONS[6]))
+  const [isRolling, setIsRolling] = useState(false)
+
+  const {
+    turnPhase,
+    handlers: { rollDie }
+  } = useGame()
 
   useEffect(() => {
     return () => {
@@ -60,16 +70,16 @@ const Dice = forwardRef(({ onRollDone }, ref) => {
         clearTimeout(settleTimeoutRef.current)
       }
 
-      isRollingRef.current = false
+      setIsRolling(false)
     }
   }, [])
 
-  const rollDie = () => {
-    if (!dieRef.current || isRollingRef.current) {
+  const animate = () => {
+    if (!dieRef.current || isRolling || turnPhase !== TURN_PHASES.IDLE) {
       return
     }
 
-    isRollingRef.current = true
+    setIsRolling(true)
 
     if (animationRef.current) {
       animationRef.current.cancel()
@@ -81,8 +91,8 @@ const Dice = forwardRef(({ onRollDone }, ref) => {
       settleTimeoutRef.current = null
     }
 
-    const roll = Math.floor(Math.random() * 6) + 1
-    const targetFaceRotation = FACE_ROTATIONS[roll]
+    const dieValue = Math.floor(Math.random() * 6) + 1
+    const targetFaceRotation = FACE_ROTATIONS[dieValue]
 
     const dirX = Math.random() < 0.5 ? -1 : 1
     const dirY = Math.random() < 0.5 ? -1 : 1
@@ -120,39 +130,43 @@ const Dice = forwardRef(({ onRollDone }, ref) => {
     settleTimeoutRef.current = setTimeout(() => {
       currentRotationRef.current = targetFaceRotation
       setDieTransform(toTransform(targetFaceRotation))
-      isRollingRef.current = false
-      if (onRollDone) onRollDone(roll)
+      setIsRolling(false)
+      rollDie(dieValue)
     }, ROLL_DURATION_MS)
   }
 
-  useImperativeHandle(ref, () => ({ rollDie }))
-
   return (
-    <div
-      className="m-3.75 inline-block select-none perspective-[580px]"
-      aria-label="3D dice"
-    >
+    <div className='flex items-center gap-4' aria-label='Die section'>
       <div
-        className="relative h-16 w-16 origin-[50%_50%] transform-3d will-change-transform"
-        ref={dieRef}
-        style={{ transform: dieTransform }}
+        className="m-3.75 inline-block select-none perspective-[580px]"
+        aria-label="3D die"
       >
-        {FACE_ORDER.map((face) => (
-          <div
-            key={face}
-            className={`absolute size-16 rounded-lg border border-border bg-primary backface-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-3px_6px_rgba(0,0,0,0.2)] ${FACE_CLASSNAMES[face]}`}
-          >
-            {FACE_DOTS[face].map((dot) => (
-              <span
-                key={dot}
-                className={`absolute size-2.5 rounded-full bg-primary-foreground ${DOT_POSITIONS[dot]}`}
-              />
-            ))}
-          </div>
-        ))}
+        <div
+          className="relative h-16 w-16 origin-[50%_50%] transform-3d will-change-transform"
+          ref={dieRef}
+          style={{ transform: dieTransform }}
+        >
+          {FACE_ORDER.map((face) => (
+            <div
+              key={face}
+              className={`absolute size-16 rounded-lg border border-border bg-primary backface-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-3px_6px_rgba(0,0,0,0.2)] ${FACE_CLASSNAMES[face]}`}
+            >
+              {FACE_DOTS[face].map((dot) => (
+                <span
+                  key={dot}
+                  className={`absolute size-2.5 rounded-full bg-primary-foreground ${DOT_POSITIONS[dot]}`}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
+
+      <Button onClick={animate} disabled={turnPhase !== TURN_PHASES.IDLE || isRolling}>
+        Roll die
+      </Button>
     </div>
   )
-})
+}
 
-export default Dice
+export default Die

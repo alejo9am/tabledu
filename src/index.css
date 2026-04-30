@@ -5,6 +5,8 @@
 @import "@fontsource-variable/shantell-sans/full.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant v-lg (@media (max-height: 920px));
+@custom-variant v-md (@media (max-height: 820px));
 
 @theme inline {
   /* Fonts */
@@ -58,6 +60,7 @@
 
   /* Borders and states */
   --color-border: var(--border);
+  --color-border-dark: var(--border-dark);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
@@ -86,8 +89,7 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  --radius-5xl: calc(var(--radius) * 3);
-  --radius-6xl: calc(var(--radius) * 4);
+  --radius-tile: calc(var(--radius) * 5);
 }
 
 :root {
@@ -98,6 +100,9 @@
   --card-foreground: #0f172a;
   --popover: #ffffff;
   --popover-foreground: #0f172a;
+
+  /* Color de los puntos/cuadros de la libreta */
+  --sketch-dot: #cbd5e1; /* slate-300 */
 
   /* Triad palette */
   --primary: #3f74c6;
@@ -137,6 +142,7 @@
 
   /* Borders and focus */
   --border: #e2e8f0;
+  --border-dark: #334155;
   --input: #e2e8f0;
   --ring: #3f74c6;
 
@@ -168,6 +174,8 @@
   --card-foreground: #f8fafc;
   --popover: #1e293b;
   --popover-foreground: #f8fafc;
+
+  --sketch-dot: #334155; /* slate-700 */
 
   --primary: #4f83d4;
   --destructive: #ef6a5c;
@@ -201,7 +209,8 @@
   --accent: #1e293b;
   --accent-foreground: #f8fafc;
 
-  --border: #ffffff1a;
+  --border: #243041;
+  --border-dark: #64748b;
   --input: #ffffff26;
   --ring: #4f83d4;
 
@@ -227,11 +236,28 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+
+    /* Fondo estilo Libreta de Puntos */
+    /* background-color: var(--background);
+    background-image: radial-gradient(var(--sketch-dot) 2px, transparent 0);
+    background-size: 28px 28px; */
+
+    /* Fondo estilo Libreta de Cuadricula */
+    background-color: var(--background);
+    background-image: 
+      linear-gradient(to right, var(--sketch-dot) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--sketch-dot) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
 
   html {
     @apply font-sans;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
   }
 }
 
