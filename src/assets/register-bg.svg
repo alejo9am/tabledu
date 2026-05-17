@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <defs>
+    <style>
+      /* Colores base y modos de mezcla para igualar la imagen */
+      .bg { fill: #f8fafc; }
+      .y { fill: #f2d247; }
+      .y-s { stroke: #f2d247; }
+      .r { fill: #e65747; }
+      .r-s { stroke: #e65747; }
+      .b { fill: #3f74c6; }
+      .b-s { stroke: #3f74c6; }
+      
+      /* El modo "multiply" es el que permite que rojo + azul = morado oscuro al cruzarse */
+      .blend { mix-blend-mode: multiply; }
+      
+      /* Clases de grosor para estandarizar las figuras de "píldora" y bordes */
+      .thick { stroke-width: 60; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .thick-lg { stroke-width: 80; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .thick-j { stroke-width: 105; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+
+      /* Animaciones: Configuración base */
+      #s1, #s2, #s3, #s4, #s5, #s6, #s7, #s8, #s9, #s10, 
+      #s11, #s12, #s13, #s14, #s15, #s16, #s17, #s18, #s19, #s20, 
+      #s21, #s22, #s23, #s24, #s25 {
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+
+      /* Animaciones: respiración visible + desplazamiento suave */
+      @keyframes a1 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(12px, 8px) rotate(3deg) scale(1.05); } }
+      @keyframes a2 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(-14px, 6px) rotate(-4deg) scale(0.95); } }
+      @keyframes a3 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(10px, -12px) rotate(4deg) scale(1.045); } }
+      @keyframes a4 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(-12px, -10px) rotate(-3deg) scale(0.955); } }
+      @keyframes a5 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(15px, 2px) rotate(5deg) scale(1.04); } }
+      @keyframes a6 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(-7px, 12px) rotate(-4deg) scale(0.96); } }
+      @keyframes a7 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(13px, -8px) rotate(3deg) scale(1.04); } }
+      @keyframes a8 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(-16px, -11px) rotate(-5deg) scale(0.95); } }
+      @keyframes a9 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(8px, 13px) rotate(4deg) scale(1.04); } }
+      @keyframes a10 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(-10px, 7px) rotate(-3deg) scale(0.96); } }
+      @keyframes a11 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(16px, -4px) rotate(5deg) scale(1.05); } }
+      @keyframes a12 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(-8px, -13px) rotate(-4deg) scale(0.955); } }
+      @keyframes a13 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(10px, 10px) rotate(3deg) scale(1.035); } }
+      @keyframes a14 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(-15px, 0) rotate(-4deg) scale(0.95); } }
+      @keyframes a15 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(0, -13px) rotate(5deg) scale(1.05); } }
+      @keyframes a16 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(12px, 6px) rotate(-3deg) scale(0.965); } }
+      @keyframes a17 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(-9px, 15px) rotate(4deg) scale(1.04); } }
+      @keyframes a18 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(14px, -12px) rotate(-5deg) scale(0.955); } }
+      @keyframes a19 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(-11px, -7px) rotate(4deg) scale(1.04); } }
+      @keyframes a20 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(7px, -15px) rotate(-5deg) scale(0.95); } }
+      @keyframes a21 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(-13px, 9px) rotate(3deg) scale(1.04); } }
+      @keyframes a22 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(16px, 12px) rotate(-4deg) scale(0.96); } }
+      @keyframes a23 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(-5px, -13px) rotate(4deg) scale(1.035); } }
+      @keyframes a24 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(10px, -4px) rotate(-3deg) scale(0.965); } }
+      @keyframes a25 { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(-14px, 10px) rotate(5deg) scale(1.045); } }
+
+      /* Animaciones: Asignación a cada forma con duraciones y retrasos únicos (sin cambios en los tiempos) */
+      #s1 { animation: a1 12.1s ease-in-out infinite alternate 0.1s; }
+      #s2 { animation: a2 15.2s ease-in-out infinite alternate 2.3s; }
+      #s3 { animation: a3 9.3s ease-in-out infinite alternate 4.1s; }
+      #s4 { animation: a4 18.4s ease-in-out infinite alternate 1.2s; }
+      #s5 { animation: a5 14.5s ease-in-out infinite alternate 3.4s; }
+      #s6 { animation: a6 19.6s ease-in-out infinite alternate 5.5s; }
+      #s7 { animation: a7 11.7s ease-in-out infinite alternate 0.7s; }
+      #s8 { animation: a8 16.8s ease-in-out infinite alternate 2.8s; }
+      #s9 { animation: a9 8.9s ease-in-out infinite alternate 1.9s; }
+      #s10 { animation: a10 13.2s ease-in-out infinite alternate 4.7s; }
+      #s11 { animation: a11 17.3s ease-in-out infinite alternate 3.6s; }
+      #s12 { animation: a12 10.4s ease-in-out infinite alternate 5.8s; }
+      #s13 { animation: a13 18.9s ease-in-out infinite alternate 0.4s; }
+      #s14 { animation: a14 14.2s ease-in-out infinite alternate 2.1s; }
+      #s15 { animation: a15 11.6s ease-in-out infinite alternate 4.3s; }
+      #s16 { animation: a16 9.8s ease-in-out infinite alternate 1.5s; }
+      #s17 { animation: a17 16.4s ease-in-out infinite alternate 3.9s; }
+      #s18 { animation: a18 18.1s ease-in-out infinite alternate 5.1s; }
+      #s19 { animation: a19 15.7s ease-in-out infinite alternate 0.9s; }
+      #s20 { animation: a20 12.8s ease-in-out infinite alternate 2.6s; }
+      #s21 { animation: a21 17.5s ease-in-out infinite alternate 4.8s; }
+      #s22 { animation: a22 10.2s ease-in-out infinite alternate 1.1s; }
+      #s23 { animation: a23 13.9s ease-in-out infinite alternate 3.2s; }
+      #s24 { animation: a24 19.2s ease-in-out infinite alternate 5.4s; }
+      #s25 { animation: a25 8.4s ease-in-out infinite alternate 2.9s; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="800" height="800" />
+
+  <g class="blend">
+    
+    <circle id="s1" class="y" cx="70" cy="70" r="140" />
+    <circle id="s2" class="y" cx="490" cy="270" r="220" />
+    <circle id="s3" class="y" cx="740" cy="160" r="30" />
+    <circle id="s4" class="y" cx="780" cy="780" r="100" />
+    <circle id="s5" class="y" cx="120" cy="780" r="100" />
+    <line id="s6" class="y-s thick" x1="260" y1="720" x2="440" y2="540" />
+    <line id="s7" class="y-s thick" x1="120" y1="380" x2="200" y2="300" stroke-width="35" />
+
+    <path id="s8" class="b-s thick-j" d="M 550 720 L 550 450 A 150 150 0 0 0 250 450 L 250 480" />
+    <circle id="s9" class="b" cx="160" cy="620" r="80" />
+    <path id="s10" class="b-s thick" d="M -30 240 L 70 240 L 250 60" />
+    <line id="s11" class="b-s thick" x1="580" y1="180" x2="720" y2="40" stroke-width="45" />
+    <line id="s12" class="b-s thick" x1="400" y1="840" x2="520" y2="720" stroke-width="40" />
+    <path id="s13" class="b-s thick" d="M 660 410 A 70 70 0 0 1 780 410" stroke-width="50" />
+    <path id="s14" class="b-s thick" d="M 630 680 L 730 680" stroke-width="60" />
+    <path id="s15" class="b-s thick" d="M 230 780 A 60 60 0 0 1 330 780" stroke-width="45" />
+    <circle id="s16" class="b" cx="220" cy="150" r="25" />
+    <circle id="s17" class="b" cx="500" cy="780" r="60" />
+
+    <line id="s18" class="r-s thick-lg" x1="280" y1="550" x2="580" y2="250" />
+    <path id="s19" class="r-s thick" d="M -30 300 L 70 300 L 230 140" />
+    <line id="s20" class="r-s thick" x1="-10" y1="600" x2="180" y2="410" stroke-width="35" />
+    <rect id="s21" class="r" x="590" y="600" width="110" height="220" rx="35" />
+    <line id="s22" class="r-s thick" x1="580" y1="70" x2="680" y2="-30" stroke-width="35" />
+    <line id="s23" class="r-s thick" x1="640" y1="540" x2="820" y2="360" stroke-width="45" />
+    <path id="s24" class="r-s thick" d="M -20 400 L 20 400" stroke-width="40" />
+    <path id="s25" class="r-s thick" d="M 760 620 L 780 620" stroke-width="40" />
+
+  </g>
+</svg>

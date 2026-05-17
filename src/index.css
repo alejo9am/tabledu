@@ -3,6 +3,7 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/figtree";
 @import "@fontsource-variable/shantell-sans/full.css";
+@import "@fontsource-variable/fredoka/wght.css"; /* Supports weights 300-700 */
 
 @custom-variant dark (&:is(.dark *));
 @custom-variant v-lg (@media (max-height: 920px));
@@ -12,7 +13,8 @@
   /* Fonts */
   --font-sans: 'Figtree Variable', sans-serif;
   --font-heading: var(--font-sans);
-  --font-display: 'Shantell Sans Variable', cursive;
+  /* --font-display: 'Shantell Sans Variable', cursive; */
+  --font-display: 'Fredoka Variable', cursive;
 
   /* Semantic color bridge */
   --color-background: var(--background);
@@ -102,7 +104,7 @@
   --popover-foreground: #0f172a;
 
   /* Color de los puntos/cuadros de la libreta */
-  --sketch-dot: #cbd5e1; /* slate-300 */
+  --sketch-dot: #e2e8f0; /* slate-200 */
 
   /* Triad palette */
   --primary: #3f74c6;
@@ -126,7 +128,7 @@
   --warning-200: #faefb6;
   --warning-350: #f5df79;
   --warning-700: #d3ad1e;
-  --warning-850: #a98917;
+  --warning-850: #6f5808;
 
   /* Supporting surfaces */
   --secondary: #f1f5f9;
@@ -175,7 +177,7 @@
   --popover: #1e293b;
   --popover-foreground: #f8fafc;
 
-  --sketch-dot: #334155; /* slate-700 */
+  --sketch-dot: #1e293b; /* slate-800 */
 
   --primary: #4f83d4;
   --destructive: #ef6a5c;
@@ -196,7 +198,7 @@
   --warning-200: #fbf1be;
   --warning-350: #f7e289;
   --warning-700: #d8b929;
-  --warning-850: #ad9620;
+  --warning-850: #735d0b;
 
   --secondary: #1e293b;
   --secondary-foreground: #f8fafc;
@@ -239,16 +241,16 @@
     @apply text-foreground;
 
     /* Fondo estilo Libreta de Puntos */
-    /* background-color: var(--background);
+    background-color: var(--background);
     background-image: radial-gradient(var(--sketch-dot) 2px, transparent 0);
-    background-size: 28px 28px; */
+    background-size: 28px 28px;
 
     /* Fondo estilo Libreta de Cuadricula */
-    background-color: var(--background);
+    /* background-color: var(--background);
     background-image: 
       linear-gradient(to right, var(--sketch-dot) 1px, transparent 1px),
       linear-gradient(to bottom, var(--sketch-dot) 1px, transparent 1px);
-    background-size: 32px 32px;
+    background-size: 32px 32px; */
   }
 
   html {
@@ -258,6 +260,33 @@
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+  }
+}
+
+@layer components {
+  .toaster [data-sonner-toast] {
+    border-left-width: 4px !important;
+    border-left-color: var(--border) !important;
+  }
+
+  .toaster [data-sonner-toast][data-type="success"] {
+    border-left-color: var(--success) !important;
+    background: var(--success-200) !important;
+  }
+
+  .toaster [data-sonner-toast][data-type="info"] {
+    border-left-color: var(--primary) !important;
+    background: var(--primary-200) !important;
+  }
+
+  .toaster [data-sonner-toast][data-type="warning"] {
+    border-left-color: var(--warning) !important;
+    background: var(--warning-200) !important;
+  }
+
+  .toaster [data-sonner-toast][data-type="error"] {
+    border-left-color: var(--destructive) !important;
+    background: var(--destructive-200) !important;
   }
 }
 
