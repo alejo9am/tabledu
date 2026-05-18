@@ -4,6 +4,8 @@ import { Icon } from '@/components/ui/Icon'
 import { Mail02Icon, LockPasswordIcon, ViewOffIcon, ViewIcon, Loading02Icon, CheckmarkCircle02Icon } from '@hugeicons/core-free-icons'
 import { supabase } from '@/lib/supabase'
 import registerBg from '@/assets/register-bg.svg'
+import AuthHeader from '@/features/auth/components/AuthHeader'
+import AuthVisualPanel from '@/features/auth/components/AuthVisualPanel'
 import { Button } from '@/components/ui/button'
 import { Field, FieldLabel, FieldError } from '@/components/ui/field'
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupButton } from '@/components/ui/input-group'
@@ -67,34 +69,17 @@ function RegisterPage() {
   return (
     <main className="min-h-screen w-full animate-in fade-in" aria-label="Create account">
       <div className="flex min-h-screen flex-col lg:grid lg:grid-cols-2">
-        {/* Visual panel. On mobile it appears on top. */}
-        <div
-          className="relative h-[35vh] min-h-52 shrink-0 bg-cover bg-center lg:order-last lg:h-auto lg:min-h-screen"
-          style={{ backgroundImage: `url(${registerBg})` }}
-          aria-label="Visual decoration"
-        >
-          <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/0 to-black/0" aria-hidden="true" />
-
-          <div className="relative flex h-full flex-col justify-end p-5 sm:p-8">
-            <div className="max-w-md">
-              <p className="text-balance font-display text-2xl font-extrabold leading-tight text-white sm:text-3xl">
-                Join the platform
-              </p>
-              <p className="mt-2 text-sm font-semibold leading-relaxed text-white/80">
-                Start building engaging educational games for your students
-              </p>
-            </div>
-          </div>
-        </div>
+        <AuthVisualPanel
+          backgroundImage={registerBg}
+          title="Join the platform"
+          subtitle="Start building board games for your students"
+          subtitleClassName="font-semibold leading-relaxed"
+        />
 
         {/* Form panel */}
         <div className="flex flex-1 flex-col items-center justify-start bg-card px-6 py-8 sm:px-8 lg:justify-center lg:px-10">
           <div className="w-full max-w-md">
-            <header className="pb-5">
-              <p className="font-display text-lg font-extrabold text-foreground">cyberpatrol</p>
-              <h1 className="mt-6 font-display text-3xl font-extrabold text-primary">Create account</h1>
-              <p className="mt-1 text-sm font-medium text-muted-foreground">Let's start with a few details.</p>
-            </header>
+            <AuthHeader title="Create account" subtitle="Let's start with a few details." />
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               <Field>

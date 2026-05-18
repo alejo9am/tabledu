@@ -37,8 +37,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/context/AuthContext"
 import { Icon } from "@/components/ui/Icon"
+import logoDark from "@/assets/logo-dark.svg"
+import logoLight from "@/assets/logo-light.svg"
 import {
-  DiceFaces05Icon,
   Home01Icon,
   DashboardSquare02Icon,
   Quiz05Icon,
@@ -242,13 +243,8 @@ function DashboardLayout() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild size="lg">
                   <Link to="/" state={{ from: location.pathname }}>
-                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                      <Icon icon={DiceFaces05Icon} strokeWidth={2.5} className="size-4" />
-                    </div>
-                    <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                      <span className="truncate font-semibold">Tabledu</span>
-                      <span className="truncate text-xs text-sidebar-foreground/70">Dashboard</span>
-                    </div>
+                    <img src={logoLight} alt="tabledu" className="h-8 w-auto dark:hidden" />
+                    <img src={logoDark} alt="tabledu" className="hidden h-8 w-auto dark:block" />
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
