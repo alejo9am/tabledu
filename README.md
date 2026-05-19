@@ -1,9 +1,7 @@
 <div align="center">
-  <!-- Logo: reemplazar src con la ruta al SVG definitivo cuando esté disponible -->
-  <!-- <img src="./docs/logo.svg" alt="Tabledu" width="200" /> -->
+  <img src="./src/assets/logo-light.svg" alt="Tabledu" width="350" />
 
-  # Tabledu
-
+---
   **Plataforma web para la creación y gestión de juegos de mesa educativos personalizados.**
 
   Tabledu permite a los profesores transformar el contenido de sus asignaturas en experiencias de juego interactivas, configurando tableros, categorías, preguntas y partidas desde un panel propio.
