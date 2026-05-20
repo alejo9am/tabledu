@@ -11,7 +11,7 @@ const Header = ({ className }) => {
   return (
     <header className={`${className} relative`} aria-label="Game header">
       <BackButton
-        fallbackTo="/games"
+        to="/games"
         label="Back"
         variant="secondary"
         className="absolute left-2 top-1/2 -translate-y-1/2 sm:left-4"
