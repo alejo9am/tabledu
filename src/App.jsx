@@ -12,7 +12,7 @@ function App() {
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <AuthProvider>
           <AppRoutes />
-          <Toaster position="top-center" />
+          <Toaster position="top-right" />
           <Analytics />
           <SpeedInsights />
         </AuthProvider>
