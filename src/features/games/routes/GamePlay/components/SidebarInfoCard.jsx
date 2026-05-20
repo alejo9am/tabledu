@@ -10,35 +10,12 @@ function SidebarInfoCard() {
     handlers: { startTileAction }
   } = useGame()
 
-  const actionCardData = (() => {
-    if (!currentCategory) return null
-
-    if (currentCategory.type === 'question') {
-      return {
-        title: `${currentCategory.name} Question`,
-        description: currentCategory.description,
-        buttonLabel: 'Show question',
-        buttonAction: startTileAction
-      }
-    }
-
-    if (currentCategory.type === 'special') {
-      return {
-        title: `${currentCategory.name} Tile`,
-        description: currentCategory.description,
-        buttonLabel: 'Continue',
-        buttonAction: startTileAction
-      }
-    }
-
-    // Fallback info
-    return {
-      title: 'Tile event',
-      description: 'A tile effect was triggered. Continue to resolve this step.',
-      buttonLabel: 'Continue',
-      buttonAction: startTileAction
-    }
-  })()
+  const actionCardData = currentCategory ? {
+    title: `${currentCategory.name} ${currentCategory.type === 'question' ? 'Question' : 'Tile'}`, // e.g. "History Question", "Attack Tile"
+    description: currentCategory.description,
+    buttonLabel: currentCategory.type === 'question' ? 'Show question' : 'Continue',
+    buttonAction: startTileAction
+  } : null
 
   if (turnPhase !== TURN_PHASES.TILE_INFO) {
     return null

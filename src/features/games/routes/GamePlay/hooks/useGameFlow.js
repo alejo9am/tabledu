@@ -79,20 +79,16 @@ export function useGameFlow(gameInfo) {
       case 'question':
         setTurnPhase(TURN_PHASES.QUESTION)
         break
-      case 'special':
-        switch (currentCategory.name.toLowerCase()) {
-          case 'pipe':
-            setTurnPhase(TURN_PHASES.IDLE)
-            break
-          case 'attack':
-            if (!currentTeam) return
-            updateScore(currentTeam.id, board.score_attack)
-            finishTurn()
-            break
-          case 'challenge':
-            setTurnPhase(TURN_PHASES.CHALLENGE)
-            break
-        }
+      case 'pipe':
+        setTurnPhase(TURN_PHASES.IDLE)
+        break
+      case 'attack':
+        if (!currentTeam) return
+        updateScore(currentTeam.id, board.score_attack)
+        finishTurn()
+        break
+      case 'challenge':
+        setTurnPhase(TURN_PHASES.CHALLENGE)
         break
       default:
         finishTurn()

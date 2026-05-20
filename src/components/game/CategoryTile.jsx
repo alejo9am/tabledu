@@ -50,7 +50,7 @@ const CategoryTile = forwardRef(function CategoryTile(
 
   const tone = useMemo(() => {
     if (category?.type === 'question') return 'question'
-    if (category?.name?.toLowerCase() === 'attack') return 'danger'
+    if (category?.type === 'attack') return 'danger'
     return 'special'
   }, [category?.type, category?.name])
 
