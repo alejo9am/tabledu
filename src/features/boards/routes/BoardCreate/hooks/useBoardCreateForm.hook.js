@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react'
 const defaultSpecialCategories = {
   attack: {
     id: null,
+    type: 'attack',
     name: 'Attack',
     icon: 'system/hacker.png',
     description: 'Cyber attack! Your team loses points.',
@@ -11,6 +12,7 @@ const defaultSpecialCategories = {
   },
   pipe: {
     id: null,
+    type: 'pipe',
     name: 'Pipe',
     icon: 'system/pipe.png',
     description: 'Lucky break! Roll the dice again.',
@@ -18,6 +20,7 @@ const defaultSpecialCategories = {
   },
   challenge: {
     id: null,
+    type: 'challenge',
     name: 'Challenge',
     icon: 'system/swords.png',
     description: 'Duel time. Challenge a rival team.',

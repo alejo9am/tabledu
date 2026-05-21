@@ -49,17 +49,14 @@ function SpecialTilesPage({ form }) {
         ) : (
           <>
             <SpecialCategoryCard
-              type="challenge"
               category={form.specialCategories.challenge}
               onChange={(updates) => form.updateSpecialCategory('challenge', updates)}
             />
             <SpecialCategoryCard
-              type="attack"
               category={form.specialCategories.attack}
               onChange={(updates) => form.updateSpecialCategory('attack', updates)}
             />
             <SpecialCategoryCard
-              type="pipe"
               category={form.specialCategories.pipe}
               onChange={(updates) => form.updateSpecialCategory('pipe', updates)}
             />
