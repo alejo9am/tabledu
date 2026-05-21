@@ -43,7 +43,7 @@ export function useBoardCreateForm() {
   const [specialCategoriesLoaded, setSpecialCategoriesLoaded] = useState(false)
   const [scoreCorrect, setScoreCorrect] = useState(3)
   const [scoreIncorrect, setScoreIncorrect] = useState(-1)
-  const [questionCategories, setQuestionCategories] = useState([])
+  const [selectedQuestionTiles, setSelectedQuestionTiles] = useState([])
   const [generatedLayout, setGeneratedLayout] = useState([])
 
   const hydrateSpecialCategories = useCallback((categories) => {
@@ -114,8 +114,8 @@ export function useBoardCreateForm() {
     }
 
     if (step === 3) {
-      if (questionCategories.length < 1) return 'Select or create at least 1 question tile.'
-      if (questionCategories.length > 6) return 'Select no more than 6 question tiles.'
+      if (selectedQuestionTiles.length < 1) return 'Select or create at least 1 question tile.'
+      if (selectedQuestionTiles.length > 6) return 'Select no more than 6 question tiles.'
       return null
     }
 
@@ -125,7 +125,7 @@ export function useBoardCreateForm() {
     }
 
     return 'Complete the current step.'
-  }, [description, generatedLayout.length, name, questionCategories.length, specialCategories])
+  }, [description, generatedLayout.length, name, selectedQuestionTiles.length, specialCategories])
 
   return {
     name,
@@ -141,8 +141,8 @@ export function useBoardCreateForm() {
     setScoreCorrect,
     scoreIncorrect,
     setScoreIncorrect,
-    questionCategories,
-    setQuestionCategories,
+    selectedQuestionTiles,
+    setSelectedQuestionTiles,
     generatedLayout,
     setGeneratedLayout,
     getStepValidationError,
