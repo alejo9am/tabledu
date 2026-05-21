@@ -1,19 +1,19 @@
 const stepTitles = {
   1: {
     title: 'Board details',
-    description: 'Start with a clear name and a short explanation of the classroom activity.',
+    description: 'Start with a clear name and a short explanation of the classroom activity',
   },
   2: {
     title: 'Special tiles',
-    description: 'Choose the surprise tiles that can appear on the board. You can rename, score, or disable them.',
+    description: 'Choose which surprise tiles can appear on the board',
   },
   3: {
     title: 'Question tiles',
-    description: 'Select the question banks that will become question tiles on this board.',
+    description: 'Select the question banks that will become question tiles on this board',
   },
   4: {
     title: 'Board layout',
-    description: 'Generate and preview the randomized tile layout before creating the board.',
+    description: 'Generate and preview the randomized tile layout before creating the board',
   },
 }
 

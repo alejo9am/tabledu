@@ -1,4 +1,4 @@
-import { AddSquareIcon } from '@hugeicons/core-free-icons'
+import { AddSquareIcon, CheckmarkSquare02Icon } from '@hugeicons/core-free-icons'
 import CategoryTile from '@/components/game/CategoryTile'
 import { Icon } from '@/components/ui/Icon'
 import { Input } from '@/components/ui/input'
@@ -30,8 +30,8 @@ function SpecialCategoryCard({ category, onChange }) {
           aria-label={`${tileLabel} enabled`}
           className="data-[state=on]:border-primary data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
         >
-          <Icon icon={AddSquareIcon} className="size-4" />
-          Use it
+          <Icon icon={category.enabled ? CheckmarkSquare02Icon : AddSquareIcon} className="size-4" />
+          {category.enabled ? 'Included' : 'Add tile'}
         </Toggle>
       </div>
 
@@ -108,8 +108,8 @@ function SpecialCategoryCard({ category, onChange }) {
       ) : null}
 
       {type === 'attack' ? (
-        <div className={cn('mt-4 transition-opacity', !category.enabled && 'pointer-events-none opacity-60')}>
-          <div className="grid gap-1">
+        <div className={cn('mt-4 flex flex-col items-center transition-opacity', !category.enabled && 'pointer-events-none opacity-60')}>
+          <div className="grid w-full max-w-40 gap-1">
             <Label id="score-attack-label" className="justify-center text-xs font-semibold text-muted-foreground">Points deducted</Label>
             <NumberInput
               aria-labelledby="score-attack-label"
