@@ -59,7 +59,7 @@ function BoardCreateStepper({ currentStep, onBack, onNext, stepValidationError }
 
   return (
     <nav aria-label="Board creation progress" className="py-2 sm:py-3">
-      <div className="rounded-2xl border bg-card/80 p-3 shadow-sm sm:grid sm:grid-cols-[auto_1fr_auto] sm:items-center sm:gap-4 sm:p-4">
+      <div className="rounded-2xl border bg-card/80 p-3 sm:grid sm:grid-cols-[auto_1fr_auto] sm:items-center sm:gap-4 sm:p-4">
         <div className="hidden sm:block">{backButton}</div>
 
         <ol className="grid grid-cols-4 items-start gap-2">
@@ -81,7 +81,7 @@ function BoardCreateStepper({ currentStep, onBack, onNext, stepValidationError }
                 ) : null}
                 <span
                   className={cn(
-                    'relative z-10 flex size-8 items-center justify-center rounded-full border-3 bg-card text-sm font-display font-semibold shadow-lg transition-colors sm:size-10',
+                    'relative z-10 flex size-8 items-center justify-center rounded-full border-3 bg-card text-sm font-display font-semibold transition-colors sm:size-10',
                     isCompleted || isActive ? step.activeClassName : step.idleClassName
                   )}
                 >

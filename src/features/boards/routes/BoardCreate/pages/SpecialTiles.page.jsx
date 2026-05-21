@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
+import BoardCreateStepTitle from '@/features/boards/routes/BoardCreate/components/BoardCreateStepTitle'
 import SpecialCategoryCard from '@/features/boards/routes/BoardCreate/components/SpecialCategoryCard'
 import { fetchUserCategories } from '@/services/categories'
 
@@ -35,44 +36,39 @@ function SpecialTilesPage({ form }) {
   }, [loadSpecialCategories])
 
   return (
-    <article className="rounded-2xl border bg-card p-4 sm:p-6">
-      <div>
-        <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h3 className="text-xl font-semibold">Special tiles</h3>
-            <p className="text-sm text-muted-foreground">These tiles add surprises to the board. Disable any you do not want to use.</p>
-          </div>
-        </div>
+    <div className="space-y-4">
+      <BoardCreateStepTitle currentStep={2} />
 
-        <div className="mt-4 grid gap-4 xl:grid-cols-3">
+      <article className="rounded-2xl border bg-card p-4 sm:p-6">
+        <div className="grid gap-4 xl:grid-cols-3">
           {isLoadingSpecials ? (
-            <>
-              <Skeleton className="h-72 rounded-xl" />
-              <Skeleton className="h-72 rounded-xl" />
-              <Skeleton className="h-72 rounded-xl" />
-            </>
-          ) : (
-            <>
-              <SpecialCategoryCard
-                type="attack"
-                category={form.specialCategories.attack}
-                onChange={(updates) => form.updateSpecialCategory('attack', updates)}
-              />
-              <SpecialCategoryCard
-                type="challenge"
-                category={form.specialCategories.challenge}
-                onChange={(updates) => form.updateSpecialCategory('challenge', updates)}
-              />
-              <SpecialCategoryCard
-                type="pipe"
-                category={form.specialCategories.pipe}
-                onChange={(updates) => form.updateSpecialCategory('pipe', updates)}
-              />
-            </>
-          )}
+          <>
+            <Skeleton className="h-72 rounded-xl" />
+            <Skeleton className="h-72 rounded-xl" />
+            <Skeleton className="h-72 rounded-xl" />
+          </>
+        ) : (
+          <>
+            <SpecialCategoryCard
+              type="attack"
+              category={form.specialCategories.attack}
+              onChange={(updates) => form.updateSpecialCategory('attack', updates)}
+            />
+            <SpecialCategoryCard
+              type="challenge"
+              category={form.specialCategories.challenge}
+              onChange={(updates) => form.updateSpecialCategory('challenge', updates)}
+            />
+            <SpecialCategoryCard
+              type="pipe"
+              category={form.specialCategories.pipe}
+              onChange={(updates) => form.updateSpecialCategory('pipe', updates)}
+            />
+          </>
+        )}
         </div>
-      </div>
-    </article>
+      </article>
+    </div>
   )
 }
 
