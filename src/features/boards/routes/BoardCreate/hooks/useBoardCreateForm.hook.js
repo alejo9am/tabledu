@@ -83,7 +83,10 @@ export function useBoardCreateForm() {
     if (step === 1) {
       if (!hasText(name)) return 'Add a board name.'
       if (!hasText(description)) return 'Add a board description.'
+      return null
+    }
 
+    if (step === 2) {
       for (const [type, category] of Object.entries(specialCategories)) {
         if (!category.enabled) continue
 
@@ -107,13 +110,13 @@ export function useBoardCreateForm() {
       return null
     }
 
-    if (step === 2) {
+    if (step === 3) {
       if (questionCategories.length < 1) return 'Select or create at least 1 question tile.'
       if (questionCategories.length > 6) return 'Select no more than 6 question tiles.'
       return null
     }
 
-    if (step === 3) {
+    if (step === 4) {
       if (generatedLayout.length !== 29) return 'Generate a board layout.'
       return null
     }

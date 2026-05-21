@@ -3,6 +3,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import BoardCreateStepper from '@/features/boards/routes/BoardCreate/components/BoardCreateStepper'
 import { useBoardCreateForm } from '@/features/boards/routes/BoardCreate/hooks/useBoardCreateForm.hook'
+import BoardInfoPage from '@/features/boards/routes/BoardCreate/pages/BoardInfo.page'
 import BoardLayoutPage from '@/features/boards/routes/BoardCreate/pages/BoardLayout.page'
 import QuestionTilesPage from '@/features/boards/routes/BoardCreate/pages/QuestionTiles.page'
 import SpecialTilesPage from '@/features/boards/routes/BoardCreate/pages/SpecialTiles.page'
@@ -23,12 +24,13 @@ function BoardCreatePage() {
       return
     }
 
-    setCurrentStep((step) => Math.min(3, step + 1))
+    setCurrentStep((step) => Math.min(4, step + 1))
   }
 
   const renderStep = () => {
-    if (currentStep === 1) return <SpecialTilesPage form={form} />
-    if (currentStep === 2) return <QuestionTilesPage />
+    if (currentStep === 1) return <BoardInfoPage form={form} />
+    if (currentStep === 2) return <SpecialTilesPage form={form} />
+    if (currentStep === 3) return <QuestionTilesPage />
     return <BoardLayoutPage />
   }
 
@@ -47,7 +49,7 @@ function BoardCreatePage() {
             type="button"
             variant="warning"
             onClick={handleNext}
-            disabled={currentStep === 3}
+            disabled={currentStep === 4}
             aria-disabled={Boolean(stepValidationError)}
             className={cn(stepValidationError && 'cursor-not-allowed opacity-50 hover:bg-warning')}
           >

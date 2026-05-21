@@ -1,7 +1,6 @@
 function QuestionTilesPage() {
   return (
     <article className="rounded-xl border bg-card p-4 sm:p-6">
-      <p className="text-sm font-medium text-muted-foreground">Step 2</p>
       <h2 className="mt-1 text-2xl font-semibold text-primary">Question tiles</h2>
       <p className="mt-2 text-sm text-muted-foreground">
         Select the question banks that will become question tiles on this board.

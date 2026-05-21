@@ -5,19 +5,26 @@ import { cn } from '@/lib/utils'
 const steps = [
   {
     value: 1,
-    label: 'Details',
-    activeClassName: 'border-primary bg-primary text-primary-foreground shadow-primary-200',
-    lineClassName: 'bg-primary',
+    label: 'Board Details',
+    activeClassName: 'border-primary-350 bg-primary-200 text-primary-850 shadow-primary-200',
+    lineClassName: 'bg-primary-350',
   },
   {
     value: 2,
+    label: 'Special',
+    activeClassName: 'border-primary bg-primary text-primary-foreground shadow-primary-200',
+    idleClassName: 'border-primary text-primary',
+    lineClassName: 'bg-primary',
+  },
+  {
+    value: 3,
     label: 'Questions',
     activeClassName: 'border-warning bg-warning text-warning-foreground shadow-warning-200',
     idleClassName: 'border-warning text-warning',
     lineClassName: 'bg-warning',
   },
   {
-    value: 3,
+    value: 4,
     label: 'Layout',
     activeClassName: 'border-destructive bg-destructive text-destructive-foreground shadow-destructive-200',
     idleClassName: 'border-destructive text-destructive',
@@ -28,7 +35,7 @@ const steps = [
 function BoardCreateStepper({ currentStep }) {
   return (
     <nav aria-label="Board creation progress" className="py-2 sm:py-3">
-      <ol className="grid grid-cols-3 items-start gap-2 rounded-2xl border bg-card/80 p-3 shadow-sm sm:p-4">
+      <ol className="grid grid-cols-4 items-start gap-2 rounded-2xl border bg-card/80 p-3 shadow-sm sm:p-4">
         {steps.map((step, index) => {
           const isCompleted = step.value < currentStep
           const isActive = step.value === currentStep
