@@ -1,5 +1,6 @@
 import { CheckmarkCircle02Icon } from '@hugeicons/core-free-icons'
 import { Icon } from '@/components/ui/Icon'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 const steps = [
@@ -32,41 +33,75 @@ const steps = [
   },
 ]
 
-function BoardCreateStepper({ currentStep }) {
+function BoardCreateStepper({ currentStep, onBack, onNext, stepValidationError }) {
+  const isFirstStep = currentStep === 1
+  const isLastStep = currentStep === steps.length
+  const hasStepError = Boolean(stepValidationError)
+
+  const backButton = (
+    <Button type="button" variant="secondary" onClick={onBack} disabled={isFirstStep}>
+      Back
+    </Button>
+  )
+
+  const nextButton = (
+    <Button
+      type="button"
+      variant="warning"
+      onClick={onNext}
+      disabled={isLastStep}
+      aria-disabled={hasStepError}
+      className={cn(hasStepError && 'cursor-not-allowed opacity-50 hover:bg-warning')}
+    >
+      Next
+    </Button>
+  )
+
   return (
     <nav aria-label="Board creation progress" className="py-2 sm:py-3">
-      <ol className="grid grid-cols-4 items-start gap-2 rounded-2xl border bg-card/80 p-3 shadow-sm sm:p-4">
-        {steps.map((step, index) => {
-          const isCompleted = step.value < currentStep
-          const isActive = step.value === currentStep
-          const previousStep = steps[index - 1]
+      <div className="rounded-2xl border bg-card/80 p-3 shadow-sm sm:grid sm:grid-cols-[auto_1fr_auto] sm:items-center sm:gap-4 sm:p-4">
+        <div className="hidden sm:block">{backButton}</div>
 
-          return (
-            <li key={step.value} className="relative flex flex-col items-center gap-2 text-center">
-              {index > 0 ? (
+        <ol className="grid grid-cols-4 items-start gap-2">
+          {steps.map((step, index) => {
+            const isCompleted = step.value < currentStep
+            const isActive = step.value === currentStep
+            const previousStep = steps[index - 1]
+
+            return (
+              <li key={step.value} className="relative flex flex-col items-center gap-2 text-center">
+                {index > 0 ? (
+                  <span
+                    aria-hidden="true"
+                    className="absolute right-1/2 top-4 flex h-1 w-full overflow-hidden rounded-full sm:top-5"
+                  >
+                    <span className={cn('h-full flex-1', previousStep.lineClassName)} />
+                    <span className={cn('h-full flex-1', step.lineClassName)} />
+                  </span>
+                ) : null}
                 <span
-                  aria-hidden="true"
-                  className="absolute right-1/2 top-4 flex h-1 w-full overflow-hidden rounded-full sm:top-5"
+                  className={cn(
+                    'relative z-10 flex size-8 items-center justify-center rounded-full border-3 bg-card text-sm font-display font-semibold shadow-lg transition-colors sm:size-10',
+                    isCompleted || isActive ? step.activeClassName : step.idleClassName
+                  )}
                 >
-                  <span className={cn('h-full flex-1', previousStep.lineClassName)} />
-                  <span className={cn('h-full flex-1', step.lineClassName)} />
+                  {isCompleted ? <Icon icon={CheckmarkCircle02Icon} className="size-4 sm:size-5" /> : step.value}
                 </span>
-              ) : null}
-              <span
-                className={cn(
-                  'relative z-10 flex size-8 items-center justify-center rounded-full border-3 bg-card text-sm font-display font-semibold shadow-lg transition-colors sm:size-10',
-                  isCompleted || isActive ? step.activeClassName : step.idleClassName
-                )}
-              >
-                {isCompleted ? <Icon icon={CheckmarkCircle02Icon} className="size-4 sm:size-5" /> : step.value}
-              </span>
-              <span className={cn('text-xs font-medium sm:text-sm', isActive ? 'text-foreground' : 'text-muted-foreground')}>
-                {step.label}
-              </span>
-            </li>
-          )
-        })}
-      </ol>
+                <span className={cn('text-xs font-medium sm:text-sm', isActive ? 'text-foreground' : 'text-muted-foreground')}>
+                  {step.label}
+                </span>
+              </li>
+            )
+          })}
+        </ol>
+
+        <div className="hidden sm:block">{nextButton}</div>
+
+        <div className="mt-4 flex items-center justify-between gap-3 sm:hidden">
+          {backButton}
+          {nextButton}
+        </div>
+      </div>
     </nav>
   )
 }
