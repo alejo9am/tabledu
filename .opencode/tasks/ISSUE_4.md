@@ -3,10 +3,10 @@
 ## Steps
 - [x] Reemplazar el stub en `@/features/boards/routes/BoardCreate/BoardCreate.route.jsx` por un orquestador de 3 pasos con navegacion `Back/Next` y `BoardCreateStepper`.
 - [x] Crear `@/features/boards/routes/BoardCreate/hooks/useBoardCreateForm.hook.js` para centralizar estado del wizard (name, description, specials, scoring, questionCategories, generatedLayout) sin llamadas de escritura a API.
-- [x] Crear `@/features/boards/routes/BoardCreate/pages/BoardDetails.page.jsx` (paso 1) con campos de tablero y cards de tiles especiales editables (`attack`, `pipe`, `challenge`), con toggle enable/disable y validacion.
+- [x] Crear `@/features/boards/routes/BoardCreate/pages/SpecialTiles.page.jsx` (paso 1) con campos de tablero y cards de tiles especiales editables (`attack`, `pipe`, `challenge`), con toggle enable/disable y validacion.
 - [x] En paso 1, cargar `fetchUserCategories(userId)` y prehidratar especiales por tipo; si faltan, usar defaults hardcodeados (`Attack`, `Pipe`, `Challenge`) con iconos `system/*`.
 - [x] Crear `@/features/boards/routes/BoardCreate/components/SpecialCategoryCard.jsx` con icono via `getCategoryIconPublicUrl`, fallback visual, descripcion editable y campos de scoring segun tipo (`attack` y `challenge`).
-- [ ] Crear `@/features/boards/routes/BoardCreate/pages/QuestionCategories.page.jsx` (paso 2) con:
+- [ ] Crear `@/features/boards/routes/BoardCreate/pages/QuestionTiles.page.jsx` (paso 2) con:
   - seleccion/deseleccion de tiles `question` existentes,
   - busqueda local por nombre,
   - `+ New` inline para crear tiles de pregunta locales (sin persistir aun),

@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext'
 import SpecialCategoryCard from '@/features/boards/routes/BoardCreate/components/SpecialCategoryCard'
 import { fetchUserCategories } from '@/services/categories'
 
-function BoardDetailsPage({ form }) {
+function SpecialTilesPage({ form }) {
   const { user } = useAuth()
   const [isLoadingSpecials, setIsLoadingSpecials] = useState(!form.specialCategoriesLoaded)
   const { hydrateSpecialCategories, specialCategoriesLoaded } = form
@@ -108,4 +108,4 @@ function BoardDetailsPage({ form }) {
   )
 }
 
-export default BoardDetailsPage
+export default SpecialTilesPage

@@ -1,4 +1,4 @@
-function QuestionCategoriesPage() {
+function QuestionTilesPage() {
   return (
     <article className="rounded-xl border bg-card p-4 sm:p-6">
       <p className="text-sm font-medium text-muted-foreground">Step 2</p>
@@ -14,4 +14,4 @@ function QuestionCategoriesPage() {
   )
 }
 
-export default QuestionCategoriesPage
+export default QuestionTilesPage

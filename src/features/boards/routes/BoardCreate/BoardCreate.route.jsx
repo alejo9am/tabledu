@@ -3,9 +3,9 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import BoardCreateStepper from '@/features/boards/routes/BoardCreate/components/BoardCreateStepper'
 import { useBoardCreateForm } from '@/features/boards/routes/BoardCreate/hooks/useBoardCreateForm.hook'
-import BoardDetailsPage from '@/features/boards/routes/BoardCreate/pages/BoardDetails.page'
 import BoardLayoutPage from '@/features/boards/routes/BoardCreate/pages/BoardLayout.page'
-import QuestionCategoriesPage from '@/features/boards/routes/BoardCreate/pages/QuestionCategories.page'
+import QuestionTilesPage from '@/features/boards/routes/BoardCreate/pages/QuestionTiles.page'
+import SpecialTilesPage from '@/features/boards/routes/BoardCreate/pages/SpecialTiles.page'
 import { cn } from '@/lib/utils'
 
 function BoardCreatePage() {
@@ -27,8 +27,8 @@ function BoardCreatePage() {
   }
 
   const renderStep = () => {
-    if (currentStep === 1) return <BoardDetailsPage form={form} />
-    if (currentStep === 2) return <QuestionCategoriesPage />
+    if (currentStep === 1) return <SpecialTilesPage form={form} />
+    if (currentStep === 2) return <QuestionTilesPage />
     return <BoardLayoutPage />
   }
 
