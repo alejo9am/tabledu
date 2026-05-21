@@ -1,6 +1,21 @@
 import { supabase } from '@/lib/supabase'
 import { throwIfSupabaseError } from '@/services/core/errors'
 
+export const fetchUserCategories = async (userId) => {
+  if (!userId) {
+    throw new Error('[supabase] Failed to fetch user categories: missing user id')
+  }
+
+  const { data, error } = await supabase
+    .from('categories')
+    .select('*')
+    .eq('user_id', userId)
+    .order('name', { ascending: true })
+
+  throwIfSupabaseError(error, 'categories')
+  return data ?? []
+}
+
 /**
  * Fetches unique categories used by a board.
  * @param {string} boardId - Target board id.

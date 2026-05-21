@@ -1,23 +1,33 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import BoardCreateStepper from '@/features/boards/routes/BoardCreate/components/BoardCreateStepper'
+import { useBoardCreateForm } from '@/features/boards/routes/BoardCreate/hooks/useBoardCreateForm.hook'
 import BoardDetailsPage from '@/features/boards/routes/BoardCreate/pages/BoardDetails.page'
 import BoardLayoutPage from '@/features/boards/routes/BoardCreate/pages/BoardLayout.page'
 import QuestionCategoriesPage from '@/features/boards/routes/BoardCreate/pages/QuestionCategories.page'
+import { cn } from '@/lib/utils'
 
 function BoardCreatePage() {
   const [currentStep, setCurrentStep] = useState(1)
+  const form = useBoardCreateForm()
+  const stepValidationError = form.getStepValidationError(currentStep)
 
   const handleBack = () => {
     setCurrentStep((step) => Math.max(1, step - 1))
   }
 
   const handleNext = () => {
+    if (stepValidationError) {
+      toast.error(stepValidationError)
+      return
+    }
+
     setCurrentStep((step) => Math.min(3, step + 1))
   }
 
   const renderStep = () => {
-    if (currentStep === 1) return <BoardDetailsPage />
+    if (currentStep === 1) return <BoardDetailsPage form={form} />
     if (currentStep === 2) return <QuestionCategoriesPage />
     return <BoardLayoutPage />
   }
@@ -33,7 +43,14 @@ function BoardCreatePage() {
           <Button type="button" variant="secondary" onClick={handleBack} disabled={currentStep === 1}>
             Back
           </Button>
-          <Button type="button" variant="warning" onClick={handleNext} disabled={currentStep === 3}>
+          <Button
+            type="button"
+            variant="warning"
+            onClick={handleNext}
+            disabled={currentStep === 3}
+            aria-disabled={Boolean(stepValidationError)}
+            className={cn(stepValidationError && 'cursor-not-allowed opacity-50 hover:bg-warning')}
+          >
             Next
           </Button>
         </div>
