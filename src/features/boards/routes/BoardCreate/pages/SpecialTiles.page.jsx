@@ -39,9 +39,8 @@ function SpecialTilesPage({ form }) {
     <div className="space-y-4">
       <BoardCreateStepTitle currentStep={2} />
 
-      <article className="rounded-2xl border bg-card p-4 sm:p-6">
-        <div className="grid gap-4 xl:grid-cols-3">
-          {isLoadingSpecials ? (
+      <div className="grid gap-4 xl:grid-cols-3">
+        {isLoadingSpecials ? (
           <>
             <Skeleton className="h-72 rounded-xl" />
             <Skeleton className="h-72 rounded-xl" />
@@ -50,14 +49,14 @@ function SpecialTilesPage({ form }) {
         ) : (
           <>
             <SpecialCategoryCard
-              type="attack"
-              category={form.specialCategories.attack}
-              onChange={(updates) => form.updateSpecialCategory('attack', updates)}
-            />
-            <SpecialCategoryCard
               type="challenge"
               category={form.specialCategories.challenge}
               onChange={(updates) => form.updateSpecialCategory('challenge', updates)}
+            />
+            <SpecialCategoryCard
+              type="attack"
+              category={form.specialCategories.attack}
+              onChange={(updates) => form.updateSpecialCategory('attack', updates)}
             />
             <SpecialCategoryCard
               type="pipe"
@@ -66,8 +65,7 @@ function SpecialTilesPage({ form }) {
             />
           </>
         )}
-        </div>
-      </article>
+      </div>
     </div>
   )
 }

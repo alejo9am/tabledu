@@ -38,6 +38,7 @@ const CategoryTile = forwardRef(function CategoryTile(
     tileNumber,
     corner = 'none',
     active = false,
+    showShadow = true,
     badgeStyle,
     className,
     style,
@@ -69,13 +70,15 @@ const CategoryTile = forwardRef(function CategoryTile(
       aria-label={isNumberedTile ? `tile ${tileNumber}` : 'category tile'}
       {...props}
     >
-      <div
-        aria-hidden="true"
-        className={cn(
-          'pointer-events-none absolute inset-0 -z-10 rounded-[inherit] shadow-2xl transition-shadow duration-200',
-          active && 'shadow-[0_24px_64px_-4px_color-mix(in_srgb,var(--team-color)_100%,transparent)]'
-        )}
-      />
+      {showShadow ? (
+        <div
+          aria-hidden="true"
+          className={cn(
+            'pointer-events-none absolute inset-0 -z-10 rounded-[inherit] shadow-2xl transition-shadow duration-200',
+            active && 'shadow-[0_24px_64px_-4px_color-mix(in_srgb,var(--team-color)_100%,transparent)]'
+          )}
+        />
+      ) : null}
       {showTileNumber && (
         <span
           className="absolute z-10 inline-flex items-center justify-center rounded-full border-2 border-border-dark bg-card text-border-dark font-semibold leading-none"

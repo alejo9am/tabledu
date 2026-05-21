@@ -1,30 +1,20 @@
-import { useState } from 'react'
+import { AddSquareIcon } from '@hugeicons/core-free-icons'
+import CategoryTile from '@/components/game/CategoryTile'
+import { Icon } from '@/components/ui/Icon'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { Toggle } from '@/components/ui/toggle'
 import { cn } from '@/lib/utils'
-import { getCategoryIconPublicUrl } from '@/services/api'
 
-const categoryMeta = {
-  attack: {
-    label: 'Attack',
-    description: 'Penalty tile',
-    className: 'border-destructive/40 bg-destructive/5',
-  },
-  challenge: {
-    label: 'Challenge',
-    description: 'Duel tile',
-    className: 'border-primary/40 bg-primary/5',
-  },
-  pipe: {
-    label: 'Pipe',
-    description: 'Bonus tile',
-    className: 'border-warning/40 bg-warning/5',
-  },
+const tileLabels = {
+  attack: 'Attack tile',
+  challenge: 'Duel tile',
+  pipe: 'Bonus tile',
 }
 
 function NumberInput({ id, label, value, disabled, onChange }) {
   return (
-    <label className="grid gap-1 text-xs font-medium text-muted-foreground" htmlFor={id}>
+    <label className="grid gap-1 text-xs font-semibold text-muted-foreground" htmlFor={id}>
       {label}
       <Input
         id={id}
@@ -32,86 +22,65 @@ function NumberInput({ id, label, value, disabled, onChange }) {
         value={value}
         disabled={disabled}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="h-9"
+        className="h-9 rounded-lg bg-card text-center font-semibold"
       />
     </label>
   )
 }
 
 function SpecialCategoryCard({ type, category, onChange }) {
-  const [failedIconUrl, setFailedIconUrl] = useState(null)
-  const meta = categoryMeta[type]
-  const iconUrl = getCategoryIconPublicUrl(category.icon)
-  const showIcon = Boolean(iconUrl) && failedIconUrl !== iconUrl
+  const tileLabel = tileLabels[type]
+  const tileCategory = { ...category, type }
 
   return (
-    <article className={cn('rounded-xl border p-4 transition-opacity', meta.className, !category.enabled && 'opacity-50')}>
-      <div className="flex items-start gap-3">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-xl border bg-card text-lg font-semibold text-muted-foreground">
-          {showIcon ? (
-            <img
-              src={iconUrl}
-              alt=""
-              aria-hidden="true"
-              className="size-9 object-contain"
-              onError={() => setFailedIconUrl(iconUrl)}
-            />
-          ) : (
-            category.name.charAt(0) || '?'
-          )}
-        </div>
+    <article className="rounded-2xl border bg-card p-4">
+      <div className={cn('flex items-center justify-between gap-3 transition-opacity', !category.enabled && 'opacity-60')}>
+        <p className="text-sm font-bold uppercase tracking-[0.16em] text-foreground">{tileLabel}</p>
+        <Toggle
+          pressed={category.enabled}
+          onPressedChange={(enabled) => onChange({ enabled })}
+          variant="outline"
+          size="sm"
+          aria-label={`${tileLabel} enabled`}
+          className="data-[state=on]:border-primary data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+        >
+          <Icon icon={AddSquareIcon} className="size-4" />
+          Use it
+        </Toggle>
+      </div>
 
-        <div className="min-w-0 flex-1 space-y-2">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">{meta.description}</p>
-              <h3 className="text-base font-semibold">{meta.label}</h3>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={category.enabled}
-              onClick={() => onChange({ enabled: !category.enabled })}
-              className={cn(
-                'flex h-6 w-11 items-center rounded-full border p-0.5 transition-colors',
-                category.enabled ? 'border-primary bg-primary' : 'border-border bg-muted'
-              )}
-            >
-              <span
-                className={cn(
-                  'size-4 rounded-full bg-card shadow-sm transition-transform',
-                  category.enabled && 'translate-x-5'
-                )}
-              />
-            </button>
-          </div>
+      <div className={cn('mt-4 space-y-4 transition-opacity', !category.enabled && 'pointer-events-none opacity-60')}>
+        <div className="grid grid-cols-[5.5rem_1fr] items-center gap-4 sm:grid-cols-[6.5rem_1fr]">
+          <CategoryTile category={tileCategory} showShadow={false} className="aspect-square w-full" />
 
-          <div className="grid gap-2">
+          <div className="min-w-0">
+            <label className="text-xs font-semibold text-muted-foreground" htmlFor={`${type}-tile-name`}>Title</label>
             <Input
+              id={`${type}-tile-name`}
               value={category.name}
               disabled={!category.enabled}
-              aria-label={`${meta.label} tile name`}
+              aria-label={`${tileLabel} name`}
               onChange={(event) => onChange({ name: event.target.value })}
-            />
-            <Input
-              value={category.icon}
-              disabled={!category.enabled}
-              aria-label={`${meta.label} tile icon path`}
-              onChange={(event) => onChange({ icon: event.target.value })}
-            />
-            <Textarea
-              value={category.description}
-              disabled={!category.enabled}
-              aria-label={`${meta.label} tile description`}
-              className="min-h-20"
-              onChange={(event) => onChange({ description: event.target.value })}
+              className="h-auto rounded-none border-0 border-b-2 border-border bg-transparent px-0 py-1 font-display text-2xl font-semibold text-foreground shadow-none focus-visible:border-primary focus-visible:ring-0"
             />
           </div>
         </div>
+
+        <label className="grid gap-1 text-xs font-semibold text-muted-foreground" htmlFor={`${type}-tile-description`}>
+          Description
+          <Textarea
+            id={`${type}-tile-description`}
+            value={category.description}
+            disabled={!category.enabled}
+            aria-label={`${tileLabel} description`}
+            className="min-h-18 rounded-xl bg-card text-sm"
+            onChange={(event) => onChange({ description: event.target.value })}
+          />
+        </label>
       </div>
 
       {type === 'attack' ? (
-        <div className="mt-4">
+        <div className={cn('mt-4 transition-opacity', !category.enabled && 'pointer-events-none opacity-60')}>
           <NumberInput
             id="score-attack"
             label="Points deducted"
@@ -123,7 +92,7 @@ function SpecialCategoryCard({ type, category, onChange }) {
       ) : null}
 
       {type === 'challenge' ? (
-        <div className="mt-4 grid grid-cols-2 gap-3">
+        <div className={cn('mt-4 grid grid-cols-2 gap-3 transition-opacity', !category.enabled && 'pointer-events-none opacity-60')}>
           <NumberInput
             id="score-challenge-winner"
             label="Winner"
