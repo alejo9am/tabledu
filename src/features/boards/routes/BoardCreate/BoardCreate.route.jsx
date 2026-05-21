@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import BoardCreateStepper from '@/features/boards/routes/BoardCreate/components/BoardCreateStepper'
 import { useBoardCreateForm } from '@/features/boards/routes/BoardCreate/hooks/useBoardCreateForm.hook'
-import BoardInfoPage from '@/features/boards/routes/BoardCreate/pages/BoardInfo.page'
-import BoardLayoutPage from '@/features/boards/routes/BoardCreate/pages/BoardLayout.page'
-import QuestionTilesPage from '@/features/boards/routes/BoardCreate/pages/QuestionTiles.page'
-import SpecialTilesPage from '@/features/boards/routes/BoardCreate/pages/SpecialTiles.page'
+import BoardInfoPage from '@/features/boards/routes/BoardCreate/pages/BoardInfo/BoardInfo.page'
+import BoardLayoutPage from '@/features/boards/routes/BoardCreate/pages/BoardLayout/BoardLayout.page'
+import QuestionTilesPage from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/QuestionTiles.page'
+import SpecialTilesPage from '@/features/boards/routes/BoardCreate/pages/SpecialTiles/SpecialTiles.page'
 
 function BoardCreatePage() {
   const [currentStep, setCurrentStep] = useState(1)

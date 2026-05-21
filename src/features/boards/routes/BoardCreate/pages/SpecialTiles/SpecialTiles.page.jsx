@@ -3,7 +3,7 @@ import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
 import BoardCreateStepTitle from '@/features/boards/routes/BoardCreate/components/BoardCreateStepTitle'
-import SpecialCategoryCard from '@/features/boards/routes/BoardCreate/components/SpecialCategoryCard'
+import SpecialCategoryCard from '@/features/boards/routes/BoardCreate/pages/SpecialTiles/SpecialCategoryCard'
 import { fetchUserCategories } from '@/services/categories'
 
 function SpecialTilesPage({ form }) {
@@ -12,7 +12,6 @@ function SpecialTilesPage({ form }) {
   const { hydrateSpecialCategories, specialCategoriesLoaded } = form
 
   const loadSpecialCategories = useCallback(async () => {
-    // Skip re-fetching data if we already have it
     if (specialCategoriesLoaded) {
       setIsLoadingSpecials(false)
       return
@@ -23,7 +22,7 @@ function SpecialTilesPage({ form }) {
     try {
       const categories = await fetchUserCategories(user?.id)
       hydrateSpecialCategories(categories.filter((category) => category.type !== 'question'))
-    } catch (error) {
+    } catch {
       toast.error('Could not load your saved special tiles. Defaults are available.')
       hydrateSpecialCategories([])
     } finally {

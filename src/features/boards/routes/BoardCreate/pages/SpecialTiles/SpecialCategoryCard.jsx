@@ -65,7 +65,6 @@ function SpecialCategoryCard({ category, onChange }) {
         </div>
       </div>
 
-
       {type === 'challenge' ? (
         <div className={cn('mt-4 grid grid-cols-2 gap-3 transition-opacity', !category.enabled && 'pointer-events-none opacity-60')}>
           <div className="grid gap-1">
