@@ -36,7 +36,7 @@ El proyecto se desarrolla como Trabajo Fin de Grado en la [Escuela Superior de I
 
 | Capa | Tecnología |
 | :--- | :--- |
-| Frontend | React 19 + Vite 7 (SPA) |
+| Frontend | React 19 + Vite 8 (SPA) |
 | Estilos | Tailwind CSS + shadcn/ui |
 | Backend & Auth | Supabase (PostgreSQL + Auth + RLS) |
 | Gestor de paquetes | pnpm |

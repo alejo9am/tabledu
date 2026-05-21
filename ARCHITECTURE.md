@@ -40,13 +40,13 @@ src/features/
 ## 4. Convenciones de Nomenclatura
 
 - Archivos de entrada de ruta: `*.route.jsx`
-- Pantallas internas de una ruta: `*.page.jsx`
+- Pantallas internas de una ruta: `*.page.jsx`, nombradas por responsabilidad cuando el contexto de la carpeta ya identifica la ruta (por ejemplo, `BoardDetails.page.jsx`, `QuestionCategories.page.jsx`).
 - Secciones o fragmentos específicos de ruta: `*.step.jsx` o nombres por responsabilidad
 - Hooks de ruta o feature: `*.hook.js|jsx` (por ejemplo, `useNewGameFlow.hook.js`)
 
 ## 5. Patrón Recomendado para Rutas Multi-paso
 
-Cuando un flujo de URL contiene varias pantallas internas (por ejemplo `/games/new` y `/games/new/:boardId`), se mantiene un único orquestador de ruta:
+Cuando un flujo de URL contiene varias pantallas internas (por ejemplo `/games/new` y `/games/new/:boardId`, o el wizard `/boards/new`), se mantiene un único orquestador de ruta:
 
 ```text
 features/games/
