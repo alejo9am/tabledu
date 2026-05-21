@@ -16,3 +16,27 @@ export const fetchBoardLayout = async (boardId) => {
   throwIfSupabaseError(error, 'board_category')
   return data ?? []
 }
+
+export const createBoardLayout = async ({ boardId, layout }) => {
+  if (!boardId) {
+    throw new Error('[supabase] Failed to create board_category: missing board id')
+  }
+
+  if (!Array.isArray(layout) || layout.length !== 29) {
+    throw new Error('[supabase] Failed to create board_category: layout must contain exactly 29 tiles')
+  }
+
+  const rows = (layout ?? []).map((tile) => ({
+    board_id: boardId,
+    category_id: tile.categoryId,
+    position: tile.position,
+  }))
+
+  const { data, error } = await supabase
+    .from('board_category')
+    .insert(rows)
+    .select('*')
+
+  throwIfSupabaseError(error, 'board_category')
+  return data ?? []
+}

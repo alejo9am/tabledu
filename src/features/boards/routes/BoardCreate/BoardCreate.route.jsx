@@ -28,8 +28,8 @@ function BoardCreatePage() {
   const renderStep = () => {
     if (currentStep === 1) return <BoardInfoPage form={form} />
     if (currentStep === 2) return <SpecialTilesPage form={form} />
-    if (currentStep === 3) return <QuestionTilesPage />
-    return <BoardLayoutPage />
+    if (currentStep === 3) return <QuestionTilesPage form={form} />
+    return <BoardLayoutPage form={form} />
   }
 
   return (

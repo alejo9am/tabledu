@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { getAuthenticatedUserId } from '@/services/core/auth'
 import { throwIfSupabaseError } from '@/services/core/errors'
 
 export const fetchUserCategories = async (userId) => {
@@ -14,6 +15,49 @@ export const fetchUserCategories = async (userId) => {
 
   throwIfSupabaseError(error, 'categories')
   return data ?? []
+}
+
+export const createCategory = async ({ category }) => {
+  const userId = await getAuthenticatedUserId()
+
+  const { data, error } = await supabase
+    .from('categories')
+    .insert({
+      name: category.name,
+      type: category.type ?? 'question',
+      icon: category.icon ?? '',
+      description: category.description ?? '',
+      user_id: userId,
+    })
+    .select('*')
+    .maybeSingle()
+
+  throwIfSupabaseError(error, 'categories')
+  return data
+}
+
+export const upsertCategory = async ({ category }) => {
+  const userId = await getAuthenticatedUserId()
+
+  if (!category?.id) {
+    return createCategory({ category })
+  }
+
+  const { data, error } = await supabase
+    .from('categories')
+    .update({
+      name: category.name,
+      type: category.type ?? 'question',
+      icon: category.icon ?? '',
+      description: category.description ?? '',
+    })
+    .eq('id', category.id)
+    .eq('user_id', userId)
+    .select('*')
+    .maybeSingle()
+
+  throwIfSupabaseError(error, 'categories')
+  return data
 }
 
 /**

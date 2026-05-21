@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { getAuthenticatedUserId } from '@/services/core/auth'
 import { throwIfSupabaseError } from '@/services/core/errors'
 
 export const fetchBoardById = async (boardId) => {
@@ -24,4 +25,28 @@ export const fetchBoards = async () => {
 
   throwIfSupabaseError(error, 'boards')
   return data ?? []
+}
+
+export const createBoard = async ({ board }) => {
+  const userId = await getAuthenticatedUserId()
+
+  const { data, error } = await supabase
+    .from('boards')
+    .insert({
+      name: board.name,
+      description: board.description,
+      score_correct: board.scoreCorrect,
+      score_incorrect: board.scoreIncorrect,
+      score_attack: board.scoreAttack,
+      score_challenge_winner: board.scoreChallengeWinner,
+      score_challenge_loser: board.scoreChallengeLoser,
+      score_challenge_draw_defender: board.scoreChallengeDrawDefender,
+      score_challenge_draw_attacker: board.scoreChallengeDrawAttacker,
+      user_id: userId,
+    })
+    .select('*')
+    .maybeSingle()
+
+  throwIfSupabaseError(error, 'boards')
+  return data
 }
