@@ -62,9 +62,16 @@ function SelectedQuestionTiles({ selectedTiles, questionCountsByCategoryId, onDe
   return (
     <div className="rounded-2xl flex flex-col items-center border bg-card p-4">
       <div className="flex w-full items-center justify-between">
-        <p className="text-sm font-medium text-muted-foreground">
-          Selected tiles: <span className="font-semibold text-foreground">{selectedTiles.length}</span> / 6
-        </p>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <p className="text-sm font-medium text-muted-foreground">
+              Selected tiles: <span className="font-semibold text-foreground">{selectedTiles.length}</span> / 6
+            </p>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            You can select up to 6 question tiles for this board. Select more tiles to increase gameplay variety
+          </TooltipContent>
+        </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
             <Badge variant="secondary" className="text-sm font-medium cursor-help">

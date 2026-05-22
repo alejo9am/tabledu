@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { AddSquareIcon } from '@hugeicons/core-free-icons'
+import { AddSquareIcon, Search01Icon } from '@hugeicons/core-free-icons'
 import { toast } from 'sonner'
 
 import { Icon } from '@/components/ui/Icon'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group'
 import { Separator } from '@/components/ui/separator'
 
 import { useAuth } from '@/context/AuthContext'
@@ -12,6 +12,7 @@ import BoardCreateStepTitle from '@/features/boards/routes/BoardCreate/component
 import QuestionScoringPanel from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/QuestionScoringPanel'
 import SelectedQuestionTiles from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/SelectedQuestionTiles'
 import AvailableQuestionTilesList from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/AvailableQuestionTilesList'
+import CreateQuestionTileSheet from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/CreateQuestionTileSheet'
 import { getQuestionTileKey } from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/questionTiles.utils'
 import { fetchUserCategories } from '@/services/categories'
 import { fetchQuestionCountsByCategoryIds } from '@/services/questions'
@@ -25,6 +26,12 @@ function QuestionTilesPage({ form }) {
   const [isCreatingNewTile, setIsCreatingNewTile] = useState(false)
   const [newTileName, setNewTileName] = useState('')
   const [newTileDescription, setNewTileDescription] = useState('')
+
+  const closeCreateTileSheet = () => {
+    setIsCreatingNewTile(false)
+    setNewTileName('')
+    setNewTileDescription('')
+  }
 
   const loadQuestionTiles = useCallback(async () => {
     setIsLoadingQuestionTiles(true)
@@ -76,9 +83,15 @@ function QuestionTilesPage({ form }) {
 
   const createQuestionTile = () => {
     const trimmedName = newTileName.trim()
+    const trimmedDescription = newTileDescription.trim()
 
     if (!trimmedName) {
       toast.error('Add a name for the new question tile.')
+      return
+    }
+
+    if (!trimmedDescription) {
+      toast.error('Add a description. It is shown in gameplay before the question appears.')
       return
     }
 
@@ -88,7 +101,7 @@ function QuestionTilesPage({ form }) {
       type: 'question',
       name: trimmedName,
       icon: '',
-      description: newTileDescription.trim(),
+      description: trimmedDescription,
     }
 
     setAvailableQuestionTiles((current) => [...current, newQuestionTile])
@@ -99,9 +112,7 @@ function QuestionTilesPage({ form }) {
       toast.message('Tile created. Select it later by removing another selected tile.')
     }
 
-    setNewTileName('')
-    setNewTileDescription('')
-    setIsCreatingNewTile(false)
+    closeCreateTileSheet()
   }
 
   return (
@@ -126,12 +137,18 @@ function QuestionTilesPage({ form }) {
           <Separator />
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <Input
-              value={search}
-              placeholder="Search available question tiles"
-              onChange={(event) => setSearch(event.target.value)}
-              className="sm:max-w-md"
-            />
+            <InputGroup className="sm:max-w-md">
+              <InputGroupAddon>
+                <InputGroupText>
+                  <Icon icon={Search01Icon} className="size-4" />
+                </InputGroupText>
+              </InputGroupAddon>
+              <InputGroupInput
+                value={search}
+                placeholder="Search available question tiles"
+                onChange={(event) => setSearch(event.target.value)}
+              />
+            </InputGroup>
             <Button type="button" variant="warning" onClick={() => setIsCreatingNewTile(true)}>
               <Icon icon={AddSquareIcon} className="size-4" />
               Create tile
@@ -142,14 +159,23 @@ function QuestionTilesPage({ form }) {
             isLoading={isLoadingQuestionTiles}
             availableTiles={filteredQuestionTiles}
             onSelect={selectQuestionTile}
-            isCreatingNewTile={isCreatingNewTile}
-            newTileName={newTileName}
-            newTileDescription={newTileDescription}
-            onNewTileNameChange={setNewTileName}
-            onNewTileDescriptionChange={setNewTileDescription}
-            onOpenCreate={() => setIsCreatingNewTile(true)}
-            onCancelCreate={() => setIsCreatingNewTile(false)}
-            onAddNewTile={createQuestionTile}
+          />
+
+          <CreateQuestionTileSheet
+            open={isCreatingNewTile}
+            name={newTileName}
+            description={newTileDescription}
+            onOpenChange={(open) => {
+              if (open) {
+                setIsCreatingNewTile(true)
+                return
+              }
+
+              closeCreateTileSheet()
+            }}
+            onNameChange={setNewTileName}
+            onDescriptionChange={setNewTileDescription}
+            onCreate={createQuestionTile}
           />
         </section>
       </div>
