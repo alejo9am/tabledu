@@ -5,17 +5,20 @@ import { Icon } from '@/components/ui/Icon'
 import { Button } from '@/components/ui/button'
 import BoardCreateStepTitle from '@/features/boards/routes/BoardCreate/components/BoardCreateStepTitle'
 import BoardLayoutPreview from '@/features/boards/routes/BoardCreate/components/BoardLayoutPreview'
-import { createCategoryRef, generateBoardLayout } from '@/features/boards/routes/BoardCreate/generateBoardLayout'
+import { generateBoardLayout } from '@/features/boards/routes/BoardCreate/generateBoardLayout'
+import ReplaceTileDialog from '@/features/boards/routes/BoardCreate/pages/BoardLayout/ReplaceTileDialog'
 import useAppNavigation from '@/hooks/useAppNavigation.hook'
 import { createBoardLayout } from '@/services/boardCategory'
 import { createBoard } from '@/services/boards'
-import { createCategory, upsertCategory } from '@/services/categories'
+import { createCategory as createTileCategory, upsertCategory as upsertTileCategory } from '@/services/categories'
 import { fetchQuestionCountsByCategoryIds } from '@/services/questions'
 
 function BoardLayoutPage({ form }) {
+  const getTileKey = (tile) => tile.localId ?? tile.id ?? `${tile.type}:${tile.name}`
   const { goTo } = useAppNavigation()
   const [isCreatingBoard, setIsCreatingBoard] = useState(false)
   const hasShownQuestionCountWarningRef = useRef(false)
+  const [editingTilePosition, setEditingTilePosition] = useState(null)
   const hasGeneratedLayout = form.generatedLayout.length === 29
   const enabledSpecialTileCount = Object.values(form.specialTiles ?? {}).filter((tile) => tile.enabled).length
   const selectedQuestionTileCount = form.selectedQuestionTiles.length
@@ -49,6 +52,12 @@ function BoardLayoutPage({ form }) {
     }
 
     loadQuestionTotals()
+    
+    console.info('ALL data saved in hook', JSON.stringify({
+      selectedQuestionTiles: form.selectedQuestionTiles,
+      specialTiles: form.specialTiles,
+      boardLayout: form.generatedLayout,
+    }, null, 2))
 
     return () => {
       isMounted = false
@@ -57,9 +66,28 @@ function BoardLayoutPage({ form }) {
 
   const handleGenerateLayout = () => {
     form.setGeneratedLayout(generateBoardLayout({
-      questionCategories: form.selectedQuestionTiles,
-      specialCategories: form.specialTiles,
+      questionTiles: form.selectedQuestionTiles,
+      specialTiles: form.specialTiles,
     }))
+  }
+
+  const handleOpenReplaceTile = (position) => {
+    if (!hasGeneratedLayout) return
+    setEditingTilePosition(position)
+  }
+
+  const handleReplaceTile = (position, replacement) => {
+    form.setGeneratedLayout((currentLayout) => currentLayout.map((tile) => {
+      if (tile.position !== position) {
+        return tile
+      }
+
+      return {
+        ...tile,
+        tile: replacement.tile,
+      }
+    }))
+    setEditingTilePosition(null)
   }
 
   const handleCreateBoard = async () => {
@@ -71,37 +99,37 @@ function BoardLayoutPage({ form }) {
     setIsCreatingBoard(true)
 
     try {
-      const categoryIdsByRef = new Map(
+      const tileIdsByKey = new Map(
         form.selectedQuestionTiles
-          .filter((category) => category.id)
-          .map((category) => [createCategoryRef(category), category.id])
+          .filter((tile) => tile.id)
+          .map((tile) => [getTileKey(tile), tile.id])
       )
-      const activeSpecialCategories = Object.values(form.specialTiles).filter((category) => category.enabled)
-      const newQuestionCategories = form.selectedQuestionTiles.filter((category) => !category.id)
+      const activeSpecialTiles = Object.values(form.specialTiles).filter((tile) => tile.enabled)
+      const newQuestionTiles = form.selectedQuestionTiles.filter((tile) => !tile.id)
 
-      for (const category of activeSpecialCategories) {
-        const savedCategory = await upsertCategory({ category })
-        categoryIdsByRef.set(createCategoryRef(category), savedCategory.id)
+      for (const tile of activeSpecialTiles) {
+        const savedTile = await upsertTileCategory({ category: tile })
+        tileIdsByKey.set(getTileKey(tile), savedTile.id)
       }
 
-      for (const category of newQuestionCategories) {
-        const savedCategory = await createCategory({ category })
-        categoryIdsByRef.set(createCategoryRef(category), savedCategory.id)
+      for (const tile of newQuestionTiles) {
+        const savedTile = await createTileCategory({ category: tile })
+        tileIdsByKey.set(getTileKey(tile), savedTile.id)
       }
 
-      const attackCategory = form.specialTiles.attack
-      const challengeCategory = form.specialTiles.challenge
+      const attackTile = form.specialTiles.attack
+      const challengeTile = form.specialTiles.challenge
       const board = await createBoard({
         board: {
           name: form.name.trim(),
           description: form.description.trim(),
           scoreCorrect: Number(form.scoreCorrect),
           scoreIncorrect: Number(form.scoreIncorrect),
-          scoreAttack: Number(attackCategory.scoreAttack),
-          scoreChallengeWinner: Number(challengeCategory.scoreChallengeWinner),
-          scoreChallengeLoser: Number(challengeCategory.scoreChallengeLoser),
-          scoreChallengeDrawDefender: Number(challengeCategory.scoreChallengeDrawDefender),
-          scoreChallengeDrawAttacker: Number(challengeCategory.scoreChallengeDrawAttacker),
+          scoreAttack: Number(attackTile.scoreAttack),
+          scoreChallengeWinner: Number(challengeTile.scoreChallengeWinner),
+          scoreChallengeLoser: Number(challengeTile.scoreChallengeLoser),
+          scoreChallengeDrawDefender: Number(challengeTile.scoreChallengeDrawDefender),
+          scoreChallengeDrawAttacker: Number(challengeTile.scoreChallengeDrawAttacker),
         },
       })
 
@@ -112,14 +140,14 @@ function BoardLayoutPage({ form }) {
       await createBoardLayout({
         boardId: board.id,
         layout: form.generatedLayout.map((tile) => {
-          const categoryId = categoryIdsByRef.get(tile.categoryRef)
-          if (!categoryId) {
-            throw new Error(`Missing saved category for tile ${tile.position}.`)
+          const tileCategoryId = tileIdsByKey.get(getTileKey(tile.tile))
+          if (!tileCategoryId) {
+            throw new Error(`Missing saved tile for board position ${tile.position}.`)
           }
 
           return {
             position: tile.position,
-            categoryId,
+            categoryId: tileCategoryId,
           }
         }),
       })
@@ -141,6 +169,7 @@ function BoardLayoutPage({ form }) {
           <BoardLayoutPreview
             layout={hasGeneratedLayout ? form.generatedLayout : []}
             showGhost={!hasGeneratedLayout}
+            onTileClick={handleOpenReplaceTile}
           />
         </section>
 
@@ -197,6 +226,15 @@ function BoardLayoutPage({ form }) {
           ) : null}
         </aside>
       </div>
+
+      <ReplaceTileDialog
+        editingTilePosition={editingTilePosition}
+        generatedLayout={form.generatedLayout}
+        selectedQuestionTiles={form.selectedQuestionTiles}
+        specialTiles={form.specialTiles}
+        onClose={() => setEditingTilePosition(null)}
+        onReplaceTile={handleReplaceTile}
+      />
     </div>
   )
 }

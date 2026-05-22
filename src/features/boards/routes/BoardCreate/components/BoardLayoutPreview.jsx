@@ -1,21 +1,29 @@
+import { cn } from '@/lib/utils'
 import CategoryTile from '@/components/game/CategoryTile'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { getTileGridStyle, SPIRAL_COORDINATES } from '@/features/games/routes/GamePlay/constants/tileLayout'
 import { CORNER_BY_TILE } from '@/features/games/routes/GamePlay/constants/tokenLayout'
 
-const startCategory = { name: 'Start', showIcon: false }
-const goalCategory = { icon: 'system/goal.png', name: 'Goal' }
+const startTile = { name: 'Start', showIcon: false }
+const goalTile = { icon: 'system/goal.png', name: 'Goal' }
 
-function BoardLayoutPreview({ layout = [], showGhost = false }) {
+function BoardLayoutPreview({ layout = [], showGhost = false, onTileClick }) {
   const layoutByPosition = new Map(layout.map((tile) => [tile.position, tile]))
 
   const renderTile = (tile) => {
+    const isInteractive = (
+      !showGhost &&
+      tile.id >=1 &&
+      tile.id <= 29 &&
+      typeof onTileClick === 'function' &&
+      layoutByPosition.size === 29
+    )
     const layoutTile = layoutByPosition.get(tile.id)
-    const category = tile.id === 0
-      ? startCategory
+    const tileData = tile.id === 0
+      ? startTile
       : tile.id === 30
-        ? goalCategory
-        : layoutTile?.category
+        ? goalTile
+        : layoutTile?.tile
 
     const badgeStyle = {
       top: CORNER_BY_TILE[tile.id] === 'topLeft' ? '12px' : '4px',
@@ -28,25 +36,26 @@ function BoardLayoutPreview({ layout = [], showGhost = false }) {
     return (
       <CategoryTile
         key={tile.id}
-        category={category}
+        category={tileData}
         tileNumber={tile.id}
         corner={CORNER_BY_TILE[tile.id] ?? 'none'}
         showShadow={false}
         isGhost={showGhost}
         badgeStyle={badgeStyle}
-        className="border-3"
+        className={cn('border-3', isInteractive ? 'cursor-pointer transition-opacity hover:opacity-90' : '')}
         style={getTileGridStyle(tile.id)}
+        onClick={isInteractive ? () => onTileClick(tile.id) : undefined}
       />
     )
   }
 
   return (
-    <div className="min-w-0 space-y-2 p-3 sm:p-4">
+    <div className="min-w-0 space-y-2">
       <p className="text-center text-xs text-muted-foreground lg:hidden">Swipe horizontally to explore the board</p>
 
       <ScrollArea className="w-full max-w-full overflow-hidden lg:hidden">
         <section
-          className="grid aspect-9/7 w-2xl max-w-none grid-cols-54 grid-rows-48 gap-2 pr-2 sm:w-184 md:w-200"
+          className="grid aspect-9/7 w-2xl max-w-none grid-cols-54 grid-rows-48 gap-2 p-2 sm:w-184 md:w-200"
           aria-label="Generated board layout preview"
         >
           {SPIRAL_COORDINATES.map(renderTile)}
