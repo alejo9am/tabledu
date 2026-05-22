@@ -86,7 +86,7 @@ function BoardDetailsPage() {
         <BoardScoringCard board={board} isLoading={isLoading} />
 
         <article className="rounded-xl border bg-card p-4 sm:p-5 lg:col-span-4">
-          <h2 className="text-lg font-semibold sm:text-xl">Categories</h2>
+          <h2 className="text-lg font-semibold sm:text-xl">Tiles</h2>
           <div className="mt-4 space-y-3">
             <Skeleton className="h-8 w-full" />
             <Skeleton className="h-8 w-full" />
