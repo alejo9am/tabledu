@@ -36,17 +36,17 @@ export const specialTileLabels = {
   pipe: 'Bonus tile',
 }
 
-export const hydrateSpecialTiles = (savedCategories) => ({
+export const hydrateSpecialTiles = (savedTiles) => ({
   attack: {
     ...defaultSpecialTiles.attack,
-    ...((savedCategories ?? []).find((category) => category.type === 'attack') ?? {}),
+    ...((savedTiles ?? []).find((tile) => tile.type === 'attack') ?? {}),
   },
   pipe: {
     ...defaultSpecialTiles.pipe,
-    ...((savedCategories ?? []).find((category) => category.type === 'pipe') ?? {}),
+    ...((savedTiles ?? []).find((tile) => tile.type === 'pipe') ?? {}),
   },
   challenge: {
     ...defaultSpecialTiles.challenge,
-    ...((savedCategories ?? []).find((category) => category.type === 'challenge') ?? {}),
+    ...((savedTiles ?? []).find((tile) => tile.type === 'challenge') ?? {}),
   },
 })

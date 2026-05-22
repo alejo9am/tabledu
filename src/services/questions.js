@@ -15,41 +15,41 @@ export const fetchQuestionsByBoardId = async (boardId) => {
   throwIfSupabaseError(boardLayoutError, 'board_category')
 
   const layoutRows = boardLayout ?? []
-  const categoryIds = layoutRows
+  const tileIds = layoutRows
     .map((tile) => tile.category_id)
     .filter(Boolean)
-  const uniqueCategoryIds = [...new Set(categoryIds)]
-  if (!uniqueCategoryIds.length) {
+  const uniqueTileIds = [...new Set(tileIds)]
+  if (!uniqueTileIds.length) {
     return []
   }
 
   const { data, error } = await supabase
     .from('questions')
     .select('*')
-    .in('category_id', uniqueCategoryIds)
+    .in('category_id', uniqueTileIds)
     .order('id', { ascending: true })
 
   throwIfSupabaseError(error, 'questions')
   return data ?? []
 }
 
-export const fetchQuestionCountsByCategoryIds = async (categoryIds) => {
-  if (!(categoryIds ?? []).length) {
+export const fetchQuestionCountsByTileIds = async (tileIds) => {
+  if (!(tileIds ?? []).length) {
     return {}
   }
 
   const { data, error } = await supabase
     .from('questions')
     .select('category_id')
-    .in('category_id', categoryIds ?? [])
+    .in('category_id', tileIds ?? [])
 
   throwIfSupabaseError(error, 'questions')
 
-  const countsByCategoryId = {}
+  const countsByTileId = {}
   for (const question of data ?? []) {
-    const categoryId = question.category_id
-    countsByCategoryId[categoryId] = (countsByCategoryId[categoryId] ?? 0) + 1
+    const tileId = question.category_id
+    countsByTileId[tileId] = (countsByTileId[tileId] ?? 0) + 1
   }
 
-  return countsByCategoryId
+  return countsByTileId
 }

@@ -1,23 +1,23 @@
 
-export const getRandomQuestionForCategory = (category, questions, answers) => {
-  if (!category || category.type !== 'question') return null
+export const getRandomQuestionForTile = (tile, questions, answers) => {
+  if (!tile || tile.type !== 'question') return null
 
-  const categoryQuestions = questions.filter((q) => q.category_id === category.id)
-  if (categoryQuestions.length === 0) {
-    console.warn(`[QuestionPool] No questions found for category "${category.name}".`)
+  const tileQuestions = questions.filter((q) => q.category_id === tile.id)
+  if (tileQuestions.length === 0) {
+    console.warn(`[QuestionPool] No questions found for tile "${tile.name}".`)
     return null
   }
 
   const answeredIds = new Set(answers.map((a) => a.question_id))
-  const unanswered = categoryQuestions.filter((q) => !answeredIds.has(q.id))
+  const unanswered = tileQuestions.filter((q) => !answeredIds.has(q.id))
 
   if (unanswered.length === 0) {
     console.warn(
-      `[QuestionPool] Category "${category.name}" is exhausted. Reusing previously answered questions.`
+      `[QuestionPool] Tile "${tile.name}" is exhausted. Reusing previously answered questions.`
     )
   }
 
-  const pool = unanswered.length > 0 ? unanswered : categoryQuestions
+  const pool = unanswered.length > 0 ? unanswered : tileQuestions
   const randomIndex = Math.floor(Math.random() * pool.length)
 
   return pool[randomIndex]

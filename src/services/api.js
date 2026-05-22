@@ -2,10 +2,10 @@ import { fetchBoardById } from '@/services/boards'
 import { createGame, fetchGameById, updateGameById } from '@/services/games'
 import { createTeams, fetchTeamsByGameId, updateTeamById } from '@/services/teams'
 import { createAnswer, fetchAnswersByGameId } from '@/services/answers'
-import { fetchBoardCategories } from '@/services/categories'
-import { fetchBoardLayout } from '@/services/boardCategory'
+import { fetchBoardTiles } from '@/services/tiles'
+import { fetchBoardLayout } from '@/services/boardLayouts'
 import { fetchQuestionsByBoardId } from '@/services/questions'
-import { getCategoryIconPublicUrl } from '@/services/storage'
+import { getTileIconPublicUrl } from '@/services/storage'
 
 export {
   fetchBoardById,
@@ -17,10 +17,10 @@ export {
   updateTeamById,
   fetchAnswersByGameId,
   createAnswer,
-  fetchBoardCategories,
+  fetchBoardTiles,
   fetchBoardLayout,
   fetchQuestionsByBoardId,
-  getCategoryIconPublicUrl,
+  getTileIconPublicUrl,
 }
 
 /** Load runtime entities required to play one game. */
@@ -34,18 +34,18 @@ export const fetchGameData = async ({ gameId }) => {
     throw new Error('Game not found or you do not have access to it.')
   }
 
-  const [board, teams, answers, boardLayout, categories, questions] = await Promise.all([
+  const [board, teams, answers, layout, tiles, questions] = await Promise.all([
     fetchBoardById(game.board_id),
     fetchTeamsByGameId(gameId),
     fetchAnswersByGameId(gameId),
     fetchBoardLayout(game.board_id),
-    fetchBoardCategories(game.board_id),
+    fetchBoardTiles(game.board_id),
     fetchQuestionsByBoardId(game.board_id),
   ])
 
-  if (!board || !game || teams.length === 0 || categories.length === 0 || boardLayout.length === 0 || questions.length === 0) {
+  if (!board || !game || teams.length === 0 || tiles.length === 0 || layout.length === 0 || questions.length === 0) {
     throw new Error('Incomplete game data, check your board configuration.')
   }
 
-  return { board, game, teams, answers, categories, boardCategory: boardLayout, questions }
+  return { board, game, teams, answers, tiles, layout, questions }
 }
