@@ -28,7 +28,7 @@ export const createBoardLayout = async ({ boardId, layout }) => {
 
   const rows = (layout ?? []).map((tile) => ({
     board_id: boardId,
-    category_id: tile.categoryId,
+    category_id: tile.tileId,
     position: tile.position,
   }))
 

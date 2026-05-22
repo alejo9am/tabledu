@@ -1,7 +1,7 @@
 import { forwardRef, useMemo, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { cva } from 'class-variance-authority'
-import { getCategoryIconPublicUrl } from '@/services/api'
+import { getTileIconPublicUrl } from '@/services/api'
 
 const tileVariants = cva(
   'flex items-center justify-center bg-card text-card-foreground ring-2 ring-border-dark border-[6px] shadow-[inset_0_0_0_2px_var(--card)] rounded-lg relative transition-colors duration-200',
@@ -32,9 +32,9 @@ const tileVariants = cva(
   }
 )
 
-const CategoryTile = forwardRef(function CategoryTile(
+const TileCard = forwardRef(function TileCard(
   {
-    category,
+    tile,
     tileNumber,
     corner = 'none',
     active = false,
@@ -51,14 +51,14 @@ const CategoryTile = forwardRef(function CategoryTile(
   const [failedIconUrl, setFailedIconUrl] = useState(null)
 
   const tone = useMemo(() => {
-    if (category?.type === 'question') return 'question'
-    if (category?.type === 'attack') return 'danger'
+    if (tile?.type === 'question') return 'question'
+    if (tile?.type === 'attack') return 'danger'
     return 'special'
-  }, [category?.type, category?.name])
+  }, [tile?.type, tile?.name])
 
-  const iconUrl = useMemo(() => getCategoryIconPublicUrl(category?.icon), [category?.icon])
-  const showIcon = category?.showIcon !== false && Boolean(iconUrl) && failedIconUrl !== iconUrl
-  const fallbackLabel = category?.name?.charAt(0)?.toUpperCase() ?? '?'
+  const iconUrl = useMemo(() => getTileIconPublicUrl(tile?.icon), [tile?.icon])
+  const showIcon = tile?.showIcon !== false && Boolean(iconUrl) && failedIconUrl !== iconUrl
+  const fallbackLabel = tile?.name?.charAt(0)?.toUpperCase() ?? '?'
 
   const isNumberedTile = typeof tileNumber === 'number'
 
@@ -72,7 +72,7 @@ const CategoryTile = forwardRef(function CategoryTile(
           className
         )}
         style={style}
-        aria-label={isNumberedTile ? `tile ${tileNumber}` : 'category tile'}
+        aria-label={isNumberedTile ? `tile ${tileNumber}` : 'tile card'}
         {...props}
       >
         {children}
@@ -87,7 +87,7 @@ const CategoryTile = forwardRef(function CategoryTile(
       ref={ref}
       className={cn(tileVariants({ corner, tone, active }), className)}
       style={style}
-      aria-label={isNumberedTile ? `tile ${tileNumber}` : 'category tile'}
+      aria-label={isNumberedTile ? `tile ${tileNumber}` : 'tile card'}
       {...props}
     >
       {showShadow ? (
@@ -117,7 +117,7 @@ const CategoryTile = forwardRef(function CategoryTile(
             className="size-full object-contain filter-[drop-shadow(2px_0_0_var(--card))_drop-shadow(-2px_0_0_var(--card))_drop-shadow(0_2px_0_var(--card))_drop-shadow(0_-2px_0_var(--card))]"
             onError={() => setFailedIconUrl(iconUrl)}
           />
-        ) : category?.showIcon !== false ? (
+        ) : tile?.showIcon !== false ? (
           <span
             aria-hidden="true"
             role="presentation"
@@ -133,4 +133,4 @@ const CategoryTile = forwardRef(function CategoryTile(
   )
 })
 
-export default CategoryTile
+export default TileCard
