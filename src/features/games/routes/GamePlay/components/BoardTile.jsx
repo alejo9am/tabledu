@@ -26,8 +26,8 @@ function BoardTile({ tileNumber }) {
     if (tileNumber === 30) {
       return { icon: 'system/goal.png', name: 'Goal' }
     }
-    const boardTile = layout.find((tile) => tile.position === tileNumber)
-    return tiles.find((tile) => tile.id === boardTile?.category_id)
+    const layoutEntry = layout.find((tile) => tile.position === tileNumber)
+    return tiles.find((tile) => tile.id === layoutEntry?.tileId)
   })()
   const numberFontSizePx = Math.max(10, Math.min(18, tileMinSize * 0.16))
   const numberBadgeDiameterPx = Math.max(20, Math.min(34, numberFontSizePx * 1.85))

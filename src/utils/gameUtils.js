@@ -2,7 +2,7 @@
 export const getRandomQuestionForTile = (tile, questions, answers) => {
   if (!tile || tile.type !== 'question') return null
 
-  const tileQuestions = questions.filter((q) => q.category_id === tile.id)
+  const tileQuestions = questions.filter((q) => q.tileId === tile.id)
   if (tileQuestions.length === 0) {
     console.warn(`[QuestionPool] No questions found for tile "${tile.name}".`)
     return null

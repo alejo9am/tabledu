@@ -62,7 +62,7 @@ export function useGameFlow(gameInfo) {
     }
 
     const tileAtNextPosition = layout.find((tile) => tile.position === nextPosition)
-    const nextTileId = tileAtNextPosition?.category_id
+    const nextTileId = tileAtNextPosition?.tileId
     const nextTile = nextTileId
       ? tiles.find((tile) => tile.id === nextTileId) ?? null
       : null
