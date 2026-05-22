@@ -136,23 +136,15 @@ function BoardLayoutPage({ form }) {
     <div className="space-y-4">
       <BoardCreateStepTitle currentStep={4} />
 
-      <div className="grid gap-4 lg:grid-cols-[1.35fr_0.65fr]">
-        <section className="order-2 rounded-2xl border bg-card p-4 lg:order-1 sm:p-5">
-          {hasGeneratedLayout ? (
-            <BoardLayoutPreview layout={form.generatedLayout} />
-          ) : (
-            <div className="grid min-h-72 place-items-center rounded-2xl border border-dashed bg-muted/20 p-6 text-center">
-              <div className="max-w-md space-y-2">
-                <p className="font-display text-2xl font-semibold text-foreground">Preview not generated yet</p>
-                <p className="text-sm text-muted-foreground">
-                  Generate a layout to preview tile placement before creating your board.
-                </p>
-              </div>
-            </div>
-          )}
+      <div className="grid min-w-0 gap-4 lg:grid-cols-[1.35fr_0.65fr]">
+        <section className="order-2 min-w-0 lg:order-1">
+          <BoardLayoutPreview
+            layout={hasGeneratedLayout ? form.generatedLayout : []}
+            showGhost={!hasGeneratedLayout}
+          />
         </section>
 
-        <aside className="order-1 flex flex-col gap-4 rounded-2xl border bg-card p-4 lg:sticky lg:top-4 lg:order-2 sm:p-5">
+        <aside className="order-1 min-w-0 flex flex-col gap-4 rounded-2xl border bg-card p-4 lg:sticky lg:top-4 lg:order-2 sm:p-5">
           <div className="space-y-1">
             <h3 className="font-display text-xl font-semibold">Generate & finalize</h3>
             <p className="text-sm text-muted-foreground">

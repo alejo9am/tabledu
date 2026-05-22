@@ -39,6 +39,7 @@ const CategoryTile = forwardRef(function CategoryTile(
     corner = 'none',
     active = false,
     showShadow = true,
+    isGhost = false,
     badgeStyle,
     className,
     style,
@@ -60,6 +61,25 @@ const CategoryTile = forwardRef(function CategoryTile(
   const fallbackLabel = category?.name?.charAt(0)?.toUpperCase() ?? '?'
 
   const isNumberedTile = typeof tileNumber === 'number'
+
+  if (isGhost) {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          tileVariants({ corner, tone, active: false }),
+          'bg-muted border-dashed border-muted-foreground ring-0 shadow-none',
+          className
+        )}
+        style={style}
+        aria-label={isNumberedTile ? `tile ${tileNumber}` : 'category tile'}
+        {...props}
+      >
+        {children}
+      </div>
+    )
+  }
+
   const showTileNumber = isNumberedTile && tileNumber !== 0
 
   return (
