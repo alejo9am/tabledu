@@ -57,7 +57,7 @@ const CategoryTile = forwardRef(function CategoryTile(
 
   const iconUrl = useMemo(() => getCategoryIconPublicUrl(category?.icon), [category?.icon])
   const showIcon = category?.showIcon !== false && Boolean(iconUrl) && failedIconUrl !== iconUrl
-  const fallbackLabel = category?.name?.charAt(0) ?? '?'
+  const fallbackLabel = category?.name?.charAt(0)?.toUpperCase() ?? '?'
 
   const isNumberedTile = typeof tileNumber === 'number'
   const showTileNumber = isNumberedTile && tileNumber !== 0
@@ -98,7 +98,11 @@ const CategoryTile = forwardRef(function CategoryTile(
             onError={() => setFailedIconUrl(iconUrl)}
           />
         ) : category?.showIcon !== false ? (
-          <span aria-hidden="true" role="presentation">
+          <span
+            aria-hidden="true"
+            role="presentation"
+            className="inline-flex items-center justify-center font-display text-[clamp(1.75rem,4vw,3rem)] font-black leading-none text-card"
+          >
             {fallbackLabel}
           </span>
         ) : null}
