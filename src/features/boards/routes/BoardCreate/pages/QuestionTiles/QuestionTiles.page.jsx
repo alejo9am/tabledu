@@ -14,10 +14,12 @@ import SelectedQuestionTiles from '@/features/boards/routes/BoardCreate/pages/Qu
 import AvailableQuestionTilesList from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/AvailableQuestionTilesList'
 import { getQuestionTileKey } from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/questionTiles.utils'
 import { fetchUserCategories } from '@/services/categories'
+import { fetchQuestionCountsByCategoryIds } from '@/services/questions'
 
 function QuestionTilesPage({ form }) {
   const { user } = useAuth()
   const [availableQuestionTiles, setAvailableQuestionTiles] = useState([])
+  const [questionCountsByCategoryId, setQuestionCountsByCategoryId] = useState({})
   const [isLoadingQuestionTiles, setIsLoadingQuestionTiles] = useState(true)
   const [search, setSearch] = useState('')
   const [isCreatingNewTile, setIsCreatingNewTile] = useState(false)
@@ -29,10 +31,17 @@ function QuestionTilesPage({ form }) {
 
     try {
       const categories = await fetchUserCategories(user?.id)
-      setAvailableQuestionTiles(categories.filter((category) => category.type === 'question'))
+      const questionTiles = categories.filter((category) => category.type === 'question')
+      setAvailableQuestionTiles(questionTiles)
+
+      const countsByCategoryId = await fetchQuestionCountsByCategoryIds(
+        questionTiles.map((tile) => tile.id)
+      )
+      setQuestionCountsByCategoryId(countsByCategoryId)
     } catch {
       toast.error('Could not load your saved question tiles.')
       setAvailableQuestionTiles([])
+      setQuestionCountsByCategoryId({})
     } finally {
       setIsLoadingQuestionTiles(false)
     }
@@ -108,7 +117,11 @@ function QuestionTilesPage({ form }) {
         />
 
         <section className="space-y-4 lg:col-span-2">
-          <SelectedQuestionTiles selectedTiles={form.selectedQuestionTiles} onDeselect={deselectQuestionTile} />
+          <SelectedQuestionTiles
+            selectedTiles={form.selectedQuestionTiles}
+            questionCountsByCategoryId={questionCountsByCategoryId}
+            onDeselect={deselectQuestionTile}
+          />
 
           <Separator />
 

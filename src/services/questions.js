@@ -32,3 +32,24 @@ export const fetchQuestionsByBoardId = async (boardId) => {
   throwIfSupabaseError(error, 'questions')
   return data ?? []
 }
+
+export const fetchQuestionCountsByCategoryIds = async (categoryIds) => {
+  if (!(categoryIds ?? []).length) {
+    return {}
+  }
+
+  const { data, error } = await supabase
+    .from('questions')
+    .select('category_id')
+    .in('category_id', categoryIds ?? [])
+
+  throwIfSupabaseError(error, 'questions')
+
+  const countsByCategoryId = {}
+  for (const question of data ?? []) {
+    const categoryId = question.category_id
+    countsByCategoryId[categoryId] = (countsByCategoryId[categoryId] ?? 0) + 1
+  }
+
+  return countsByCategoryId
+}
