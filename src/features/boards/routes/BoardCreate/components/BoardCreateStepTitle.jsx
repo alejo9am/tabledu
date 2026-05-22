@@ -9,7 +9,7 @@ const stepTitles = {
   },
   3: {
     title: 'Question tiles',
-    description: 'Select the question banks that will become question tiles on this board',
+    description: 'Each question tile is linked to a question bank. When a team lands on that tile, it must answer one question from that bank.',
   },
   4: {
     title: 'Board layout',

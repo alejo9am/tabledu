@@ -4,10 +4,21 @@ import { Icon } from '@/components/ui/Icon'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { getQuestionTileKey } from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/questionTiles.utils'
 
 function SelectedQuestionTile({ tile, questionCount, onDeselect }) {
   const questionCountLabel = questionCount === 1 ? '1 question' : `${questionCount} questions`
+  const questionCountBadgeVariant = questionCount === 0
+    ? 'destructive'
+    : questionCount < 10
+      ? 'warning'
+      : 'default'
+  const questionCountTooltip = questionCount === 0
+    ? 'This tile has no questions yet. Add questions to this bank before gameplay.'
+    : questionCount < 10
+      ? 'This tile has few questions, so repeats may happen often during play.'
+      : 'This bank has enough questions for good variety during play.'
 
   return (
     <article className="relative flex h-40 w-full max-w-36 flex-col items-center justify-between rounded-xl border bg-card p-3 text-center">
@@ -27,9 +38,14 @@ function SelectedQuestionTile({ tile, questionCount, onDeselect }) {
         <p className="w-full truncate text-sm font-medium text-foreground" title={tile.name}>{tile.name}</p>
       </div>
 
-      <Badge variant={questionCount > 0 ? (questionCount > 5 ? 'default' : 'secondary') : 'destructive'} className="self-stretch">
-        {questionCountLabel}
-      </Badge>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge variant={questionCountBadgeVariant} className="self-stretch cursor-help">
+            {questionCountLabel}
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">{questionCountTooltip}</TooltipContent>
+      </Tooltip>
     </article>
   )
 }
@@ -49,9 +65,16 @@ function SelectedQuestionTiles({ selectedTiles, questionCountsByCategoryId, onDe
         <p className="text-sm font-medium text-muted-foreground">
           Selected tiles: <span className="font-semibold text-foreground">{selectedTiles.length}</span> / 6
         </p>
-        <Badge variant="secondary" className="text-sm font-medium">
-          {totalQuestionBankSizeLabel}
-        </Badge>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge variant="secondary" className="text-sm font-medium cursor-help">
+              {totalQuestionBankSizeLabel}
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            Total number of questions available across your selected tiles.
+          </TooltipContent>
+        </Tooltip>
       </div>
 
       {selectedTiles.length === 0 ? (
