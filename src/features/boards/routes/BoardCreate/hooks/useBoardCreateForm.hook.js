@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { defaultSpecialTiles, hydrateSpecialTiles } from '@/features/boards/routes/BoardCreate/pages/SpecialTiles/specialTiles.constants'
-import { fetchUserCategories } from '@/services/categories'
+import { fetchUserTiles } from '@/services/tiles'
 
 const hasText = (value) => String(value ?? '').trim().length > 0
 
@@ -28,7 +28,7 @@ export function useBoardCreateForm() {
     setIsLoadingSpecialTiles(true)
 
     try {
-      const tiles = await fetchUserCategories(user?.id)
+      const tiles = await fetchUserTiles(user?.id)
       const specialTiles = tiles.filter((tile) => tile.type !== 'question')
       setSpecialTiles(hydrateSpecialTiles(specialTiles))
     } catch {
@@ -41,10 +41,10 @@ export function useBoardCreateForm() {
 
   const updateSpecialTile = useCallback((type, updates) => {
     setSpecialTiles((current) => ({
-      ...current,           // copies existing categories
-      [type]: {             // updates the specified category with new values
-        ...current[type],   // copies existing values for the category
-        ...updates,         // applies updates to the category
+      ...current,           // copies existing tiles
+      [type]: {             // updates the specified tile with new values
+        ...current[type],   // copies existing values for the tile
+        ...updates,         // applies updates to the tile
       },
     }))
   }, [])
