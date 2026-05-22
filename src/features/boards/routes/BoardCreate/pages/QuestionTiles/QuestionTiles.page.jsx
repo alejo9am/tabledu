@@ -158,7 +158,9 @@ function QuestionTilesPage({ form }) {
           <AvailableQuestionTilesList
             isLoading={isLoadingQuestionTiles}
             availableTiles={filteredQuestionTiles}
+            hasAnyQuestionTiles={availableQuestionTiles.length > 0}
             onSelect={selectQuestionTile}
+            onCreateTile={() => setIsCreatingNewTile(true)}
           />
 
           <CreateQuestionTileSheet
