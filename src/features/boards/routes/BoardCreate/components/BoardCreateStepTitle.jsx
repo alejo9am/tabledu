@@ -13,7 +13,7 @@ const stepTitles = {
   },
   4: {
     title: 'Board layout',
-    description: 'Generate and preview the randomized tile layout before creating the board',
+    description: 'This is your final check before creating the board. Generate a layout to see where each tile appears, and go back to any previous step if you want to adjust names, scores, or selected tiles.',
   },
 }
 
