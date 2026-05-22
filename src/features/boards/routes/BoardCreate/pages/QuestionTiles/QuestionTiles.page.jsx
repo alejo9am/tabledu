@@ -25,11 +25,13 @@ function QuestionTilesPage({ form }) {
   const [search, setSearch] = useState('')
   const [isCreatingNewTile, setIsCreatingNewTile] = useState(false)
   const [newTileName, setNewTileName] = useState('')
+  const [newTileIcon, setNewTileIcon] = useState('')
   const [newTileDescription, setNewTileDescription] = useState('')
 
   const closeCreateTileSheet = () => {
     setIsCreatingNewTile(false)
     setNewTileName('')
+    setNewTileIcon('')
     setNewTileDescription('')
   }
 
@@ -100,7 +102,7 @@ function QuestionTilesPage({ form }) {
       localId: `question-tile-${Date.now()}`,
       type: 'question',
       name: trimmedName,
-      icon: '',
+      icon: newTileIcon,
       description: trimmedDescription,
     }
 
@@ -166,6 +168,7 @@ function QuestionTilesPage({ form }) {
           <CreateQuestionTileSheet
             open={isCreatingNewTile}
             name={newTileName}
+            icon={newTileIcon}
             description={newTileDescription}
             onOpenChange={(open) => {
               if (open) {
@@ -176,6 +179,7 @@ function QuestionTilesPage({ form }) {
               closeCreateTileSheet()
             }}
             onNameChange={setNewTileName}
+            onIconChange={setNewTileIcon}
             onDescriptionChange={setNewTileDescription}
             onCreate={createQuestionTile}
           />

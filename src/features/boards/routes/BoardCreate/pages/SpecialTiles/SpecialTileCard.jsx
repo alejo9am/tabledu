@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { AddSquareIcon, CheckmarkSquare02Icon } from '@hugeicons/core-free-icons'
 import CategoryTile from '@/components/game/CategoryTile'
 import { Icon } from '@/components/ui/Icon'
@@ -7,9 +8,17 @@ import { NumberInput } from '@/components/ui/number-input'
 import { Textarea } from '@/components/ui/textarea'
 import { Toggle } from '@/components/ui/toggle'
 import { cn } from '@/lib/utils'
+import CategoryIconPickerDialog from '@/features/boards/routes/BoardCreate/components/CategoryIconPickerDialog'
 import { specialTileLabels } from '@/features/boards/routes/BoardCreate/pages/SpecialTiles/specialTiles.constants'
 
+const defaultTileNameByType = {
+  attack: 'Attack',
+  challenge: 'Challenge',
+  pipe: 'Pipe',
+}
+
 function SpecialTileCard({ tile, onChange }) {
+  const [isIconDialogOpen, setIsIconDialogOpen] = useState(false)
   const type = tile.type
   const tileLabel = specialTileLabels[type]
 
@@ -32,7 +41,15 @@ function SpecialTileCard({ tile, onChange }) {
 
       <div className={cn('mt-4 space-y-4 transition-opacity', !tile.enabled && 'pointer-events-none opacity-60')}>
         <div className="grid grid-cols-[5.5rem_1fr] items-center gap-4 sm:grid-cols-[6.5rem_1fr]">
-          <CategoryTile category={tile} showShadow={false} className="aspect-square w-full" />
+          <button
+            type="button"
+            onClick={() => setIsIconDialogOpen(true)}
+            className="rounded-xl transition hover:opacity-90"
+            aria-label={`Choose icon for ${tileLabel}`}
+            disabled={!tile.enabled}
+          >
+            <CategoryTile category={tile} showShadow={false} className="aspect-square w-full" />
+          </button>
 
           <div className="min-w-0">
             <Label className="font-semibold text-muted-foreground" htmlFor={`${type}-tile-name`}>Title</Label>
@@ -114,6 +131,15 @@ function SpecialTileCard({ tile, onChange }) {
           </div>
         </div>
       ) : null}
+
+      <CategoryIconPickerDialog
+        open={isIconDialogOpen}
+        onOpenChange={setIsIconDialogOpen}
+        value={tile.icon}
+        tileName={tile.name || defaultTileNameByType[type]}
+        tileType={type}
+        onSelect={(icon) => onChange({ icon })}
+      />
     </article>
   )
 }

@@ -65,7 +65,6 @@ export function useBoardCreateForm() {
         const label = defaultSpecialTiles[type].name
         if (!hasText(tile.name)) return `${label} needs a name.`
         if (!hasText(tile.description)) return `${label} needs a description.`
-        if (!hasText(tile.icon)) return `${label} needs an icon path.`
 
         if (type === 'attack' && !hasNumber(tile.scoreAttack)) {
           return 'Attack needs a valid score value.'
