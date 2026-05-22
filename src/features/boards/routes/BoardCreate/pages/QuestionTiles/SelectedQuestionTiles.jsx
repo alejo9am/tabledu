@@ -1,13 +1,14 @@
 import { Delete02Icon } from '@hugeicons/core-free-icons'
-import CategoryTile from '@/components/game/CategoryTile'
+import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { getQuestionTileKey } from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/questionTiles.utils'
 
-function SelectedQuestionTile({ tile, questionCount, onDeselect }) {
+function SelectedQuestionTile({ tile, questionCount, isLoadingQuestionCounts, onDeselect }) {
   const questionCountLabel = questionCount === 1 ? '1 question' : `${questionCount} questions`
   const questionCountBadgeVariant = questionCount === 0
     ? 'destructive'
@@ -34,25 +35,29 @@ function SelectedQuestionTile({ tile, questionCount, onDeselect }) {
       </Button>
 
       <div className="flex flex-col items-center gap-2">
-        <CategoryTile category={{ ...tile, type: 'question' }} showShadow={false} className="size-18" />
+        <TileCard tile={{ ...tile, type: 'question' }} showShadow={false} className="size-18" />
         <p className="w-full truncate text-sm font-medium text-foreground" title={tile.name}>{tile.name}</p>
       </div>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Badge variant={questionCountBadgeVariant} className="self-stretch cursor-help">
-            {questionCountLabel}
-          </Badge>
-        </TooltipTrigger>
-        <TooltipContent side="bottom">{questionCountTooltip}</TooltipContent>
-      </Tooltip>
+      {isLoadingQuestionCounts ? (
+        <Skeleton className="h-6 w-24 rounded-full" />
+      ) : (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge variant={questionCountBadgeVariant} className="self-stretch cursor-help">
+              {questionCountLabel}
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">{questionCountTooltip}</TooltipContent>
+        </Tooltip>
+      )}
     </article>
   )
 }
 
-function SelectedQuestionTiles({ selectedTiles, questionCountsByCategoryId, onDeselect }) {
+function SelectedQuestionTiles({ selectedTiles, questionCountsByTileId, isLoadingQuestionCounts, onDeselect }) {
   const totalQuestionBankSize = selectedTiles.reduce(
-    (total, tile) => total + (questionCountsByCategoryId[tile.id] ?? 0),
+    (total, tile) => total + (questionCountsByTileId[tile.id] ?? 0),
     0
   )
   const totalQuestionBankSizeLabel = totalQuestionBankSize === 1
@@ -74,13 +79,19 @@ function SelectedQuestionTiles({ selectedTiles, questionCountsByCategoryId, onDe
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Badge variant="secondary" className="text-sm font-medium cursor-help">
-              {totalQuestionBankSizeLabel}
-            </Badge>
+            {isLoadingQuestionCounts ? (
+              <Skeleton className="h-6 w-28 rounded-full" />
+            ) : (
+              <Badge variant="secondary" className="text-sm font-medium cursor-help">
+                {totalQuestionBankSizeLabel}
+              </Badge>
+            )}
           </TooltipTrigger>
-          <TooltipContent side="left">
-            Total number of questions available across your selected tiles.
-          </TooltipContent>
+          {!isLoadingQuestionCounts ? (
+            <TooltipContent side="left">
+              Total number of questions available across your selected tiles.
+            </TooltipContent>
+          ) : null}
         </Tooltip>
       </div>
 
@@ -99,7 +110,8 @@ function SelectedQuestionTiles({ selectedTiles, questionCountsByCategoryId, onDe
             <SelectedQuestionTile
               key={getQuestionTileKey(tile)}
               tile={tile}
-              questionCount={questionCountsByCategoryId[tile.id] ?? 0}
+              questionCount={questionCountsByTileId[tile.id] ?? 0}
+              isLoadingQuestionCounts={isLoadingQuestionCounts}
               onDeselect={onDeselect}
             />
           ))}

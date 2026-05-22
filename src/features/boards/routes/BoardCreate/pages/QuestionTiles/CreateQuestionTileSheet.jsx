@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import CategoryTile from '@/components/game/CategoryTile'
+import TileCard from '@/components/game/TileCard'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,7 +12,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { Textarea } from '@/components/ui/textarea'
-import CategoryIconPickerDialog from '@/features/boards/routes/BoardCreate/components/CategoryIconPickerDialog'
+import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/components/TileIconPickerDialog'
 
 function CreateQuestionTileSheet({
   open,
@@ -55,7 +55,7 @@ function CreateQuestionTileSheet({
               className="w-fit rounded-xl transition hover:opacity-90"
               aria-label="Choose tile icon"
             >
-              <CategoryTile category={previewTile} showShadow={false} className="size-20" />
+              <TileCard tile={previewTile} showShadow={false} className="size-20" />
             </button>
             <p className="w-3/4 text-xs text-muted-foreground text-center">
               Choose an icon, or use the first letter of the tile name as the icon
@@ -99,7 +99,7 @@ function CreateQuestionTileSheet({
         </SheetContent>
       </Sheet>
 
-      <CategoryIconPickerDialog
+      <TileIconPickerDialog
         open={isIconDialogOpen}
         onOpenChange={setIsIconDialogOpen}
         value={icon}
