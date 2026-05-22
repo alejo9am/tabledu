@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { getCategoryIconPublicUrl } from '@/services/api'
+import { getTileIconPublicUrl } from '@/services/api'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { getRandomQuestionForCategory } from '@/utils/gameUtils'
+import { getRandomQuestionForTile } from '@/utils/gameUtils'
 
 import { useGame } from '../context/GameContext'
 import { TURN_PHASES } from '../constants/turnPhases'
@@ -16,8 +16,9 @@ export default function ChallengeModal() {
   ]
 
   const [selectedOpponentId, setSelectedOpponentId] = useState(null)
-  const [categoryMode, setCategoryMode] = useState(null)
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null)
+  // Topic here means the question bank source represented by a question tile.
+  const [topicMode, setTopicMode] = useState(null)
+  const [selectedTopicId, setSelectedTopicId] = useState(null)
   const [failedIcons, setFailedIcons] = useState(new Set())
   const [phase, setPhase] = useState('setup')
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -33,7 +34,7 @@ export default function ChallengeModal() {
     questions,
     currentTeam,
     turnPhase,
-    questionCategories,
+    questionTiles,
     actions: { updateScore, saveAnswer },
     handlers: { finishTurn }
   } = useGame()
@@ -50,7 +51,7 @@ export default function ChallengeModal() {
   }, [turnPhase])
 
   // Boolean indicating whether the "Continue" button can be enabled in the setup phase
-  const canConfirm = selectedOpponentId !== null && categoryMode !== null && (categoryMode === 'any' || selectedCategoryId !== null)
+  const canConfirm = selectedOpponentId !== null && topicMode !== null && (topicMode === 'any' || selectedTopicId !== null)
 
   const handleSetupConfirm = () => {
     if (!canConfirm || !currentTeam) {
@@ -65,16 +66,16 @@ export default function ChallengeModal() {
       return
     }
 
-    const pickCategory = () => {
-      if (categoryMode === 'specific') {
-        return questionCategories.find((category) => category.id === selectedCategoryId) ?? null
+    const pickTopic = () => {
+      if (topicMode === 'specific') {
+        return questionTiles.find((tile) => tile.id === selectedTopicId) ?? null
       }
 
-      return questionCategories[Math.floor(Math.random() * questionCategories.length)] ?? null
+      return questionTiles[Math.floor(Math.random() * questionTiles.length)] ?? null
     }
 
-    const q1 = getRandomQuestionForCategory(pickCategory(), questions, answers)
-    const q2 = getRandomQuestionForCategory(pickCategory(), questions, answers)
+    const q1 = getRandomQuestionForTile(pickTopic(), questions, answers)
+    const q2 = getRandomQuestionForTile(pickTopic(), questions, answers)
     const selectedQuestions = [q1, q2].filter(Boolean)
 
     if (selectedQuestions.length === 0) {
@@ -90,10 +91,10 @@ export default function ChallengeModal() {
     setCurrentQuestionIndex(0)
   }
 
-  const handleSelectCategoryMode = (mode) => {
-    setCategoryMode(mode)
+  const handleSelectTopicMode = (mode) => {
+    setTopicMode(mode)
     if (mode === 'any') {
-      setSelectedCategoryId(null)
+      setSelectedTopicId(null)
     }
   }
 
@@ -210,8 +211,8 @@ export default function ChallengeModal() {
 
   const handleClose = () => {
     setSelectedOpponentId(null)
-    setCategoryMode(null)
-    setSelectedCategoryId(null)
+    setTopicMode(null)
+    setSelectedTopicId(null)
     setPhase('setup')
     setCurrentQuestionIndex(0)
     setOpponentTeam(null)
@@ -268,33 +269,33 @@ export default function ChallengeModal() {
             </section>
 
             <section className="flex flex-col gap-3">
-              <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Choose a category</p>
-              <div className="grid gap-3 sm:grid-cols-2" role="group" aria-label="Category mode">
+              <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Choose a question topic</p>
+              <div className="grid gap-3 sm:grid-cols-2" role="group" aria-label="Question topic mode">
                 <button
                   type="button"
-                  className={optionButtonClassName(categoryMode === 'any')}
-                  onClick={() => handleSelectCategoryMode('any')}
+                  className={optionButtonClassName(topicMode === 'any')}
+                  onClick={() => handleSelectTopicMode('any')}
                 >
-                  Any category
+                  Any topic
                 </button>
                 <button
                   type="button"
-                  className={optionButtonClassName(categoryMode === 'specific')}
-                  onClick={() => handleSelectCategoryMode('specific')}
+                  className={optionButtonClassName(topicMode === 'specific')}
+                  onClick={() => handleSelectTopicMode('specific')}
                 >
-                  Pick a category
+                  Choose topic
                 </button>
               </div>
 
-              {categoryMode === 'specific' && (
-                <div className="grid grid-cols-2 gap-3 md:grid-cols-3" role="group" aria-label="Specific category">
-                  {questionCategories.map((category) => {
-                    const iconUrl = getCategoryIconPublicUrl(category.icon)
-                    const isSelected = selectedCategoryId === category.id
+              {topicMode === 'specific' && (
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-3" role="group" aria-label="Specific question topic">
+                  {questionTiles.map((tile) => {
+                    const iconUrl = getTileIconPublicUrl(tile.icon)
+                    const isSelected = selectedTopicId === tile.id
 
                     return (
                       <button
-                        key={category.id}
+                        key={tile.id}
                         type="button"
                         className={cn(
                           'flex flex-col items-center gap-2 rounded-xl border-2 px-3 py-3 text-center transition-all',
@@ -302,7 +303,7 @@ export default function ChallengeModal() {
                             ? 'border-primary bg-primary-200 text-primary-700'
                             : 'border-border bg-secondary text-foreground hover:border-primary/40 hover:bg-primary-200'
                         )}
-                        onClick={() => setSelectedCategoryId(category.id)}
+                        onClick={() => setSelectedTopicId(tile.id)}
                       >
                         <span
                           className={cn(
@@ -313,19 +314,19 @@ export default function ChallengeModal() {
                           )}
                           aria-hidden="true"
                         >
-                          {iconUrl && !failedIcons.has(category.id) ? (
+                          {iconUrl && !failedIcons.has(tile.id) ? (
                             <img
                               src={iconUrl}
                               alt=""
                               loading="lazy"
                               className="size-full object-cover"
-                              onError={() => setFailedIcons((prev) => { const next = new Set(prev); next.add(category.id); return next })}
+                              onError={() => setFailedIcons((prev) => { const next = new Set(prev); next.add(tile.id); return next })}
                             />
                           ) : (
-                            category.name.charAt(0)
+                            tile.name.charAt(0)
                           )}
                         </span>
-                        <span className="text-sm font-semibold leading-tight">{category.name}</span>
+                        <span className="text-sm font-semibold leading-tight">{tile.name}</span>
                       </button>
                     )
                   })}

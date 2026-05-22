@@ -6,14 +6,14 @@ import { TURN_PHASES } from '../constants/turnPhases'
 
 function SidebarInfoCard() {
   const {
-    currentCategory, turnPhase,
+    currentTile, turnPhase,
     handlers: { startTileAction }
   } = useGame()
 
-  const actionCardData = currentCategory ? {
-    title: `${currentCategory.name} ${currentCategory.type === 'question' ? 'Question' : 'Tile'}`, // e.g. "History Question", "Attack Tile"
-    description: currentCategory.description,
-    buttonLabel: currentCategory.type === 'question' ? 'Show question' : 'Continue',
+  const actionCardData = currentTile ? {
+    title: `${currentTile.name} ${currentTile.type === 'question' ? 'Question' : 'Tile'}`, // e.g. "History Question", "Attack Tile"
+    description: currentTile.description,
+    buttonLabel: currentTile.type === 'question' ? 'Show question' : 'Continue',
     buttonAction: startTileAction
   } : null
 
