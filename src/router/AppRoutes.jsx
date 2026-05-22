@@ -5,7 +5,7 @@ import BoardCreateRoute from '@/features/boards/routes/BoardCreate/BoardCreate.r
 import BoardDetailsRoute from '@/features/boards/routes/BoardDetails/BoardDetails.route'
 import GamesListRoute from '@/features/games/routes/GamesList/GamesList.route'
 import NewGameRoute from '@/features/games/routes/NewGame/NewGame.route'
-import CategoriesListRoute from '@/features/categories/routes/CategoriesList/CategoriesList.route'
+import TilesListRoute from '@/features/tiles/routes/TilesList/TilesList.route'
 import HomeRoute from '@/features/home/routes/Home/Home.route'
 import QuestionsListRoute from '@/features/questions/routes/QuestionsList/QuestionsList.route'
 import DashboardLayout from '@/layouts/DashboardLayout'
@@ -25,7 +25,7 @@ function AppRoutes() {
           <Route path="/boards/new" element={<BoardCreateRoute />} />
           <Route path="/boards/:boardId" element={<BoardDetailsRoute />} />
           <Route path="/questions" element={<QuestionsListRoute />} />
-          <Route path="/categories" element={<CategoriesListRoute />} />
+          <Route path="/tiles" element={<TilesListRoute />} />
           <Route path="/games" element={<GamesListRoute />} />
         </Route>
         <Route path="/games/new" element={<NewGameRoute />} />

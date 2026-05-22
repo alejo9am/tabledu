@@ -66,8 +66,8 @@ const dashboardRoutes = [
     icon: <Icon icon={Quiz05Icon} />,
   },
   {
-    title: "Categories",
-    to: "/categories",
+    title: "Tiles",
+    to: "/tiles",
     icon: <Icon icon={ClipboardIcon} />,
   },
   {
