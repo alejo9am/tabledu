@@ -5,7 +5,7 @@ const stepTitles = {
   },
   2: {
     title: 'Special tiles',
-    description: 'Choose which surprise tiles can appear on the board',
+    description: 'Tiles are the spaces where teams land during play. Here you decide which special tiles can appear on your board.',
   },
   3: {
     title: 'Question tiles',
