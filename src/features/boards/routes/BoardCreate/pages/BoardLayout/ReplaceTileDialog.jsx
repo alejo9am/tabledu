@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CheckmarkCircle02Icon } from '@hugeicons/core-free-icons'
-import CategoryTile from '@/components/game/CategoryTile'
+import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
 import { Button } from '@/components/ui/button'
 import {
@@ -76,7 +76,7 @@ function ReplaceTileDialog({
         )}
         aria-pressed={isSelected}
       >
-        <CategoryTile category={option.tile} showShadow={false} className="size-16 shrink-0" />
+        <TileCard tile={option.tile} showShadow={false} className="size-16 shrink-0" />
         <p className="flex-1 truncate text-lg font-medium text-foreground">{option.tile.name}</p>
         {isSelected ? <Icon icon={CheckmarkCircle02Icon} className="size-4 shrink-0 text-primary" /> : null}
       </button>
