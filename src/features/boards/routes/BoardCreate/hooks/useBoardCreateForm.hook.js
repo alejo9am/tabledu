@@ -15,11 +15,11 @@ export function useBoardCreateForm() {
   const [scores, setScores] = useState({
     scoreCorrect: 3,
     scoreIncorrect: -1,
-    scoreAttack: -2,
-    scoreChallengeWinner: 2,
-    scoreChallengeLoser: -2,
-    scoreChallengeDrawDefender: 0,
-    scoreChallengeDrawAttacker: 0,
+    scoreAttack: -5,
+    scoreChallengeWinner: 5,
+    scoreChallengeLoser: -3,
+    scoreChallengeDrawDefender: 1,
+    scoreChallengeDrawAttacker: -1,
   })
   const [selectedQuestionTiles, setSelectedQuestionTiles] = useState([])
   const [generatedLayout, setGeneratedLayout] = useState([])
