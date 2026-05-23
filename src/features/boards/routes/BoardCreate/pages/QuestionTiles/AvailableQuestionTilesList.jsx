@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
-import { getQuestionTileKey } from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/questionTiles.utils'
 
 function AvailableQuestionTile({ tile, onSelect }) {
   const questionTile = { ...tile, type: 'question' }
@@ -67,21 +66,7 @@ function AvailableQuestionTilesList({
         ) : (
           availableTiles.map((tile) => (
             <AvailableQuestionTile
-              key={getQuestionTileKey(tile)}
-              tile={tile}
-              onSelect={onSelect}
-            />
-          )),
-          availableTiles.map((tile) => (
-            <AvailableQuestionTile
-              key={getQuestionTileKey(tile)}
-              tile={tile}
-              onSelect={onSelect}
-            />
-          )),
-          availableTiles.map((tile) => (
-            <AvailableQuestionTile
-              key={getQuestionTileKey(tile)}
+              key={tile.id}
               tile={tile}
               onSelect={onSelect}
             />

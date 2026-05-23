@@ -16,6 +16,7 @@ import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/component
 
 function CreateQuestionTileSheet({
   open,
+  isCreating,
   name,
   icon,
   description,
@@ -54,6 +55,7 @@ function CreateQuestionTileSheet({
               onClick={() => setIsIconDialogOpen(true)}
               className="w-fit rounded-xl transition hover:opacity-90"
               aria-label="Choose tile icon"
+              disabled={isCreating}
             >
               <TileCard tile={previewTile} showShadow={false} className="size-20" />
             </button>
@@ -69,6 +71,7 @@ function CreateQuestionTileSheet({
               value={name}
               placeholder="e.g. Roman Empire"
               onChange={(event) => onNameChange(event.target.value)}
+              disabled={isCreating}
             />
           </div>
 
@@ -80,6 +83,7 @@ function CreateQuestionTileSheet({
               placeholder="Write the prompt shown before teams answer"
               onChange={(event) => onDescriptionChange(event.target.value)}
               required
+              disabled={isCreating}
             />
             <p className="text-xs text-muted-foreground">
               This description is shown in gameplay before the question appears.
@@ -89,11 +93,11 @@ function CreateQuestionTileSheet({
         </div>
 
         <SheetFooter>
-          <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>
+          <Button type="button" variant="secondary" onClick={() => onOpenChange(false)} disabled={isCreating}>
             Cancel
           </Button>
-          <Button type="button" onClick={onCreate}>
-            Create tile
+          <Button type="button" onClick={onCreate} disabled={isCreating}>
+            {isCreating ? 'Creating tile...' : 'Create tile'}
           </Button>
         </SheetFooter>
         </SheetContent>

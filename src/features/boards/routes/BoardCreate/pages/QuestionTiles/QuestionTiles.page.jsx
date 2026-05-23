@@ -13,8 +13,7 @@ import QuestionScoringPanel from '@/features/boards/routes/BoardCreate/pages/Que
 import SelectedQuestionTiles from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/SelectedQuestionTiles'
 import AvailableQuestionTilesList from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/AvailableQuestionTilesList'
 import CreateQuestionTileSheet from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/CreateQuestionTileSheet'
-import { getQuestionTileKey } from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/questionTiles.utils'
-import { fetchUserTiles } from '@/services/tiles'
+import { createTile, fetchUserTiles } from '@/services/tiles'
 import { fetchQuestionCountsByTileIds } from '@/services/questions'
 
 function QuestionTilesPage({ form }) {
@@ -24,6 +23,7 @@ function QuestionTilesPage({ form }) {
   const [isLoadingQuestionTiles, setIsLoadingQuestionTiles] = useState(true)
   const [search, setSearch] = useState('')
   const [isCreatingNewTile, setIsCreatingNewTile] = useState(false)
+  const [isCreatingQuestionTile, setIsCreatingQuestionTile] = useState(false)
   const [newTileName, setNewTileName] = useState('')
   const [newTileIcon, setNewTileIcon] = useState('')
   const [newTileDescription, setNewTileDescription] = useState('')
@@ -62,8 +62,8 @@ function QuestionTilesPage({ form }) {
 
   const filteredQuestionTiles = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase()
-    const selectedKeys = new Set(form.selectedQuestionTiles.map((tile) => getQuestionTileKey(tile)))
-    const unselectedTiles = availableQuestionTiles.filter((tile) => !selectedKeys.has(getQuestionTileKey(tile)))
+    const selectedIds = new Set(form.selectedQuestionTiles.map((tile) => tile.id))
+    const unselectedTiles = availableQuestionTiles.filter((tile) => !selectedIds.has(tile.id))
 
     if (!normalizedSearch) return unselectedTiles
     return unselectedTiles.filter((tile) => tile.name.toLowerCase().includes(normalizedSearch))
@@ -79,11 +79,10 @@ function QuestionTilesPage({ form }) {
   }
 
   const deselectQuestionTile = (tile) => {
-    const tileKey = getQuestionTileKey(tile)
-    form.setSelectedQuestionTiles((current) => current.filter((item) => getQuestionTileKey(item) !== tileKey))
+    form.setSelectedQuestionTiles((current) => current.filter((item) => item.id !== tile.id))
   }
 
-  const createQuestionTile = () => {
+  const createQuestionTile = async () => {
     const trimmedName = newTileName.trim()
     const trimmedDescription = newTileDescription.trim()
 
@@ -97,24 +96,34 @@ function QuestionTilesPage({ form }) {
       return
     }
 
-    const newQuestionTile = {
-      id: null,
-      localId: `question-tile-${Date.now()}`,
-      type: 'question',
-      name: trimmedName,
-      icon: newTileIcon,
-      description: trimmedDescription,
+    setIsCreatingQuestionTile(true)
+
+    try {
+      const savedQuestionTile = await createTile({
+        tile: {
+          type: 'question',
+          name: trimmedName,
+          icon: newTileIcon,
+          description: trimmedDescription,
+        },
+      })
+
+      setAvailableQuestionTiles((current) => [...current, savedQuestionTile])
+      setQuestionCountsByTileId((current) => ({ ...current, [savedQuestionTile.id]: 0 }))
+
+      if (form.selectedQuestionTiles.length < 6) {
+        form.setSelectedQuestionTiles((current) => [...current, savedQuestionTile])
+      } else {
+        toast.message('Tile created. Select it later by removing another selected tile.')
+      }
+
+      toast.success('Tile created.')
+      closeCreateTileSheet()
+    } catch {
+      toast.error('Could not create tile.')
+    } finally {
+      setIsCreatingQuestionTile(false)
     }
-
-    setAvailableQuestionTiles((current) => [...current, newQuestionTile])
-
-    if (form.selectedQuestionTiles.length < 6) {
-      form.setSelectedQuestionTiles((current) => [...current, newQuestionTile])
-    } else {
-      toast.message('Tile created. Select it later by removing another selected tile.')
-    }
-
-    closeCreateTileSheet()
   }
 
   return (
@@ -166,6 +175,7 @@ function QuestionTilesPage({ form }) {
 
           <CreateQuestionTileSheet
             open={isCreatingNewTile}
+            isCreating={isCreatingQuestionTile}
             name={newTileName}
             icon={newTileIcon}
             description={newTileDescription}

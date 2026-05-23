@@ -1,4 +1,4 @@
-import { Delete02Icon } from '@hugeicons/core-free-icons'
+import { RemoveCircleHalfDotIcon } from '@hugeicons/core-free-icons'
 import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
 import { Badge } from '@/components/ui/badge'
@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { getQuestionTileKey } from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/questionTiles.utils'
 
 function SelectedQuestionTile({ tile, questionCount, isLoadingQuestionCounts, onDeselect }) {
   const questionCountLabel = questionCount === 1 ? '1 question' : `${questionCount} questions`
@@ -31,7 +30,7 @@ function SelectedQuestionTile({ tile, questionCount, isLoadingQuestionCounts, on
         onClick={() => onDeselect(tile)}
         aria-label={`Remove ${tile.name}`}
       >
-        <Icon icon={Delete02Icon} className="size-5" />
+        <Icon icon={RemoveCircleHalfDotIcon} className="size-5" />
       </Button>
 
       <div className="flex flex-col items-center gap-2">
@@ -108,7 +107,7 @@ function SelectedQuestionTiles({ selectedTiles, questionCountsByTileId, isLoadin
         <div className="mt-3 flex flex-wrap justify-center gap-3 lg:flex-nowrap">
           {selectedTiles.map((tile) => (
             <SelectedQuestionTile
-              key={getQuestionTileKey(tile)}
+              key={tile.id}
               tile={tile}
               questionCount={questionCountsByTileId[tile.id] ?? 0}
               isLoadingQuestionCounts={isLoadingQuestionCounts}
