@@ -28,7 +28,7 @@ function BoardCard({
         <span className="h-full w-1/3 bg-destructive" />
       </div>
       <div className="flex h-full flex-col">
-        <p className="truncate text-xl leading-tight text-primary-700 dark:text-primary-200">{title || `Board #${board.id}`}</p>
+        <p className="truncate text-xl leading-tight text-primary-700">{title || `Board #${board.id}`}</p>
         <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{description}</p>
         <div className="mt-5 flex flex-wrap items-center gap-2 sm:justify-end">
           {hasSecondaryAction ? (

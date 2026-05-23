@@ -187,24 +187,24 @@
   --destructive-foreground: #ffffff;
   --warning-foreground: #0f172a;
 
-  --primary-200: #d8e6fb;
-  --primary-350: #a9c4ee;
-  --primary-700: #3e6db8;
-  --primary-850: #2f538d;
-  --destructive-200: #fad9d5;
-  --destructive-350: #f4b0a8;
-  --destructive-700: #d2574a;
-  --destructive-850: #a84439;
-  --warning-200: #fbf1be;
-  --warning-350: #f7e289;
-  --warning-700: #d8b929;
-  --warning-850: #735d0b;
+  --primary-200: #2f538d;
+  --primary-350: #3e6db8;
+  --primary-700: #a9c4ee;
+  --primary-850: #d8e6fb;
+  --destructive-200: #a84439;
+  --destructive-350: #d2574a;
+  --destructive-700: #f4b0a8;
+  --destructive-850: #fad9d5;
+  --warning-200: #735d0b;
+  --warning-350: #d8b929;
+  --warning-700: #f7e289;
+  --warning-850: #fbf1be;
 
   --secondary: #1e293b;
   --secondary-foreground: #f8fafc;
   --success: #22c55e;
-  --success-200: #dcfce7;
-  --success-700: #15803d;
+  --success-200: #15803d;
+  --success-700: #dcfce7;
   --success-foreground: #ffffff;
   --muted: #1e293b;
   --muted-foreground: #94a3b8;
