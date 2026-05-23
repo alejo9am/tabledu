@@ -97,7 +97,7 @@ function SpecialTileEditCard({ tile, onSave }) {
 
   return (
     <article className={`w-full max-w-xs rounded-2xl border bg-card p-4 ${isEditing ? 'border-primary shadow-sm shadow-primary/30' : ''}`}>
-      <div className="mb-3 flex items-start gap-4">
+      <div className="mb-3 flex items-center gap-4">
         <button
           type="button"
           onClick={() => setIsIconDialogOpen(true)}
