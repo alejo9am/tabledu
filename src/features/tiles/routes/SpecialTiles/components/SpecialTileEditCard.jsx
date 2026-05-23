@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
-import { PencilEdit02Icon } from '@hugeicons/core-free-icons'
+import { ArrowDown01Icon, PencilEdit02Icon } from '@hugeicons/core-free-icons'
 import { toast } from 'sonner'
 import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
 import { Button } from '@/components/ui/button'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -99,12 +100,8 @@ function SpecialTileEditCard({ tile, onSave }) {
   }
 
   return (
-    <article className={`rounded-2xl border bg-card p-4 ${isEditing ? 'border-primary shadow-sm shadow-primary/30' : ''}`}>
-      <div className="mb-4 flex items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">Platform special tile</p>
-          <h2 className="font-display text-2xl font-bold text-foreground">{tileMeta.label}</h2>
-        </div>
+    <article className={`w-full max-w-xs rounded-2xl border bg-card p-4 ${isEditing ? 'border-primary shadow-sm shadow-primary/30' : ''}`}>
+      <div className="mb-3 flex items-center justify-between gap-4">
         <button
           type="button"
           onClick={() => setIsIconDialogOpen(true)}
@@ -114,47 +111,71 @@ function SpecialTileEditCard({ tile, onSave }) {
         >
           <TileCard tile={{ ...tile, icon: draftIcon, name: draftName || tile.name }} showShadow={false} className="aspect-square w-full" />
         </button>
-      </div>
 
-      <p className="rounded-xl border border-warning/30 bg-warning/10 p-3 text-sm text-foreground">{tileMeta.mechanic}</p>
-
-      {isEditing ? (
-        <div className="mt-4 grid gap-3">
-          <div className="grid gap-1">
-            <Label htmlFor={`${tile.id}-name`}>Tile name</Label>
-            <Input
-              id={`${tile.id}-name`}
-              value={draftName}
-              onChange={(event) => setDraftName(event.target.value)}
-              placeholder="Tile name"
-            />
-          </div>
-
-          <div className="grid gap-1">
-            <Label htmlFor={`${tile.id}-description`}>Description / mechanic</Label>
-            <Textarea
-              id={`${tile.id}-description`}
-              value={draftDescription}
-              onChange={(event) => setDraftDescription(event.target.value)}
-              className="min-h-24"
-              placeholder="Explain what happens when a team lands here"
-            />
-          </div>
-
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" disabled={isSaving} onClick={cancelEdit}>
-              Cancel
-            </Button>
-            <Button type="button" disabled={!hasChanges || isSaving} onClick={saveChanges}>
-              {isSaving ? 'Saving...' : 'Save changes'}
-            </Button>
+        <div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">{tileMeta.label} tile</p>
+            {isEditing ? (
+              <div className="mt-3">
+                <Label htmlFor={`${tile.id}-name`} className="text-xs">Tile name</Label>
+                <Input
+                  id={`${tile.id}-name`}
+                  value={draftName}
+                  onChange={(event) => setDraftName(event.target.value)}
+                  placeholder="Tile name"
+                  className="-mt-1 h-auto rounded-none border-0 border-b-2 border-border bg-transparent px-0 py-1 font-display text-xl! md:text-xl! font-bold shadow-none focus-visible:ring-0"
+                />
+              </div>
+            ) : (
+              <h2 className="truncate font-display text-2xl font-bold text-foreground">{draftName || tileMeta.label}</h2>
+            )}
+            {!isEditing ? (
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{draftDescription}</p>
+            ) : null}
           </div>
         </div>
+      </div>
+
+      {isEditing ? (
+        <div className="grid gap-1">
+          <Label htmlFor={`${tile.id}-description`} className="text-xs font-semibold text-muted-foreground">Description / mechanic</Label>
+          <Textarea
+            id={`${tile.id}-description`}
+            value={draftDescription}
+            onChange={(event) => setDraftDescription(event.target.value)}
+            className="min-h-20"
+            placeholder="Explain what happens when a team lands here"
+          />
+        </div>
+      ) : null}
+
+
+      <Collapsible>
+        <CollapsibleTrigger asChild>
+          <Button type="button" variant="link" className="group h-8 px-1 text-xs text-muted-foreground">
+            <Icon icon={ArrowDown01Icon} className="size-3 transition-transform group-data-[state=open]:rotate-180" />
+            More details
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <p className="p-3 text-sm text-foreground">{tileMeta.mechanic}</p>
+        </CollapsibleContent>
+      </Collapsible>
+
+      {isEditing ? (
+        <div className="mt-3 flex justify-end gap-2">
+          <Button type="button" variant="outline" disabled={isSaving} onClick={cancelEdit}>
+            Cancel
+          </Button>
+          <Button type="button" disabled={!hasChanges || isSaving} onClick={saveChanges}>
+            {isSaving ? 'Saving...' : 'Save changes'}
+          </Button>
+        </div>
       ) : (
-        <div className="mt-4">
+        <div className="mt-3">
           <Button type="button" variant="outline" className="w-full" onClick={startEdit}>
             <Icon icon={PencilEdit02Icon} className="size-4" />
-            Edit tile
+            Edit
           </Button>
         </div>
       )}

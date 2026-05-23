@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import PageHeader from '@/components/layout/PageHeader'
 import ErrorState from '@/components/ui/error-state'
+import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
 import SpecialTileEditCard from '@/features/tiles/routes/SpecialTiles/components/SpecialTileEditCard'
@@ -82,14 +83,23 @@ function SpecialTilesPage() {
         </div>
       ) : null}
 
-      <div className="grid gap-4 xl:grid-cols-3">
+      <div className="grid items-start justify-items-center gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-3">
         {isLoading ? (
           <>
-            <Skeleton className="h-96 rounded-2xl" />
-            <Skeleton className="h-96 rounded-2xl" />
-            <Skeleton className="h-96 rounded-2xl" />
+            <Skeleton className="h-60 w-full max-w-md rounded-2xl" />
+            <Separator orientation="vertical" className="hidden lg:block" />
+            <Skeleton className="h-60 w-full max-w-md rounded-2xl" />
+            <Separator orientation="vertical" className="hidden lg:block" />
+            <Skeleton className="h-60 w-full max-w-md rounded-2xl" />
           </>
-        ) : tileCards}
+        ) : (
+          tileCards.flatMap((card, index) => [
+            card,
+            index < tileCards.length - 1 ? (
+              <Separator key={`tile-separator-${index}`} orientation="vertical" className="hidden lg:block" />
+            ) : null,
+          ])
+        )}
       </div>
 
     </section>
