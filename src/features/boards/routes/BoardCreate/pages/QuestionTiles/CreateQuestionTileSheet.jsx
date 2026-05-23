@@ -16,7 +16,8 @@ import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/component
 
 function CreateQuestionTileSheet({
   open,
-  isCreating,
+  mode,
+  isSaving,
   name,
   icon,
   description,
@@ -24,7 +25,7 @@ function CreateQuestionTileSheet({
   onNameChange,
   onIconChange,
   onDescriptionChange,
-  onCreate,
+  onSave,
 }) {
   const [isIconDialogOpen, setIsIconDialogOpen] = useState(false)
 
@@ -36,14 +37,29 @@ function CreateQuestionTileSheet({
     description: '',
   }
 
+  const isEditMode = mode === 'edit'
+  const sheetMetadata = isEditMode
+    ? {
+      title: 'Edit question tile',
+      description: 'Teams will answer from this bank when they land on the tile during gameplay.',
+      actionLabel: 'Save changes',
+      actionLoadingLabel: 'Saving changes...',
+    }
+    : {
+      title: 'Create question tile',
+      description: 'Create the tile now and add its questions later. Teams will answer from this bank when they land on the tile during gameplay.',
+      actionLabel: 'Create tile',
+      actionLoadingLabel: 'Creating tile...',
+    }
+
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="right" className="sm:max-w-md">
         <SheetHeader>
-          <SheetTitle>Create question tile</SheetTitle>
+          <SheetTitle>{sheetMetadata.title}</SheetTitle>
           <SheetDescription>
-            Create the tile now and add its questions later. Teams will answer from this bank when they land on the tile during gameplay.
+            {sheetMetadata.description}
           </SheetDescription>
         </SheetHeader>
 
@@ -55,7 +71,7 @@ function CreateQuestionTileSheet({
               onClick={() => setIsIconDialogOpen(true)}
               className="w-fit rounded-xl transition hover:opacity-90"
               aria-label="Choose tile icon"
-              disabled={isCreating}
+              disabled={isSaving}
             >
               <TileCard tile={previewTile} showShadow={false} className="size-20" />
             </button>
@@ -71,7 +87,7 @@ function CreateQuestionTileSheet({
               value={name}
               placeholder="e.g. Roman Empire"
               onChange={(event) => onNameChange(event.target.value)}
-              disabled={isCreating}
+              disabled={isSaving}
             />
           </div>
 
@@ -83,7 +99,7 @@ function CreateQuestionTileSheet({
               placeholder="Write the prompt shown before teams answer"
               onChange={(event) => onDescriptionChange(event.target.value)}
               required
-              disabled={isCreating}
+              disabled={isSaving}
             />
             <p className="text-xs text-muted-foreground">
               This description is shown in gameplay before the question appears.
@@ -93,11 +109,11 @@ function CreateQuestionTileSheet({
         </div>
 
         <SheetFooter>
-          <Button type="button" variant="secondary" onClick={() => onOpenChange(false)} disabled={isCreating}>
+          <Button type="button" variant="secondary" onClick={() => onOpenChange(false)} disabled={isSaving}>
             Cancel
           </Button>
-          <Button type="button" onClick={onCreate} disabled={isCreating}>
-            {isCreating ? 'Creating tile...' : 'Create tile'}
+          <Button type="button" onClick={onSave} disabled={isSaving}>
+            {isSaving ? sheetMetadata.actionLoadingLabel : sheetMetadata.actionLabel}
           </Button>
         </SheetFooter>
         </SheetContent>

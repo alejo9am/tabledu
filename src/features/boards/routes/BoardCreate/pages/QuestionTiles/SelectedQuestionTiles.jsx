@@ -1,4 +1,4 @@
-import { RemoveCircleHalfDotIcon } from '@hugeicons/core-free-icons'
+import { Edit02Icon, RemoveCircleHalfDotIcon } from '@hugeicons/core-free-icons'
 import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
 import { Badge } from '@/components/ui/badge'
@@ -7,7 +7,7 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/u
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
-function SelectedQuestionTile({ tile, questionCount, isLoadingQuestionCounts, onDeselect }) {
+function SelectedQuestionTile({ tile, questionCount, isLoadingQuestionCounts, onDeselect, onEdit }) {
   const questionCountLabel = questionCount === 1 ? '1 question' : `${questionCount} questions`
   const questionCountBadgeVariant = questionCount === 0
     ? 'destructive'
@@ -21,40 +21,42 @@ function SelectedQuestionTile({ tile, questionCount, isLoadingQuestionCounts, on
       : 'This bank has enough questions for good variety during play.'
 
   return (
-    <article className="relative flex h-40 w-full max-w-36 flex-col items-center justify-between rounded-xl border bg-card p-3 text-center">
-      <Button
-        type="button"
-        variant="destructive"
-        size="icon-sm"
-        className="absolute top-1.5 right-1.5 z-10 rounded-full bg-card shadow-sm hover:bg-destructive-200"
-        onClick={() => onDeselect(tile)}
-        aria-label={`Remove ${tile.name}`}
-      >
-        <Icon icon={RemoveCircleHalfDotIcon} className="size-5" />
-      </Button>
+    <article className="flex w-full max-w-52 flex-col gap-3 rounded-xl border bg-card p-3">
+      <div className="flex items-center gap-3">
+        <TileCard tile={{ ...tile, type: 'question' }} showShadow={false} className="size-16 shrink-0" />
+        <div className="min-w-0 flex-1 space-y-2">
+          <p className="truncate text-sm font-medium text-foreground" title={tile.name}>{tile.name}</p>
 
-      <div className="flex flex-col items-center gap-2">
-        <TileCard tile={{ ...tile, type: 'question' }} showShadow={false} className="size-18" />
-        <p className="w-full truncate text-sm font-medium text-foreground" title={tile.name}>{tile.name}</p>
+          {isLoadingQuestionCounts ? (
+            <Skeleton className="h-6 w-24 rounded-full" />
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge variant={questionCountBadgeVariant} className="w-fit cursor-help">
+                  {questionCountLabel}
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent side="right">{questionCountTooltip}</TooltipContent>
+            </Tooltip>
+          )}
+        </div>
       </div>
 
-      {isLoadingQuestionCounts ? (
-        <Skeleton className="h-6 w-24 rounded-full" />
-      ) : (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Badge variant={questionCountBadgeVariant} className="self-stretch cursor-help">
-              {questionCountLabel}
-            </Badge>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">{questionCountTooltip}</TooltipContent>
-        </Tooltip>
-      )}
+      <div className="grid w-full grid-cols-2 gap-2">
+        <Button type="button" size="sm" variant="secondary" onClick={() => onEdit(tile)}>
+          <Icon icon={Edit02Icon} className="size-4" />
+          Edit
+        </Button>
+        <Button type="button" size="sm" variant="destructive" onClick={() => onDeselect(tile)}>
+          <Icon icon={RemoveCircleHalfDotIcon} className="size-4" />
+          Remove
+        </Button>
+      </div>
     </article>
   )
 }
 
-function SelectedQuestionTiles({ selectedTiles, questionCountsByTileId, isLoadingQuestionCounts, onDeselect }) {
+function SelectedQuestionTiles({ selectedTiles, questionCountsByTileId, isLoadingQuestionCounts, onDeselect, onEdit }) {
   const totalQuestionBankSize = selectedTiles.reduce(
     (total, tile) => total + (questionCountsByTileId[tile.id] ?? 0),
     0
@@ -112,6 +114,7 @@ function SelectedQuestionTiles({ selectedTiles, questionCountsByTileId, isLoadin
               questionCount={questionCountsByTileId[tile.id] ?? 0}
               isLoadingQuestionCounts={isLoadingQuestionCounts}
               onDeselect={onDeselect}
+              onEdit={onEdit}
             />
           ))}
         </div>

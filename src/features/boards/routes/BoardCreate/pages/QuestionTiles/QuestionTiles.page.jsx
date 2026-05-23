@@ -13,7 +13,7 @@ import QuestionScoringPanel from '@/features/boards/routes/BoardCreate/pages/Que
 import SelectedQuestionTiles from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/SelectedQuestionTiles'
 import AvailableQuestionTilesList from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/AvailableQuestionTilesList'
 import CreateQuestionTileSheet from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/CreateQuestionTileSheet'
-import { createTile, fetchUserTiles } from '@/services/tiles'
+import { createTile, fetchUserTiles, updateTile } from '@/services/tiles'
 import { fetchQuestionCountsByTileIds } from '@/services/questions'
 
 function QuestionTilesPage({ form }) {
@@ -22,17 +22,39 @@ function QuestionTilesPage({ form }) {
   const [questionCountsByTileId, setQuestionCountsByTileId] = useState({})
   const [isLoadingQuestionTiles, setIsLoadingQuestionTiles] = useState(true)
   const [search, setSearch] = useState('')
-  const [isCreatingNewTile, setIsCreatingNewTile] = useState(false)
-  const [isCreatingQuestionTile, setIsCreatingQuestionTile] = useState(false)
+  const [isTileSheetOpen, setIsTileSheetOpen] = useState(false)
+  const [sheetMode, setSheetMode] = useState('create')
+  const [editingTile, setEditingTile] = useState(null)
+  const [isSavingQuestionTile, setIsSavingQuestionTile] = useState(false)
   const [newTileName, setNewTileName] = useState('')
   const [newTileIcon, setNewTileIcon] = useState('')
   const [newTileDescription, setNewTileDescription] = useState('')
 
-  const closeCreateTileSheet = () => {
-    setIsCreatingNewTile(false)
+  const closeTileSheet = () => {
+    setIsTileSheetOpen(false)
+    setSheetMode('create')
+    setEditingTile(null)
     setNewTileName('')
     setNewTileIcon('')
     setNewTileDescription('')
+  }
+
+  const openCreateTileSheet = () => {
+    setSheetMode('create')
+    setEditingTile(null)
+    setNewTileName('')
+    setNewTileIcon('')
+    setNewTileDescription('')
+    setIsTileSheetOpen(true)
+  }
+
+  const openEditTileSheet = (tile) => {
+    setSheetMode('edit')
+    setEditingTile(tile)
+    setNewTileName(tile.name ?? '')
+    setNewTileIcon(tile.icon ?? '')
+    setNewTileDescription(tile.description ?? '')
+    setIsTileSheetOpen(true)
   }
 
   const loadQuestionTiles = useCallback(async () => {
@@ -82,7 +104,7 @@ function QuestionTilesPage({ form }) {
     form.setSelectedQuestionTiles((current) => current.filter((item) => item.id !== tile.id))
   }
 
-  const createQuestionTile = async () => {
+  const saveQuestionTile = async () => {
     const trimmedName = newTileName.trim()
     const trimmedDescription = newTileDescription.trim()
 
@@ -96,33 +118,57 @@ function QuestionTilesPage({ form }) {
       return
     }
 
-    setIsCreatingQuestionTile(true)
+    setIsSavingQuestionTile(true)
 
     try {
-      const savedQuestionTile = await createTile({
-        tile: {
-          type: 'question',
-          name: trimmedName,
-          icon: newTileIcon,
-          description: trimmedDescription,
-        },
-      })
+      if (sheetMode === 'edit') {
+        if (!editingTile?.id) {
+          throw new Error('Missing tile id for edit.')
+        }
 
-      setAvailableQuestionTiles((current) => [...current, savedQuestionTile])
-      setQuestionCountsByTileId((current) => ({ ...current, [savedQuestionTile.id]: 0 }))
+        const updatedQuestionTile = await updateTile({
+          tile: {
+            ...editingTile,
+            name: trimmedName,
+            icon: newTileIcon,
+            description: trimmedDescription,
+          },
+        })
 
-      if (form.selectedQuestionTiles.length < 6) {
-        form.setSelectedQuestionTiles((current) => [...current, savedQuestionTile])
+        // Update local state with the updated tile
+        setAvailableQuestionTiles((current) => current.map((tile) => (
+          tile.id === updatedQuestionTile.id ? updatedQuestionTile : tile
+        )))
+        form.setSelectedQuestionTiles((current) => current.map((tile) => (
+          tile.id === updatedQuestionTile.id ? updatedQuestionTile : tile
+        )))
+
+        toast.success('Tile updated.')
       } else {
-        toast.message('Tile created. Select it later by removing another selected tile.')
+        const savedQuestionTile = await createTile({
+          tile: {
+            type: 'question',
+            name: trimmedName,
+            icon: newTileIcon,
+            description: trimmedDescription,
+          },
+        })
+
+        setAvailableQuestionTiles((current) => [...current, savedQuestionTile])
+        if (form.selectedQuestionTiles.length < 6) {
+          form.setSelectedQuestionTiles((current) => [...current, savedQuestionTile])
+        } else {
+          toast.message('Tile created. Select it later by removing another selected tile.')
+        }
+
+        toast.success('Tile created.')
       }
 
-      toast.success('Tile created.')
-      closeCreateTileSheet()
+      closeTileSheet()
     } catch {
-      toast.error('Could not create tile.')
+      toast.error(sheetMode === 'edit' ? 'Could not update tile.' : 'Could not create tile.')
     } finally {
-      setIsCreatingQuestionTile(false)
+      setIsSavingQuestionTile(false)
     }
   }
 
@@ -142,6 +188,7 @@ function QuestionTilesPage({ form }) {
             questionCountsByTileId={questionCountsByTileId}
             isLoadingQuestionCounts={isLoadingQuestionTiles}
             onDeselect={deselectQuestionTile}
+            onEdit={openEditTileSheet}
           />
 
           <Separator />
@@ -159,7 +206,7 @@ function QuestionTilesPage({ form }) {
                 onChange={(event) => setSearch(event.target.value)}
               />
             </InputGroup>
-            <Button type="button" variant="warning" onClick={() => setIsCreatingNewTile(true)}>
+            <Button type="button" variant="warning" onClick={openCreateTileSheet}>
               <Icon icon={AddSquareIcon} className="size-4" />
               Create tile
             </Button>
@@ -170,27 +217,29 @@ function QuestionTilesPage({ form }) {
             availableTiles={filteredQuestionTiles}
             hasAnyQuestionTiles={availableQuestionTiles.length > 0}
             onSelect={selectQuestionTile}
-            onCreateTile={() => setIsCreatingNewTile(true)}
+            onEdit={openEditTileSheet}
+            onCreateTile={openCreateTileSheet}
           />
 
           <CreateQuestionTileSheet
-            open={isCreatingNewTile}
-            isCreating={isCreatingQuestionTile}
+            open={isTileSheetOpen}
+            mode={sheetMode}
+            isSaving={isSavingQuestionTile}
             name={newTileName}
             icon={newTileIcon}
             description={newTileDescription}
             onOpenChange={(open) => {
               if (open) {
-                setIsCreatingNewTile(true)
+                setIsTileSheetOpen(true)
                 return
               }
 
-              closeCreateTileSheet()
+              closeTileSheet()
             }}
             onNameChange={setNewTileName}
             onIconChange={setNewTileIcon}
             onDescriptionChange={setNewTileDescription}
-            onCreate={createQuestionTile}
+            onSave={saveQuestionTile}
           />
         </section>
       </div>

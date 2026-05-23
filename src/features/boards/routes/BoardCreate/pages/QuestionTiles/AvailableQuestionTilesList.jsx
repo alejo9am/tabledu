@@ -1,4 +1,4 @@
-import { HelpSquareIcon, AddSquareIcon } from '@hugeicons/core-free-icons'
+import { AddCircleHalfDotIcon, Edit02Icon, HelpSquareIcon, AddSquareIcon } from '@hugeicons/core-free-icons'
 import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
 import { Button } from '@/components/ui/button'
@@ -6,7 +6,7 @@ import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTi
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 
-function AvailableQuestionTile({ tile, onSelect }) {
+function AvailableQuestionTile({ tile, onSelect, onEdit }) {
   const questionTile = { ...tile, type: 'question' }
 
   return (
@@ -22,9 +22,16 @@ function AvailableQuestionTile({ tile, onSelect }) {
           </div>
         </div>
 
-        <Button type="button" variant="secondary" size="sm" className="shrink-0" onClick={() => onSelect(tile)}>
-          Add tile
-        </Button>
+        <div className="flex shrink-0 flex-col gap-2">
+          <Button type="button" size="sm" className="w-20" onClick={() => onSelect(tile)}>
+            <Icon icon={AddCircleHalfDotIcon} className="size-4" />
+            Add
+          </Button>
+          <Button type="button" variant="secondary" size="sm" className="w-20" onClick={() => onEdit(tile)}>
+            <Icon icon={Edit02Icon} className="size-4" />
+            Edit
+          </Button>
+        </div>
       </div>
     </article>
   )
@@ -35,6 +42,7 @@ function AvailableQuestionTilesList({
   availableTiles,
   hasAnyQuestionTiles,
   onSelect,
+  onEdit,
   onCreateTile,
 }) {
   return (
@@ -69,6 +77,7 @@ function AvailableQuestionTilesList({
               key={tile.id}
               tile={tile}
               onSelect={onSelect}
+              onEdit={onEdit}
             />
           ))
         )}
