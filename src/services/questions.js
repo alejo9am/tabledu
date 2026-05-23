@@ -1,6 +1,16 @@
 import { supabase } from '@/lib/supabase'
 import { throwIfSupabaseError } from '@/services/core/errors'
 
+/** Fetch all questions for current authenticated user (RLS-scoped). */
+export const fetchQuestions = async () => {
+  const { data, error } = await supabase
+    .from('questions')
+    .select('id')
+
+  throwIfSupabaseError(error, 'questions')
+  return data ?? []
+}
+
 /** Fetch questions available for one board. */
 export const fetchQuestionsByBoardId = async (boardId) => {
   if (!boardId) {
