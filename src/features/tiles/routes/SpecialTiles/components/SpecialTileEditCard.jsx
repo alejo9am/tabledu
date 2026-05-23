@@ -76,10 +76,6 @@ function SpecialTileEditCard({ tile, onSave }) {
       toast.error('Add a description before saving.')
       return
     }
-    if (!icon) {
-      toast.error('Add an icon before saving.')
-      return
-    }
 
     setIsSaving(true)
 
