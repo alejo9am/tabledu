@@ -40,6 +40,7 @@ import { Icon } from "@/components/ui/Icon"
 import logoDark from "@/assets/logo-dark.svg"
 import logoLight from "@/assets/logo-light.svg"
 import {
+  Home01Icon,
   DashboardSquare02Icon,
   ClipboardIcon,
   Quiz05Icon,
@@ -218,7 +219,21 @@ function DashboardBreadcrumb({ pathname }) {
                   <BreadcrumbPage>{crumb.title}</BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
-                    <Link to={crumb.to} state={{ from: pathname }}>{crumb.title}</Link>
+                    <Link
+                      to={crumb.to}
+                      state={{ from: pathname }}
+                      aria-label={crumb.title === "Home" ? "Go to Home" : undefined}
+                      className={crumb.title === "Home" ? "inline-flex items-center gap-1.5" : undefined}
+                    >
+                      {crumb.title === "Home" ? (
+                        <>
+                          <Icon icon={Home01Icon} className="size-4" />
+                          <span className="hidden sm:inline">Home</span>
+                        </>
+                      ) : (
+                        crumb.title
+                      )}
+                    </Link>
                   </BreadcrumbLink>
                 )}
               </BreadcrumbItem>
@@ -281,7 +296,7 @@ function DashboardLayout() {
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
             <div className="flex items-center gap-2 px-4">
               <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
+              <Separator orientation="vertical" className="mr-3 bg-muted-foreground data-[orientation=vertical]:h-5" />
               <DashboardBreadcrumb pathname={location.pathname} />
             </div>
           </header>
