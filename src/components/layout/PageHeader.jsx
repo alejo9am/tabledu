@@ -28,7 +28,7 @@ function PageHeader({
   return (
     <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-6">
       <div className="min-w-0">
-        <h1 className="text-xl font-semibold text-primary sm:text-3xl">{title}</h1>
+        <h1 className="text-xl font-display font-semibold text-primary sm:text-3xl">{title}</h1>
         {description ? <p className="mt-1 text-sm text-muted-foreground sm:text-base">{description}</p> : null}
       </div>
       {hasCta ? (
