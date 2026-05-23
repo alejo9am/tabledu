@@ -80,8 +80,8 @@ Además de la triada principal, Tailwind expone los tokens `secondary`, `muted`,
 El fondo de la aplicación utiliza un patrón de puntos que fusiona el concepto de aula con el de tablero de juego.
 
 ```css
-background-image: radial-gradient(var(--sketch-dot) 2px, transparent 0);
-background-size: 28px 28px;
+background-image: radial-gradient(var(--sketch-dot) 1px, transparent 0);
+background-size: 14px 14px;
 ```
 
 ### Sistema de Radios
