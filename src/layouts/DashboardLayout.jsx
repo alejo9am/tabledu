@@ -171,38 +171,9 @@ function SidebarUserMenu({ user }) {
 }
 
 function DashboardBreadcrumb({ pathname }) {
-  if (pathname === "/") {
-    return null
-  }
+  const breadcrumbs = getDashboardBreadcrumbs(pathname)
 
-  const breadcrumbs = [{ title: "Home", to: "/" }]
-
-  switch (true) {
-    case pathname === "/boards":
-      breadcrumbs.push({ title: "Boards" })
-      break
-    case pathname === "/boards/new":
-      breadcrumbs.push({ title: "Boards", to: "/boards" })
-      breadcrumbs.push({ title: "Create Board" })
-      break
-    case /^\/boards\/[^/]+$/.test(pathname):
-      breadcrumbs.push({ title: "Boards", to: "/boards" })
-      breadcrumbs.push({ title: "Board Details" })
-      break
-    case pathname === "/tiles/special":
-      breadcrumbs.push({ title: "Special Tiles" })
-      break
-    case pathname === "/tiles/questions":
-      breadcrumbs.push({ title: "Question Tiles" })
-      break
-    case pathname === "/games":
-      breadcrumbs.push({ title: "Game Sessions" })
-      break
-    default:
-      return null
-  }
-
-  if (breadcrumbs.length <= 1) {
+  if (!breadcrumbs) {
     return null
   }
 
@@ -246,9 +217,49 @@ function DashboardBreadcrumb({ pathname }) {
   )
 }
 
+function getDashboardBreadcrumbs(pathname) {
+  if (pathname === "/") {
+    return null
+  }
+
+  const breadcrumbs = [{ title: "Home", to: "/" }]
+
+  switch (true) {
+    case pathname === "/boards":
+      breadcrumbs.push({ title: "Boards" })
+      break
+    case pathname === "/boards/new":
+      breadcrumbs.push({ title: "Boards", to: "/boards" })
+      breadcrumbs.push({ title: "Create Board" })
+      break
+    case /^\/boards\/[^/]+$/.test(pathname):
+      breadcrumbs.push({ title: "Boards", to: "/boards" })
+      breadcrumbs.push({ title: "Board Details" })
+      break
+    case pathname === "/tiles/special":
+      breadcrumbs.push({ title: "Special Tiles" })
+      break
+    case pathname === "/tiles/questions":
+      breadcrumbs.push({ title: "Question Tiles" })
+      break
+    case pathname === "/games":
+      breadcrumbs.push({ title: "Game Sessions" })
+      break
+    default:
+      return null
+  }
+
+  if (breadcrumbs.length <= 1) {
+    return null
+  }
+
+  return breadcrumbs
+}
+
 function DashboardLayout() {
   const { user } = useAuth()
   const location = useLocation()
+  const showBreadcrumbs = Boolean(getDashboardBreadcrumbs(location.pathname))
 
   const userData = user
     ? {
@@ -296,8 +307,12 @@ function DashboardLayout() {
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
             <div className="flex items-center gap-2 px-4">
               <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-3 bg-muted-foreground data-[orientation=vertical]:h-5" />
-              <DashboardBreadcrumb pathname={location.pathname} />
+              {showBreadcrumbs ? (
+                <>
+                  <Separator orientation="vertical" className="mr-3 bg-muted-foreground data-[orientation=vertical]:h-5" />
+                  <DashboardBreadcrumb pathname={location.pathname} />
+                </>
+              ) : null}
             </div>
           </header>
           <Outlet />
