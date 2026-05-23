@@ -42,38 +42,43 @@ import logoLight from "@/assets/logo-light.svg"
 import {
   Home01Icon,
   DashboardSquare02Icon,
-  Quiz05Icon,
   ClipboardIcon,
+  Quiz05Icon,
   PlayCircleIcon,
   LogoutIcon,
   UnfoldMoreIcon,
 } from "@hugeicons/core-free-icons"
 
-const dashboardRoutes = [
+const dashboardRouteGroups = [
   {
-    title: "Home",
-    to: "/",
-    icon: <Icon icon={Home01Icon}/>,
+    label: "Content",
+    routes: [
+      {
+        title: "Boards",
+        to: "/boards",
+        icon: <Icon icon={DashboardSquare02Icon} />,
+      },
+      {
+        title: "Special Tiles",
+        to: "/tiles/special",
+        icon: <Icon icon={ClipboardIcon} />,
+      },
+      {
+        title: "Question Tiles",
+        to: "/tiles/questions",
+        icon: <Icon icon={Quiz05Icon} />,
+      },
+    ],
   },
   {
-    title: "Boards",
-    to: "/boards",
-    icon: <Icon icon={DashboardSquare02Icon} />,
-  },
-  {
-    title: "Questions",
-    to: "/questions",
-    icon: <Icon icon={Quiz05Icon} />,
-  },
-  {
-    title: "Tiles",
-    to: "/tiles",
-    icon: <Icon icon={ClipboardIcon} />,
-  },
-  {
-    title: "Game Sessions",
-    to: "/games",
-    icon: <Icon icon={PlayCircleIcon} />, 
+    label: "Play",
+    routes: [
+      {
+        title: "Game Sessions",
+        to: "/games",
+        icon: <Icon icon={PlayCircleIcon} />,
+      },
+    ],
   },
 ]
 
@@ -81,29 +86,33 @@ function SidebarNavigation() {
   const location = useLocation()
 
   return (
-    <SidebarGroup>
-      {/* <SidebarGroupLabel>Navigation</SidebarGroupLabel> */}
-      <SidebarMenu>
-        {dashboardRoutes.map((item) => {
-          const isActive = location.pathname === item.to || location.pathname.startsWith(`${item.to}/`)
+    <>
+      {dashboardRouteGroups.map((group) => (
+        <SidebarGroup key={group.label}>
+          <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+          <SidebarMenu>
+            {group.routes.map((item) => {
+              const isActive = location.pathname === item.to || location.pathname.startsWith(`${item.to}/`)
 
-          return (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild
-                isActive={isActive}
-                tooltip={item.title}
-              >
-                <NavLink to={item.to} state={{ from: location.pathname }} end={item.to === "/"}>
-                  {item.icon}
-                  <span>{item.title}</span>
-                </NavLink>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          )
-        })}
-      </SidebarMenu>
-    </SidebarGroup>
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive}
+                    tooltip={item.title}
+                  >
+                    <NavLink to={item.to} state={{ from: location.pathname }}>
+                      {item.icon}
+                      <span>{item.title}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )
+            })}
+          </SidebarMenu>
+        </SidebarGroup>
+      ))}
+    </>
   )
 }
 
@@ -162,32 +171,9 @@ function SidebarUserMenu({ user }) {
 }
 
 function DashboardBreadcrumb({ pathname }) {
-  const breadcrumbs = [{ title: "Home", to: "/" }]
+  const breadcrumbs = getDashboardBreadcrumbs(pathname)
 
-  if (pathname === "/") {
-    return null
-  }
-
-  if (pathname.startsWith("/boards")) {
-    breadcrumbs.push({ title: "Boards", to: "/boards" })
-
-    if (pathname === "/boards/new") {
-      breadcrumbs.push({ title: "Create Board" })
-      // Keep details breadcrumb only for /boards/:boardId, not the /boards index route.
-    } else if (/^\/boards\/[^/]+$/.test(pathname)) {
-      breadcrumbs.push({ title: "Board Details" })
-    }
-  } else {
-    const currentRoute = dashboardRoutes.find((route) => route.to === pathname)
-
-    if (!currentRoute) {
-      return null
-    }
-
-    breadcrumbs.push({ title: currentRoute.title })
-  }
-
-  if (breadcrumbs.length <= 1) {
+  if (!breadcrumbs) {
     return null
   }
 
@@ -204,7 +190,21 @@ function DashboardBreadcrumb({ pathname }) {
                   <BreadcrumbPage>{crumb.title}</BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
-                    <Link to={crumb.to} state={{ from: pathname }}>{crumb.title}</Link>
+                    <Link
+                      to={crumb.to}
+                      state={{ from: pathname }}
+                      aria-label={crumb.title === "Home" ? "Go to Home" : undefined}
+                      className={crumb.title === "Home" ? "inline-flex items-center gap-1.5" : undefined}
+                    >
+                      {crumb.title === "Home" ? (
+                        <>
+                          <Icon icon={Home01Icon} className="size-4" />
+                          <span className="hidden sm:inline">Home</span>
+                        </>
+                      ) : (
+                        crumb.title
+                      )}
+                    </Link>
                   </BreadcrumbLink>
                 )}
               </BreadcrumbItem>
@@ -217,9 +217,49 @@ function DashboardBreadcrumb({ pathname }) {
   )
 }
 
+function getDashboardBreadcrumbs(pathname) {
+  if (pathname === "/") {
+    return null
+  }
+
+  const breadcrumbs = [{ title: "Home", to: "/" }]
+
+  switch (true) {
+    case pathname === "/boards":
+      breadcrumbs.push({ title: "Boards" })
+      break
+    case pathname === "/boards/new":
+      breadcrumbs.push({ title: "Boards", to: "/boards" })
+      breadcrumbs.push({ title: "Create Board" })
+      break
+    case /^\/boards\/[^/]+$/.test(pathname):
+      breadcrumbs.push({ title: "Boards", to: "/boards" })
+      breadcrumbs.push({ title: "Board Details" })
+      break
+    case pathname === "/tiles/special":
+      breadcrumbs.push({ title: "Special Tiles" })
+      break
+    case pathname === "/tiles/questions":
+      breadcrumbs.push({ title: "Question Tiles" })
+      break
+    case pathname === "/games":
+      breadcrumbs.push({ title: "Game Sessions" })
+      break
+    default:
+      return null
+  }
+
+  if (breadcrumbs.length <= 1) {
+    return null
+  }
+
+  return breadcrumbs
+}
+
 function DashboardLayout() {
   const { user } = useAuth()
   const location = useLocation()
+  const showBreadcrumbs = Boolean(getDashboardBreadcrumbs(location.pathname))
 
   const userData = user
     ? {
@@ -267,8 +307,12 @@ function DashboardLayout() {
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
             <div className="flex items-center gap-2 px-4">
               <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
-              <DashboardBreadcrumb pathname={location.pathname} />
+              {showBreadcrumbs ? (
+                <>
+                  <Separator orientation="vertical" className="mr-3 bg-muted-foreground data-[orientation=vertical]:h-5" />
+                  <DashboardBreadcrumb pathname={location.pathname} />
+                </>
+              ) : null}
             </div>
           </header>
           <Outlet />

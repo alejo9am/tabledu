@@ -43,6 +43,27 @@ export const fetchGameData = async ({ gameId }) => {
     fetchQuestionsByBoardId(game.board_id),
   ])
 
+  const questionTileIds = (tiles ?? [])
+    .filter((tile) => tile.type === 'question')
+    .map((tile) => tile.id)
+  const tileIdsWithQuestions = new Set(
+    (questions ?? [])
+      .map((question) => question.tile_id ?? question.tileId)
+      .filter(Boolean)
+  )
+
+  let hasQuestionTileWithoutQuestions = false
+  for (const tileId of questionTileIds) {
+    if (!tileIdsWithQuestions.has(tileId)) {
+      hasQuestionTileWithoutQuestions = true
+      break
+    }
+  }
+
+  if (hasQuestionTileWithoutQuestions) {
+    throw new Error('BOARD_QUESTIONS_INCOMPLETE::This board has question tiles without questions.')
+  }
+
   if (!board || !game || teams.length === 0 || tiles.length === 0 || layout.length === 0 || questions.length === 0) {
     throw new Error('Incomplete game data, check your board configuration.')
   }

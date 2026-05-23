@@ -1,5 +1,8 @@
+import { Link } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
-import { Loading02Icon } from '@hugeicons/core-free-icons'
+import { Button } from '@/components/ui/button'
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
+import { InformationCircleIcon, Loading02Icon } from '@hugeicons/core-free-icons'
 import ErrorState from '@/components/ui/error-state'
 
 import Header from './components/Header'
@@ -29,6 +32,30 @@ function GameLoader({ children }) {
     )
   }
   if (loadError) {
+    if (typeof loadError === 'string' && loadError.startsWith('BOARD_QUESTIONS_INCOMPLETE::')) {
+      return (
+        <main className="flex min-h-dvh items-center justify-center p-6 animate-in fade-in zoom-in" aria-label="Board requires questions">
+          <Empty className="w-full max-w-lg rounded-2xl border bg-card p-6">
+            <EmptyHeader>
+              <EmptyMedia variant="icon" className="bg-warning-200 text-warning-700">
+                <Icon icon={InformationCircleIcon} />
+              </EmptyMedia>
+              <EmptyTitle>Board needs more questions</EmptyTitle>
+              <EmptyDescription>
+              This game cannot start yet because at least one question tile has no questions assigned.
+              Add questions in Question Tiles and then start a new session.
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button asChild>
+                <Link to="/tiles/questions">Go to Question Tiles</Link>
+              </Button>
+            </EmptyContent>
+          </Empty>
+        </main>
+      )
+    }
+
     return (
       <main className="flex min-h-dvh items-center justify-center p-6 animate-in fade-in zoom-in" aria-label="Error loading game">
         <ErrorState
