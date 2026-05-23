@@ -87,9 +87,9 @@ function SpecialTileEditCard({ tile, onSave }) {
         icon,
       })
       setIsEditing(false)
-      toast.success(`${tile.type} tile updated.`)
+      toast.success(`${tileMeta.label} tile updated.`)
     } catch {
-      toast.error(`Could not update ${tile.type} tile.`)
+      toast.error(`Could not update ${tileMeta.label} tile.`)
     } finally {
       setIsSaving(false)
     }
