@@ -101,19 +101,19 @@ function SpecialTileEditCard({ tile, onSave }) {
 
   return (
     <article className={`w-full max-w-xs rounded-2xl border bg-card p-4 ${isEditing ? 'border-primary shadow-sm shadow-primary/30' : ''}`}>
-      <div className="mb-3 flex items-center justify-between gap-4">
+      <div className="mb-3 flex items-start gap-4">
         <button
           type="button"
           onClick={() => setIsIconDialogOpen(true)}
-          className={cn('w-20 rounded-xl transition', isEditing && 'hover:opacity-90')}
+          className={cn('size-24 shrink-0 rounded-xl transition', isEditing && 'hover:opacity-90')}
           aria-label={`Choose icon for ${tileMeta.label}`}
           disabled={!isEditing}
         >
           <TileCard tile={{ ...tile, icon: draftIcon, name: draftName || tile.name }} showShadow={false} className="aspect-square w-full" />
         </button>
 
-        <div>
-          <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1">
+          <div>
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">{tileMeta.label} tile</p>
             {isEditing ? (
               <div className="mt-3">
