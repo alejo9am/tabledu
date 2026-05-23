@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CheckmarkCircle02Icon } from '@hugeicons/core-free-icons'
 import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
@@ -13,8 +13,6 @@ import {
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 
-const getTileKey = (tile) => tile.localId ?? tile.id ?? `${tile.type}:${tile.name}`
-
 function ReplaceTileDialog({
   editingTilePosition,
   generatedLayout,
@@ -23,61 +21,58 @@ function ReplaceTileDialog({
   onClose,
   onReplaceTile,
 }) {
-  const [selectedRef, setSelectedRef] = useState(null)
+  const [selectedTileId, setSelectedTileId] = useState(null)
   const isOpen = Boolean(editingTilePosition)
 
-  const { specialOptions, questionOptions, optionByKey } = useMemo(() => {
-    const allOptions = [
+  const allOptions = useMemo(() => {
+    return [
       ...selectedQuestionTiles,
       ...Object.values(specialTiles ?? {}).filter((tile) => tile.enabled),
-    ].map((tile) => ({
-      tile,
-      tileKey: getTileKey(tile),
-    }))
-
-    const byKey = new Map(allOptions.map((option) => [option.tileKey, option]))
-
-    return {
-      specialOptions: allOptions.filter((option) => option.tile.type !== 'question'),
-      questionOptions: allOptions.filter((option) => option.tile.type === 'question'),
-      optionByKey: byKey,
-    }
+    ]
   }, [selectedQuestionTiles, specialTiles])
 
   const currentTile = generatedLayout.find((tile) => tile.position === editingTilePosition)?.tile ?? null
-  const currentTileKey = currentTile ? getTileKey(currentTile) : null
-  const effectiveSelectedRef = selectedRef ?? currentTileKey
-  const selectedTileOption = optionByKey.get(effectiveSelectedRef) ?? null
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedTileId(null)
+      return
+    }
+
+    setSelectedTileId(currentTile?.id ?? null)
+  }, [currentTile?.id, isOpen])
+
+  const selectedTile = allOptions.find((tile) => tile.id === selectedTileId) ?? null
 
   const handleOpenChange = (nextOpen) => {
     if (!nextOpen) {
-      setSelectedRef(null)
+      setSelectedTileId(null)
       onClose()
     }
   }
 
   const handleApply = () => {
-    if (!editingTilePosition || !selectedTileOption) return
-    onReplaceTile(editingTilePosition, selectedTileOption)
-    setSelectedRef(null)
+    if (!editingTilePosition || !selectedTile) return
+    onReplaceTile(editingTilePosition, selectedTile)
+    setSelectedTileId(null)
   }
 
-  const renderOptionPill = (option) => {
-    const isSelected = option.tileKey === effectiveSelectedRef
+  const renderOptionPill = (tile) => {
+    const isSelected = tile.id === selectedTileId
 
     return (
         <button
-        key={option.tileKey}
+        key={tile.id}
         type="button"
-        onClick={() => setSelectedRef(option.tileKey)}
+        onClick={() => setSelectedTileId(tile.id)}
         className={cn(
           'relative flex h-fit w-full items-center gap-3 rounded-xl border bg-card p-3 text-left transition-colors hover:bg-muted/40',
           isSelected && 'border-2 border-primary bg-primary-200 hover:bg-primary-200/80'
         )}
         aria-pressed={isSelected}
       >
-        <TileCard tile={option.tile} showShadow={false} className="size-16 shrink-0" />
-        <p className="flex-1 truncate text-lg font-medium text-foreground">{option.tile.name}</p>
+        <TileCard tile={tile} showShadow={false} className="size-16 shrink-0" />
+        <p className="flex-1 truncate text-lg font-medium text-foreground">{tile.name}</p>
         {isSelected ? <Icon icon={CheckmarkCircle02Icon} className="size-4 shrink-0 text-primary" /> : null}
       </button>
     )
@@ -97,14 +92,18 @@ function ReplaceTileDialog({
           <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] md:gap-6">
             <section className="space-y-2">
               <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Special tiles</p>
-              <div className="space-y-2">{specialOptions.map(renderOptionPill)}</div>
+              <div className="space-y-2">
+                {allOptions.filter((tile) => tile.type !== 'question').map(renderOptionPill)}
+              </div>
             </section>
 
             <div className="hidden w-px shrink-0 self-stretch bg-border md:block" />
 
             <section className="space-y-2">
               <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Question tiles</p>
-              <div className="space-y-2">{questionOptions.map(renderOptionPill)}</div>
+              <div className="space-y-2">
+                {allOptions.filter((tile) => tile.type === 'question').map(renderOptionPill)}
+              </div>
             </section>
           </div>
         </div>
@@ -113,7 +112,7 @@ function ReplaceTileDialog({
           <Button type="button" variant="secondary" className="w-full md:h-8 md:w-auto" onClick={() => handleOpenChange(false)}>
             Cancel
           </Button>
-          <Button type="button" className="w-full md:h-8 md:w-auto" onClick={handleApply} disabled={!selectedTileOption}>
+          <Button type="button" className="w-full md:h-8 md:w-auto" onClick={handleApply} disabled={!selectedTile}>
             Apply change
           </Button>
         </DialogFooter>

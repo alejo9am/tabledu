@@ -10,11 +10,10 @@ import ReplaceTileDialog from '@/features/boards/routes/BoardCreate/pages/BoardL
 import useAppNavigation from '@/hooks/useAppNavigation.hook'
 import { createBoardLayout } from '@/services/boardLayouts'
 import { createBoard } from '@/services/boards'
-import { createTile, updateTile } from '@/services/tiles'
+import { updateTile } from '@/services/tiles'
 import { fetchQuestionCountsByTileIds } from '@/services/questions'
 
 function BoardLayoutPage({ form }) {
-  const getTileKey = (tile) => tile.localId ?? tile.id ?? `${tile.type}:${tile.name}`
   const { goTo } = useAppNavigation()
   const [isCreatingBoard, setIsCreatingBoard] = useState(false)
   const hasShownQuestionCountWarningRef = useRef(false)
@@ -52,12 +51,6 @@ function BoardLayoutPage({ form }) {
     }
 
     loadQuestionTotals()
-    
-    console.info('ALL data saved in hook', JSON.stringify({
-      selectedQuestionTiles: form.selectedQuestionTiles,
-      specialTiles: form.specialTiles,
-      boardLayout: form.generatedLayout,
-    }, null, 2))
 
     return () => {
       isMounted = false
@@ -76,7 +69,7 @@ function BoardLayoutPage({ form }) {
     setEditingTilePosition(position)
   }
 
-  const handleReplaceTile = (position, replacement) => {
+  const handleReplaceTile = (position, nextTile) => {
     form.setGeneratedLayout((currentLayout) => currentLayout.map((tile) => {
       if (tile.position !== position) {
         return tile
@@ -84,7 +77,7 @@ function BoardLayoutPage({ form }) {
 
       return {
         ...tile,
-        tile: replacement.tile,
+        tile: nextTile,
       }
     }))
     setEditingTilePosition(null)
@@ -99,23 +92,8 @@ function BoardLayoutPage({ form }) {
     setIsCreatingBoard(true)
 
     try {
-      const tileIdsByKey = new Map(
-        form.selectedQuestionTiles
-          .filter((tile) => tile.id)
-          .map((tile) => [getTileKey(tile), tile.id])
-      )
       const activeSpecialTiles = Object.values(form.specialTiles).filter((tile) => tile.enabled)
-      const newQuestionTiles = form.selectedQuestionTiles.filter((tile) => !tile.id)
-
-      for (const tile of activeSpecialTiles) {
-        const savedTile = await updateTile({ tile })
-        tileIdsByKey.set(getTileKey(tile), savedTile.id)
-      }
-
-      for (const tile of newQuestionTiles) {
-        const savedTile = await createTile({ tile })
-        tileIdsByKey.set(getTileKey(tile), savedTile.id)
-      }
+      await Promise.all(activeSpecialTiles.map((tile) => updateTile({ tile })))
 
       const board = await createBoard({
         board: {
@@ -137,15 +115,14 @@ function BoardLayoutPage({ form }) {
 
       await createBoardLayout({
         boardId: board.id,
-        layout: form.generatedLayout.map((tile) => {
-          const tileId = tileIdsByKey.get(getTileKey(tile.tile))
-          if (!tileId) {
-            throw new Error(`Missing saved tile for board position ${tile.position}.`)
+        layout: form.generatedLayout.map((layoutEntry) => {
+          if (!layoutEntry.tile?.id) {
+            throw new Error(`Tile at board position ${layoutEntry.position} is missing an id.`)
           }
 
           return {
-            position: tile.position,
-            tileId,
+            position: layoutEntry.position,
+            tileId: layoutEntry.tile.id,
           }
         }),
       })
