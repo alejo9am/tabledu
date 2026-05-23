@@ -1,5 +1,5 @@
 import { HelpSquareIcon, AddSquareIcon } from '@hugeicons/core-free-icons'
-import CategoryTile from '@/components/game/CategoryTile'
+import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
@@ -14,7 +14,7 @@ function AvailableQuestionTile({ tile, onSelect }) {
     <article className="rounded-2xl border bg-card p-4">
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <CategoryTile category={questionTile} showShadow={false} className="size-16 shrink-0" />
+          <TileCard tile={questionTile} showShadow={false} className="size-16 shrink-0" />
           <div className="min-w-0">
             <h3 className="truncate font-display text-xl font-semibold text-foreground">{tile.name}</h3>
             <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
@@ -54,7 +54,7 @@ function AvailableQuestionTilesList({
             <EmptyHeader>
               <EmptyTitle className="text-base">Create your first question tile</EmptyTitle>
               <EmptyDescription>
-                Question tiles link your board to question banks. Teams answer from these banks during gameplay, so add one to continue.
+                Start by creating the question topics you want on this board. You can add the questions later, and each topic should be completed before gameplay.
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>

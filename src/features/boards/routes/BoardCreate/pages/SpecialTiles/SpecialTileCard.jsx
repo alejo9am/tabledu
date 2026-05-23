@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { AddSquareIcon, CheckmarkSquare02Icon } from '@hugeicons/core-free-icons'
-import CategoryTile from '@/components/game/CategoryTile'
+import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -8,7 +8,7 @@ import { NumberInput } from '@/components/ui/number-input'
 import { Textarea } from '@/components/ui/textarea'
 import { Toggle } from '@/components/ui/toggle'
 import { cn } from '@/lib/utils'
-import CategoryIconPickerDialog from '@/features/boards/routes/BoardCreate/components/CategoryIconPickerDialog'
+import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/components/TileIconPickerDialog'
 import { specialTileLabels } from '@/features/boards/routes/BoardCreate/pages/SpecialTiles/specialTiles.constants'
 
 const defaultTileNameByType = {
@@ -48,7 +48,7 @@ function SpecialTileCard({ tile, onChange }) {
             aria-label={`Choose icon for ${tileLabel}`}
             disabled={!tile.enabled}
           >
-            <CategoryTile category={tile} showShadow={false} className="aspect-square w-full" />
+            <TileCard tile={tile} showShadow={false} className="aspect-square w-full" />
           </button>
 
           <div className="min-w-0">
@@ -132,7 +132,7 @@ function SpecialTileCard({ tile, onChange }) {
         </div>
       ) : null}
 
-      <CategoryIconPickerDialog
+      <TileIconPickerDialog
         open={isIconDialogOpen}
         onOpenChange={setIsIconDialogOpen}
         value={tile.icon}

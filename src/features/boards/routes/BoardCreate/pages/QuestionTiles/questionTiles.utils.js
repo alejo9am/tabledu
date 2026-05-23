@@ -1,1 +1,1 @@
-export const getQuestionTileKey = (category) => category.id ?? category.localId
+export const getQuestionTileKey = (tile) => tile.id ?? tile.localId

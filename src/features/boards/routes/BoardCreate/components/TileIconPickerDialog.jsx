@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { CheckmarkCircle02Icon, Search01Icon } from '@hugeicons/core-free-icons'
-import CategoryTile from '@/components/game/CategoryTile'
+import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
 import { Separator } from '@/components/ui/separator'
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group'
@@ -15,10 +15,10 @@ import {
 } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
-import { categoryIconOptions } from '@/features/boards/routes/BoardCreate/components/categoryIconOptions'
-import { getCategoryIconPublicUrl } from '@/services/api'
+import { tileIconOptions } from '@/features/boards/routes/BoardCreate/components/tileIconOptions'
+import { getTileIconPublicUrl } from '@/services/api'
 
-function CategoryIconPickerDialog({ open, onOpenChange, value, tileName, tileType = 'question', onSelect }) {
+function TileIconPickerDialog({ open, onOpenChange, value, tileName, tileType = 'question', onSelect }) {
   const [draftIcon, setDraftIcon] = useState(value ?? '')
   const [search, setSearch] = useState('')
 
@@ -31,12 +31,12 @@ function CategoryIconPickerDialog({ open, onOpenChange, value, tileName, tileTyp
 
   const filteredIconOptions = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase()
-    if (!normalizedSearch) return categoryIconOptions
+    if (!normalizedSearch) return tileIconOptions
 
-    return categoryIconOptions.filter((option) => option.label.toLowerCase().includes(normalizedSearch))
+    return tileIconOptions.filter((option) => option.label.toLowerCase().includes(normalizedSearch))
   }, [search])
 
-  const previewCategory = {
+  const previewTile = {
     id: null,
     type: tileType,
     name: tileName || 'Tile',
@@ -61,7 +61,7 @@ function CategoryIconPickerDialog({ open, onOpenChange, value, tileName, tileTyp
 
         <div className="grid gap-4 px-6 pb-2 lg:grid-cols-[10rem_auto_1fr]">
           <div className="flex items-center justify-center lg:min-h-72">
-            <CategoryTile category={previewCategory} showShadow={false} className="size-24" />
+            <TileCard tile={previewTile} showShadow={false} className="size-24" />
           </div>
 
           <Separator className="lg:hidden" />
@@ -100,7 +100,7 @@ function CategoryIconPickerDialog({ open, onOpenChange, value, tileName, tileTyp
 
                 {filteredIconOptions.map((option) => {
                   const isSelected = draftIcon === option.path
-                  const iconUrl = getCategoryIconPublicUrl(option.path)
+                  const iconUrl = getTileIconPublicUrl(option.path)
 
                   return (
                     <button
@@ -144,4 +144,4 @@ function CategoryIconPickerDialog({ open, onOpenChange, value, tileName, tileTyp
   )
 }
 
-export default CategoryIconPickerDialog
+export default TileIconPickerDialog

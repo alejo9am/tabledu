@@ -8,10 +8,10 @@ import BoardLayoutPreview from '@/features/boards/routes/BoardCreate/components/
 import { generateBoardLayout } from '@/features/boards/routes/BoardCreate/generateBoardLayout'
 import ReplaceTileDialog from '@/features/boards/routes/BoardCreate/pages/BoardLayout/ReplaceTileDialog'
 import useAppNavigation from '@/hooks/useAppNavigation.hook'
-import { createBoardLayout } from '@/services/boardCategory'
+import { createBoardLayout } from '@/services/boardLayouts'
 import { createBoard } from '@/services/boards'
-import { createCategory as createTileCategory, upsertCategory as upsertTileCategory } from '@/services/categories'
-import { fetchQuestionCountsByCategoryIds } from '@/services/questions'
+import { createTile, upsertTile } from '@/services/tiles'
+import { fetchQuestionCountsByTileIds } from '@/services/questions'
 
 function BoardLayoutPage({ form }) {
   const getTileKey = (tile) => tile.localId ?? tile.id ?? `${tile.type}:${tile.name}`
@@ -30,9 +30,9 @@ function BoardLayoutPage({ form }) {
     const loadQuestionTotals = async () => {
       try {
         const selectedIds = form.selectedQuestionTiles.map((tile) => tile.id).filter(Boolean)
-        const countsByCategoryId = await fetchQuestionCountsByCategoryIds(selectedIds)
+        const countsByTileId = await fetchQuestionCountsByTileIds(selectedIds)
         let total = 0
-        for (const count of Object.values(countsByCategoryId)) {
+        for (const count of Object.values(countsByTileId)) {
           total += count
         }
 
@@ -108,12 +108,12 @@ function BoardLayoutPage({ form }) {
       const newQuestionTiles = form.selectedQuestionTiles.filter((tile) => !tile.id)
 
       for (const tile of activeSpecialTiles) {
-        const savedTile = await upsertTileCategory({ category: tile })
+        const savedTile = await upsertTile({ tile })
         tileIdsByKey.set(getTileKey(tile), savedTile.id)
       }
 
       for (const tile of newQuestionTiles) {
-        const savedTile = await createTileCategory({ category: tile })
+        const savedTile = await createTile({ tile })
         tileIdsByKey.set(getTileKey(tile), savedTile.id)
       }
 
@@ -140,14 +140,14 @@ function BoardLayoutPage({ form }) {
       await createBoardLayout({
         boardId: board.id,
         layout: form.generatedLayout.map((tile) => {
-          const tileCategoryId = tileIdsByKey.get(getTileKey(tile.tile))
-          if (!tileCategoryId) {
+          const tileId = tileIdsByKey.get(getTileKey(tile.tile))
+          if (!tileId) {
             throw new Error(`Missing saved tile for board position ${tile.position}.`)
           }
 
           return {
             position: tile.position,
-            categoryId: tileCategoryId,
+            tileId,
           }
         }),
       })

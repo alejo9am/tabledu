@@ -1,4 +1,4 @@
-export const categoryIconOptions = [
+export const tileIconOptions = [
   { path: 'system/lightbulb.png', label: 'Lightbulb' },
   { path: 'system/padlock.png', label: 'Lock' },
   { path: 'system/hourglass.png', label: 'Hourglass' },

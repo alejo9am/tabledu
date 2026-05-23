@@ -5,11 +5,12 @@ const stepTitles = {
   },
   2: {
     title: 'Special tiles',
-    description: 'Choose which surprise tiles can appear on the board',
+    description: 'Tiles are the spaces where teams land during play. Here you decide which special tiles can appear on your board.',
   },
   3: {
     title: 'Question tiles',
-    description: 'Each question tile is linked to a question bank. When a team lands on that tile, it must answer one question from that bank.',
+    helper: 'Each question tile is a topic with its own question bank.',
+    description: 'Choose up to 6 tiles to determine what students will be asked during play.',
   },
   4: {
     title: 'Board layout',
@@ -26,6 +27,7 @@ function BoardCreateStepTitle({ currentStep }) {
     <section className="rounded-2xl border bg-card/90 px-4 py-3 sm:px-5" aria-label="Current board creation step">
       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Step {currentStep}</p>
       <h1 className="mt-1 font-display text-2xl font-semibold text-primary sm:text-3xl">{step.title}</h1>
+      {step.helper ? <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{step.helper}</p> : null}
       <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{step.description}</p>
     </section>
   )

@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import CategoryTile from '@/components/game/CategoryTile'
+import TileCard from '@/components/game/TileCard'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { getTileGridStyle, SPIRAL_COORDINATES } from '@/features/games/routes/GamePlay/constants/tileLayout'
 import { CORNER_BY_TILE } from '@/features/games/routes/GamePlay/constants/tokenLayout'
@@ -34,9 +34,9 @@ function BoardLayoutPreview({ layout = [], showGhost = false, onTileClick }) {
     }
 
     return (
-      <CategoryTile
+      <TileCard
         key={tile.id}
-        category={tileData}
+        tile={tileData}
         tileNumber={tile.id}
         corner={CORNER_BY_TILE[tile.id] ?? 'none'}
         showShadow={false}

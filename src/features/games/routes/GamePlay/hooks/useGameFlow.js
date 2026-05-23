@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { getRandomQuestionForCategory } from "@/utils/gameUtils"
+import { getRandomQuestionForTile } from "@/utils/gameUtils"
 import { TURN_PHASES } from '../constants/turnPhases'
 
 export function useGameFlow(gameInfo) {
@@ -11,7 +11,7 @@ export function useGameFlow(gameInfo) {
 
   // Contexto general de la partida
   const {
-    board, teams, answers, categories, boardCategory, questions,
+    board, teams, answers, tiles, layout, questions,
     currentTeam,
     actions: {
       updateTurn, updateScore, updatePosition
@@ -25,7 +25,7 @@ export function useGameFlow(gameInfo) {
 
   const [turnPhase, setTurnPhase] = useState(TURN_PHASES.IDLE)
   const [dieValue, setDieValue] = useState(1)
-  const [currentCategory, setCurrentCategory] = useState(null)
+  const [currentTile, setCurrentTile] = useState(null)
   const [currentQuestion, setCurrentQuestion] = useState(null)
 
 
@@ -39,7 +39,7 @@ export function useGameFlow(gameInfo) {
     const nextTeam = teams[(currentIndex + 1) % teams.length] ?? teams[0]
 
     updateTurn(nextTeam.id)
-    setCurrentCategory(null)
+    setCurrentTile(null)
     setCurrentQuestion(null)
     setTurnPhase(TURN_PHASES.IDLE)
   }
@@ -55,27 +55,27 @@ export function useGameFlow(gameInfo) {
     updatePosition(currentTeam.id, nextPosition)
 
     if (nextPosition === 30) {
-      setCurrentCategory(null)
+      setCurrentTile(null)
       setCurrentQuestion(null)
       setTurnPhase(TURN_PHASES.GAME_OVER)
       return
     }
 
-    const tileAtNextPosition = boardCategory.find((tile) => tile.position === nextPosition)
-    const categoryId = tileAtNextPosition?.category_id
-    const nextCategory = categoryId
-      ? categories.find((category) => category.id === categoryId) ?? null
+    const tileAtNextPosition = layout.find((tile) => tile.position === nextPosition)
+    const nextTileId = tileAtNextPosition?.tileId
+    const nextTile = nextTileId
+      ? tiles.find((tile) => tile.id === nextTileId) ?? null
       : null
-    setCurrentCategory(nextCategory)
+    setCurrentTile(nextTile)
 
-    const nextQuestion = getRandomQuestionForCategory(nextCategory, questions, answers)
+    const nextQuestion = getRandomQuestionForTile(nextTile, questions, answers)
     setCurrentQuestion(nextQuestion)
 
     setTurnPhase(TURN_PHASES.TILE_INFO)
   }
 
   const startTileAction = () => {
-    switch (currentCategory?.type) {
+    switch (currentTile?.type) {
       case 'question':
         setTurnPhase(TURN_PHASES.QUESTION)
         break
@@ -102,7 +102,7 @@ export function useGameFlow(gameInfo) {
   }
 
   return {
-    turnPhase, dieValue, currentCategory, currentQuestion,
+    turnPhase, dieValue, currentTile, currentQuestion,
     handlers: {
       nextTurn,
       rollDie,

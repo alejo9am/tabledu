@@ -14,13 +14,13 @@ import SelectedQuestionTiles from '@/features/boards/routes/BoardCreate/pages/Qu
 import AvailableQuestionTilesList from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/AvailableQuestionTilesList'
 import CreateQuestionTileSheet from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/CreateQuestionTileSheet'
 import { getQuestionTileKey } from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/questionTiles.utils'
-import { fetchUserCategories } from '@/services/categories'
-import { fetchQuestionCountsByCategoryIds } from '@/services/questions'
+import { fetchUserTiles } from '@/services/tiles'
+import { fetchQuestionCountsByTileIds } from '@/services/questions'
 
 function QuestionTilesPage({ form }) {
   const { user } = useAuth()
   const [availableQuestionTiles, setAvailableQuestionTiles] = useState([])
-  const [questionCountsByCategoryId, setQuestionCountsByCategoryId] = useState({})
+  const [questionCountsByTileId, setQuestionCountsByTileId] = useState({})
   const [isLoadingQuestionTiles, setIsLoadingQuestionTiles] = useState(true)
   const [search, setSearch] = useState('')
   const [isCreatingNewTile, setIsCreatingNewTile] = useState(false)
@@ -39,18 +39,18 @@ function QuestionTilesPage({ form }) {
     setIsLoadingQuestionTiles(true)
 
     try {
-      const categories = await fetchUserCategories(user?.id)
-      const questionTiles = categories.filter((category) => category.type === 'question')
+      const tiles = await fetchUserTiles(user?.id)
+      const questionTiles = tiles.filter((tile) => tile.type === 'question')
       setAvailableQuestionTiles(questionTiles)
 
-      const countsByCategoryId = await fetchQuestionCountsByCategoryIds(
+      const countsByTileId = await fetchQuestionCountsByTileIds(
         questionTiles.map((tile) => tile.id)
       )
-      setQuestionCountsByCategoryId(countsByCategoryId)
+      setQuestionCountsByTileId(countsByTileId)
     } catch {
       toast.error('Could not load your saved question tiles.')
       setAvailableQuestionTiles([])
-      setQuestionCountsByCategoryId({})
+      setQuestionCountsByTileId({})
     } finally {
       setIsLoadingQuestionTiles(false)
     }
@@ -62,25 +62,25 @@ function QuestionTilesPage({ form }) {
 
   const filteredQuestionTiles = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase()
-    const selectedKeys = new Set(form.selectedQuestionTiles.map((category) => getQuestionTileKey(category)))
-    const unselectedTiles = availableQuestionTiles.filter((category) => !selectedKeys.has(getQuestionTileKey(category)))
+    const selectedKeys = new Set(form.selectedQuestionTiles.map((tile) => getQuestionTileKey(tile)))
+    const unselectedTiles = availableQuestionTiles.filter((tile) => !selectedKeys.has(getQuestionTileKey(tile)))
 
     if (!normalizedSearch) return unselectedTiles
-    return unselectedTiles.filter((category) => category.name.toLowerCase().includes(normalizedSearch))
+    return unselectedTiles.filter((tile) => tile.name.toLowerCase().includes(normalizedSearch))
   }, [availableQuestionTiles, form.selectedQuestionTiles, search])
 
-  const selectQuestionTile = (category) => {
+  const selectQuestionTile = (tile) => {
     if (form.selectedQuestionTiles.length >= 6) {
       toast.error('Select no more than 6 question tiles.')
       return
     }
 
-    form.setSelectedQuestionTiles((current) => [...current, category])
+    form.setSelectedQuestionTiles((current) => [...current, tile])
   }
 
-  const deselectQuestionTile = (category) => {
-    const categoryKey = getQuestionTileKey(category)
-    form.setSelectedQuestionTiles((current) => current.filter((item) => getQuestionTileKey(item) !== categoryKey))
+  const deselectQuestionTile = (tile) => {
+    const tileKey = getQuestionTileKey(tile)
+    form.setSelectedQuestionTiles((current) => current.filter((item) => getQuestionTileKey(item) !== tileKey))
   }
 
   const createQuestionTile = () => {
@@ -132,7 +132,8 @@ function QuestionTilesPage({ form }) {
         <section className="space-y-4 lg:col-span-2">
           <SelectedQuestionTiles
             selectedTiles={form.selectedQuestionTiles}
-            questionCountsByCategoryId={questionCountsByCategoryId}
+            questionCountsByTileId={questionCountsByTileId}
+            isLoadingQuestionCounts={isLoadingQuestionTiles}
             onDeselect={deselectQuestionTile}
           />
 

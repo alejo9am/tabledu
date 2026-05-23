@@ -6,11 +6,11 @@ import { Icon } from '@/components/ui/Icon'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import BackButton from '@/components/navigation/BackButton'
-import CategoryTile from '@/components/game/CategoryTile'
+import TileCard from '@/components/game/TileCard'
 import useAppNavigation from '@/hooks/useAppNavigation.hook'
 import ErrorState from '@/components/ui/error-state'
 import { fetchBoardById } from '@/services/boards'
-import { fetchBoardCategories } from '@/services/categories'
+import { fetchBoardTiles } from '@/services/tiles'
 import { createGame, updateGameById } from '@/services/games'
 import { createTeams } from '@/services/teams'
 import { useAuth } from '@/context/AuthContext'
@@ -23,11 +23,11 @@ function NewGameSetupPage({ boardId }) {
   const teamsSetup = useTeamsSetup()
 
   const [board, setBoard] = useState(null)
-  const [categories, setCategories] = useState([])
+  const [tiles, setTiles] = useState([])
   const [isLoadingBoard, setIsLoadingBoard] = useState(true)
-  const [isLoadingCategories, setIsLoadingCategories] = useState(true)
+  const [isLoadingTiles, setIsLoadingTiles] = useState(true)
   const [boardError, setBoardError] = useState(null)
-  const [categoriesError, setCategoriesError] = useState(null)
+  const [tilesError, setTilesError] = useState(null)
   const [submitIntent, setSubmitIntent] = useState(null)
 
   const isSubmitting = submitIntent !== null
@@ -51,37 +51,37 @@ function NewGameSetupPage({ boardId }) {
     }
   }, [boardId, user?.id])
 
-  const loadCategories = useCallback(async () => {
-    setIsLoadingCategories(true)
-    setCategoriesError(null)
+  const loadTiles = useCallback(async () => {
+    setIsLoadingTiles(true)
+    setTilesError(null)
 
     try {
       if (!boardId || !user?.id) {
-        setCategories([])
+        setTiles([])
         return
       }
 
-      const data = await fetchBoardCategories(boardId)
-      setCategories(data)
+      const data = await fetchBoardTiles(boardId)
+      setTiles(data)
     } catch (error) {
-      setCategoriesError(error instanceof Error ? error.message : 'Unexpected error')
+      setTilesError(error instanceof Error ? error.message : 'Unexpected error')
     } finally {
-      setIsLoadingCategories(false)
+      setIsLoadingTiles(false)
     }
   }, [boardId, user?.id])
 
   useEffect(() => {
     loadBoard()
-    loadCategories()
-  }, [loadBoard, loadCategories])
+    loadTiles()
+  }, [loadBoard, loadTiles])
 
-  const sortedCategories = useMemo(() => {
-    return [...categories].sort((a, b) => {
+  const sortedTiles = useMemo(() => {
+    return [...tiles].sort((a, b) => {
       if (a.type === b.type) return 0
       if (a.type === 'question') return -1
       return 1
     })
-  }, [categories])
+  }, [tiles])
 
   const handleCreateSession = async (intent) => {
     if (isSubmitting || !board || !user?.id) {
@@ -137,7 +137,7 @@ function NewGameSetupPage({ boardId }) {
     }
   }
 
-  const loadError = boardError || categoriesError
+  const loadError = boardError || tilesError
 
   if (loadError) {
     return (
@@ -148,7 +148,7 @@ function NewGameSetupPage({ boardId }) {
           technicalDetails={loadError}
           onRetry={() => {
             loadBoard()
-            loadCategories()
+            loadTiles()
           }}
         />
       </main>
@@ -201,8 +201,8 @@ function NewGameSetupPage({ boardId }) {
             </div>
 
             <div className="mt-8">
-              <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Category preview</p>
-              {isLoadingCategories ? (
+              <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Tile preview</p>
+              {isLoadingTiles ? (
                 <div className="mx-auto flex w-62 flex-wrap justify-center gap-2 sm:w-fit sm:grid sm:grid-cols-7 sm:gap-2.5 lg:gap-3">
                   {Array.from({ length: 7 }, (_, index) => (
                     <Skeleton key={`tile-placeholder-${index}`} className="aspect-square w-14 rounded-lg sm:w-16 lg:w-17" />
@@ -211,20 +211,20 @@ function NewGameSetupPage({ boardId }) {
               ) : (
                 <>
                   <div className="mx-auto flex w-62 flex-wrap justify-center gap-2 sm:w-fit sm:grid sm:grid-cols-7 sm:gap-2.5 lg:gap-3">
-                      {sortedCategories.map((category) => (
-                        <div key={category.id} className="aspect-square w-14 sm:w-16 lg:w-17">
+                      {sortedTiles.map((tile) => (
+                        <div key={tile.id} className="aspect-square w-14 sm:w-16 lg:w-17">
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <button type="button" className="block size-full" aria-label={category.name}>
-                                <CategoryTile category={category} className="size-full" />
+                              <button type="button" className="block size-full" aria-label={tile.name}>
+                                <TileCard tile={tile} className="size-full" />
                               </button>
                             </TooltipTrigger>
-                            <TooltipContent side="top">{category.name}</TooltipContent>
+                            <TooltipContent side="top">{tile.name}</TooltipContent>
                           </Tooltip>
                         </div>
                       ))}
                     </div>
-                  {!sortedCategories.length ? <p className="mt-3 text-sm text-muted-foreground">No categories configured for this board yet.</p> : null}
+                  {!sortedTiles.length ? <p className="mt-3 text-sm text-muted-foreground">No tiles configured for this board yet.</p> : null}
                 </>
               )}
             </div>
