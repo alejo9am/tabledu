@@ -1,4 +1,4 @@
-import { CheckmarkCircle02Icon } from '@hugeicons/core-free-icons'
+import { ArrowLeft01Icon, ArrowRight01Icon, CheckmarkCircle02Icon } from '@hugeicons/core-free-icons'
 import { Icon } from '@/components/ui/Icon'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -37,30 +37,35 @@ function BoardCreateStepper({ currentStep, onBack, onNext, stepValidationError }
   const isFirstStep = currentStep === 1
   const isLastStep = currentStep === steps.length
   const hasStepError = Boolean(stepValidationError)
+  const hasBackButton = !isFirstStep
+  const hasNextButton = !isLastStep
 
-  const backButton = (
-    <Button type="button" variant="secondary" onClick={onBack} disabled={isFirstStep}>
+  const backButton = hasBackButton ? (
+    <Button type="button" variant="secondary" onClick={onBack}>
+      <Icon icon={ArrowLeft01Icon} className="size-4" />
       Back
     </Button>
-  )
+  ) : null
 
-  const nextButton = (
+  const nextButton = hasNextButton ? (
     <Button
       type="button"
       variant="warning"
       onClick={onNext}
-      disabled={isLastStep}
       aria-disabled={hasStepError}
       className={cn(hasStepError && 'cursor-not-allowed opacity-50 hover:bg-warning')}
     >
       Next
+      <Icon icon={ArrowRight01Icon} className="size-4" />
     </Button>
-  )
+  ) : null
 
   return (
     <nav aria-label="Board creation progress" className="py-2 sm:py-3">
-      <div className="rounded-2xl border bg-card/80 p-3 sm:grid sm:grid-cols-[auto_1fr_auto] sm:items-center sm:gap-4 sm:p-4">
-        <div className="hidden sm:block">{backButton}</div>
+      <div className="rounded-2xl border bg-card/80 p-3 sm:grid sm:grid-cols-[8rem_1fr_8rem] sm:items-center sm:gap-4 sm:p-4">
+        <div className="hidden sm:flex sm:justify-start">
+          {backButton ?? <span aria-hidden="true" className="h-9 w-full" />}
+        </div>
 
         <ol className="grid grid-cols-4 items-start gap-2">
           {steps.map((step, index) => {
@@ -95,12 +100,19 @@ function BoardCreateStepper({ currentStep, onBack, onNext, stepValidationError }
           })}
         </ol>
 
-        <div className="hidden sm:block">{nextButton}</div>
-
-        <div className="mt-4 flex items-center justify-between gap-3 sm:hidden">
-          {backButton}
-          {nextButton}
+        <div className="hidden sm:flex sm:justify-end">
+          {nextButton ?? <span aria-hidden="true" className="h-9 w-full" />}
         </div>
+
+        {backButton || nextButton ? (
+          <div className={cn(
+            'mt-4 flex items-center gap-3 sm:hidden',
+            hasBackButton && hasNextButton ? 'justify-between' : hasBackButton ? 'justify-start' : 'justify-end'
+          )}>
+            {backButton}
+            {nextButton}
+          </div>
+        ) : null}
       </div>
     </nav>
   )
