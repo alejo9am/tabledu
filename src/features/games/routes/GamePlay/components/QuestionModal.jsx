@@ -67,7 +67,7 @@ const QuestionModal = () => {
       {/* Body */}
       <div className="flex flex-col gap-6 px-6 py-6">
         <p className="text-xl font-medium text-foreground leading-snug">
-          {questionText ?? 'No question available for this category.'}
+          {questionText ?? 'No question available for this tile.'}
         </p>
 
         {!result && questionText && (

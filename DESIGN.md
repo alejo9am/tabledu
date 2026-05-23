@@ -37,6 +37,17 @@ Colores vivos inspirados en los juegos de mesa clásicos, con variantes optimiza
 | **Warning** | `#f2d247` | `#f3d85d` | Alertas y elementos de atención (Amarillo). |
 | **Success** | `#22c55e` | `#22c55e` | Aciertos y confirmaciones (Verde). |
 
+### Escalas Técnicas de Color
+
+Los tokens CSS exponen variantes claras, medias y oscuras de la triada para estados, fondos suaves, bordes y elementos interactivos.
+
+| Familia | Tokens |
+| :--- | :--- |
+| **Primary** | `primary`, `primary-200`, `primary-350`, `primary-700`, `primary-850`, `primary-foreground` |
+| **Warning** | `warning`, `warning-200`, `warning-350`, `warning-700`, `warning-850`, `warning-foreground` |
+| **Destructive** | `destructive`, `destructive-200`, `destructive-350`, `destructive-700`, `destructive-850`, `destructive-foreground` |
+| **Success** | `success`, `success-200`, `success-700`, `success-foreground` |
+
 ### Superficies y Neutros
 
 | Rol | Light | Dark | Notas |
@@ -46,6 +57,10 @@ Colores vivos inspirados en los juegos de mesa clásicos, con variantes optimiza
 | **Card / Popover** | `#ffffff` | `#1e293b` | Superficies de componentes. |
 | **Sketch Dot** | `#e2e8f0` | `#1e293b` | Color de la cuadrícula de puntos del fondo. |
 | **Border** | `#e2e8f0` | `#243041` | Bordes sutiles de UI. |
+
+### Tokens Semánticos Adicionales
+
+Además de la triada principal, Tailwind expone los tokens `secondary`, `muted`, `accent`, `input`, `ring`, `border-dark`, `chart-1..5` y `sidebar-*`. Usar estos tokens antes de introducir nuevos colores evita duplicar valores y mantiene compatibilidad con modo claro/oscuro.
 
 ---
 
@@ -65,8 +80,8 @@ Colores vivos inspirados en los juegos de mesa clásicos, con variantes optimiza
 El fondo de la aplicación utiliza un patrón de puntos que fusiona el concepto de aula con el de tablero de juego.
 
 ```css
-background-image: radial-gradient(var(--sketch-dot) 2px, transparent 0);
-background-size: 28px 28px;
+background-image: radial-gradient(var(--sketch-dot) 1px, transparent 0);
+background-size: 14px 14px;
 ```
 
 ### Sistema de Radios
@@ -78,6 +93,10 @@ Basado en un multiplicador de `0.625rem`:
 | `sm` | 0.375rem | Elementos pequeños e insignias. |
 | `md` | 0.5rem | Botones y tarjetas estándar. |
 | `lg` | 0.625rem | Base. |
+| `xl` | 0.875rem | Tarjetas y contenedores destacados. |
+| `2xl` | 1.125rem | Superficies grandes y paneles de wizard. |
+| `3xl` | 1.375rem | Contenedores visuales amplios. |
+| `4xl` | 1.625rem | Botones o superficies muy redondeadas. |
 | `tile` | 3.125rem | Casillas circulares/redondeadas del tablero. |
 
 ---

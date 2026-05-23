@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-import CategoryTile from '@/components/game/CategoryTile'
+import TileCard from '@/components/game/TileCard'
 import Token from '@/components/ui/token'
 
 import { useGame } from '../context/GameContext'
@@ -14,20 +14,20 @@ function BoardTile({ tileNumber }) {
   const [tileMinSize, setTileMinSize] = useState(0)
 
   // Contexto global
-  const { teams, currentTeam, boardCategory, categories } = useGame()
+  const { teams, currentTeam, layout, tiles } = useGame()
 
   // Variables derivadas
   const teamsOnTile = teams.filter((team) => team.position === tileNumber)
   const activeTeam = currentTeam?.position === tileNumber ? currentTeam : null
-  const category = (() => {
+  const tileData = (() => {
     if (tileNumber === 0) {
       return { name: 'Start', showIcon: false }
     }
     if (tileNumber === 30) {
       return { icon: 'system/goal.png', name: 'Goal' }
     }
-    const tileData = boardCategory.find((tile) => tile.position === tileNumber)
-    return categories.find((cat) => cat.id === tileData?.category_id)
+    const layoutEntry = layout.find((tile) => tile.position === tileNumber)
+    return tiles.find((tile) => tile.id === layoutEntry?.tileId)
   })()
   const numberFontSizePx = Math.max(10, Math.min(18, tileMinSize * 0.16))
   const numberBadgeDiameterPx = Math.max(20, Math.min(34, numberFontSizePx * 1.85))
@@ -57,9 +57,9 @@ function BoardTile({ tileNumber }) {
   }, [])
 
   return (
-    <CategoryTile
+    <TileCard
       ref={tileRef}
-      category={category}
+      tile={tileData}
       tileNumber={tileNumber}
       corner={CORNER_BY_TILE[tileNumber] ?? 'none'}
       active={Boolean(activeTeam)}
@@ -95,7 +95,7 @@ function BoardTile({ tileNumber }) {
           )
         })}
       </div>
-    </CategoryTile>
+    </TileCard>
   )
 }
 

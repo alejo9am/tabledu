@@ -66,8 +66,8 @@ const dashboardRoutes = [
     icon: <Icon icon={Quiz05Icon} />,
   },
   {
-    title: "Categories",
-    to: "/categories",
+    title: "Tiles",
+    to: "/tiles",
     icon: <Icon icon={ClipboardIcon} />,
   },
   {
@@ -241,10 +241,11 @@ function DashboardLayout() {
           <SidebarHeader>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild size="lg">
+                <SidebarMenuButton asChild size="lg" className="group-data-[collapsible=icon]:justify-center">
                   <Link to="/" state={{ from: location.pathname }}>
-                    <img src={logoLight} alt="tabledu" className="h-8 w-auto dark:hidden" />
-                    <img src={logoDark} alt="tabledu" className="hidden h-8 w-auto dark:block" />
+                    <img src={logoLight} alt="tabledu" className="h-8 w-auto dark:hidden group-data-[collapsible=icon]:hidden" />
+                    <img src={logoDark} alt="tabledu" className="hidden h-8 w-auto dark:block group-data-[collapsible=icon]:hidden" />
+                    <img src="/favicon.svg" alt="tabledu" className="hidden size-6 group-data-[collapsible=icon]:block" />
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

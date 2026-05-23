@@ -4,7 +4,7 @@
 ---
   **Plataforma web para la creación y gestión de juegos de mesa educativos personalizados.**
 
-  Tabledu permite a los profesores transformar el contenido de sus asignaturas en experiencias de juego interactivas, configurando tableros, categorías, preguntas y partidas desde un panel propio.
+  Tabledu permite a los profesores transformar el contenido de sus asignaturas en experiencias de juego interactivas, configurando tableros, casillas, preguntas y partidas desde un panel propio.
 
   [![Deploy](https://img.shields.io/badge/deploy-tabledu.com-3f74c6?style=flat-square)](https://tabledu.com)
   [![License](https://img.shields.io/badge/license-Proprietary-red?style=flat-square)](./LICENSE)
@@ -36,7 +36,7 @@ El proyecto se desarrolla como Trabajo Fin de Grado en la [Escuela Superior de I
 
 | Capa | Tecnología |
 | :--- | :--- |
-| Frontend | React 19 + Vite 7 (SPA) |
+| Frontend | React 19 + Vite 8 (SPA) |
 | Estilos | Tailwind CSS + shadcn/ui |
 | Backend & Auth | Supabase (PostgreSQL + Auth + RLS) |
 | Gestor de paquetes | pnpm |
@@ -74,7 +74,7 @@ La arquitectura de `src/` sigue una organización por features. Consulta [ARCHIT
   <img src="./docs/relational_model.svg" alt="Modelo relacional de Tabledu" width="700" />
 </div>
 
-Las entidades principales son: `users`, `boards`, `categories`, `questions`, `board_category`, `games`, `teams` y `answers`. Los scripts de creación del esquema están disponibles en [`docs/database/`](./docs/database/).
+Las entidades principales son: `users`, `boards`, `tiles`, `questions`, `board_layouts`, `games`, `teams` y `answers`. Los scripts de creación del esquema están disponibles en [`docs/database/`](./docs/database/).
 
 ---
 

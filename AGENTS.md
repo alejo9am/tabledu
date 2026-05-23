@@ -57,6 +57,6 @@ It defines the brand identity, typography strategy, color palette, icon style, a
 
 - `@` alias for all imports. Never use long relative paths.
 - Tailwind utilities only. No hardcoded hex values.
-- `categories.icon` is a relative object path. Resolve public URL only via `getCategoryIconPublicUrl()` in `@/services/api.js`. On image error, show first letter of `category.name`.
-- Board positions: 1..30. Start = 0, goal = 30. Movement clamps at 30.
+- `tile.icon` is a relative object path. Resolve public URL only via `getTileIconPublicUrl()` in `@/services/api.js`. On image error, show first letter of `tile.name`.
+- Board positions: 1..29. Start = 0, goal = 30. Movement clamps at 30.
 - Do not modify `pnpm-lock.yaml`, `components.json`, or `vercel.json` unless explicitly requested.

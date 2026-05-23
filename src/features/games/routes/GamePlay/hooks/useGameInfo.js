@@ -17,8 +17,8 @@ export function useGameInfo() {
   const [game, setGame] = useState(null)
   const [teams, setTeams] = useState([])
   const [answers, setAnswers] = useState([])
-  const [categories, setCategories] = useState([])
-  const [boardCategory, setBoardCategory] = useState([])
+  const [tiles, setTiles] = useState([])
+  const [layout, setLayout] = useState([])
   const [questions, setQuestions] = useState([])
   // Estados para controlar la carga de datos y errores
   const [isLoading, setIsLoading] = useState(true)
@@ -45,8 +45,8 @@ export function useGameInfo() {
         setGame(data.game)
         setTeams(data.teams)
         setAnswers(data.answers)
-        setCategories(data.categories)
-        setBoardCategory(data.boardCategory)
+        setTiles(data.tiles)
+        setLayout(data.layout)
         setQuestions(data.questions)
       } catch (error) {
         console.error('[useGameInfo]', error);
@@ -68,9 +68,9 @@ export function useGameInfo() {
     return teams.find((team) => team.id === game?.current_team_id) ?? null
   }, [teams, game?.current_team_id]) // Recalcula si cambian equipos o el ID del actual
 
-  const questionCategories = useMemo(() => {
-    return categories.filter((category) => category.type === 'question')
-  }, [categories]) // Solo se recalcula si cambian las categorías
+  const questionTiles = useMemo(() => {
+    return tiles.filter((tile) => tile.type === 'question')
+  }, [tiles]) // Solo se recalcula si cambian las casillas
 
 
   // ==========================================
@@ -163,9 +163,9 @@ export function useGameInfo() {
   }
 
   return {
-    board, game, teams, answers, categories, boardCategory, questions,
+    board, game, teams, answers, tiles, layout, questions,
     isLoading, loadError,
-    currentTeam, questionCategories,
+    currentTeam, questionTiles,
     actions: {
       updateTurn, updateScore, updatePosition, saveAnswer
     }
