@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 
-const TILE_ICONS_BUCKET = 'category-icons'
+const TILE_ICONS_BUCKET = 'tile-icons'
 
 export const getTileIconPublicUrl = (iconPath) => {
   if (typeof iconPath !== 'string' || !iconPath.includes('/')) {

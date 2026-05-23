@@ -63,7 +63,7 @@ export const upsertTile = async ({ tile }) => {
 /**
  * Fetches unique tiles used by a board.
  * @param {string} boardId - Target board id.
- * @returns {Promise<Array<object>>} Array of tile records from `categories`.
+ * @returns {Promise<Array<object>>} Array of tile records from `tiles`.
  * @throws {Error} If `boardId` is missing or Supabase returns an error.
  */
 export const fetchBoardTiles = async (boardId) => {
@@ -72,11 +72,11 @@ export const fetchBoardTiles = async (boardId) => {
   }
 
   const { data, error } = await supabase
-    .from('board_category')
-    .select('tile:categories!inner(*)')
+    .from('board_layouts')
+    .select('tile:tiles!inner(*)')
     .eq('board_id', boardId)
 
-  throwIfSupabaseError(error, 'board_category')
+  throwIfSupabaseError(error, 'board_layouts')
 
   const seenTileIds = new Set()
   return (data ?? [])
