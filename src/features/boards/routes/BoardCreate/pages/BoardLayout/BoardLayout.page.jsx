@@ -2,6 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import { ShuffleSquareIcon, CheckmarkCircle02Icon } from '@hugeicons/core-free-icons'
 import { toast } from 'sonner'
 import { Icon } from '@/components/ui/Icon'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import BoardCreateStepTitle from '@/features/boards/routes/BoardCreate/components/BoardCreateStepTitle'
 import BoardLayoutPreview from '@/features/boards/routes/BoardCreate/components/BoardLayoutPreview'
@@ -16,6 +26,7 @@ import { fetchQuestionCountsByTileIds } from '@/services/questions'
 function BoardLayoutPage({ form }) {
   const { goTo } = useAppNavigation()
   const [isCreatingBoard, setIsCreatingBoard] = useState(false)
+  const [isStaleLayoutDialogOpen, setIsStaleLayoutDialogOpen] = useState(false)
   const hasShownQuestionCountWarningRef = useRef(false)
   const [editingTilePosition, setEditingTilePosition] = useState(null)
   const hasGeneratedLayout = form.generatedLayout.length === 29
@@ -62,6 +73,7 @@ function BoardLayoutPage({ form }) {
       questionTiles: form.selectedQuestionTiles,
       specialTiles: form.specialTiles,
     }))
+    form.markLayoutGenerated()
   }
 
   const handleOpenReplaceTile = (position) => {
@@ -83,7 +95,7 @@ function BoardLayoutPage({ form }) {
     setEditingTilePosition(null)
   }
 
-  const handleCreateBoard = async () => {
+  const createBoardFromCurrentLayout = async () => {
     if (!hasGeneratedLayout) {
       toast.error('Generate a board layout first.')
       return
@@ -133,6 +145,20 @@ function BoardLayoutPage({ form }) {
       toast.error(error instanceof Error ? error.message : 'Unexpected error while creating board')
       setIsCreatingBoard(false)
     }
+  }
+
+  const handleCreateBoard = async () => {
+    if (form.isLayoutStale) {
+      setIsStaleLayoutDialogOpen(true)
+      return
+    }
+
+    await createBoardFromCurrentLayout()
+  }
+
+  const handleConfirmCreateWithStaleLayout = async () => {
+    setIsStaleLayoutDialogOpen(false)
+    await createBoardFromCurrentLayout()
   }
 
   return (
@@ -210,6 +236,27 @@ function BoardLayoutPage({ form }) {
         onClose={() => setEditingTilePosition(null)}
         onReplaceTile={handleReplaceTile}
       />
+
+      <AlertDialog open={isStaleLayoutDialogOpen} onOpenChange={setIsStaleLayoutDialogOpen}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Create with old layout?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You changed tiles after generating this layout. We recommend going back and regenerating so the board matches your latest selections.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isCreatingBoard}>Go back</AlertDialogCancel>
+            <AlertDialogAction
+              variant="default"
+              disabled={isCreatingBoard}
+              onClick={handleConfirmCreateWithStaleLayout}
+            >
+              {isCreatingBoard ? 'Creating board...' : 'Continue anyway'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

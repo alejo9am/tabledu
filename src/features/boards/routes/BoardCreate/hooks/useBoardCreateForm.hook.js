@@ -23,6 +23,7 @@ export function useBoardCreateForm() {
   })
   const [selectedQuestionTiles, setSelectedQuestionTiles] = useState([])
   const [generatedLayout, setGeneratedLayout] = useState([])
+  const [isLayoutStale, setIsLayoutStale] = useState(false)
 
   const loadSpecialTiles = useCallback(async () => {
     if (specialTiles !== null) {
@@ -65,10 +66,24 @@ export function useBoardCreateForm() {
         ...updates,         // applies updates to the tile
       },
     }))
-  }, [])
+    if (generatedLayout.length === 29) {
+      setIsLayoutStale(true)
+    }
+  }, [generatedLayout.length])
+
+  const updateSelectedQuestionTiles = useCallback((updater) => {
+    setSelectedQuestionTiles(updater)
+    if (generatedLayout.length === 29) {
+      setIsLayoutStale(true)
+    }
+  }, [generatedLayout.length])
 
   const updateScores = useCallback((updates) => {
     setScores((current) => ({ ...current, ...updates }))
+  }, [])
+
+  const markLayoutGenerated = useCallback(() => {
+    setIsLayoutStale(false)
   }, [])
 
   const getStepValidationError = useCallback((step) => {
@@ -122,8 +137,9 @@ export function useBoardCreateForm() {
     description, setDescription,
     specialTiles, isLoadingSpecialTiles, updateSpecialTile, loadSpecialTiles,
     scores, updateScores,
-    selectedQuestionTiles, setSelectedQuestionTiles,
+    selectedQuestionTiles, updateSelectedQuestionTiles,
     generatedLayout, setGeneratedLayout,
+    isLayoutStale, markLayoutGenerated,
     getStepValidationError,
   }
 }

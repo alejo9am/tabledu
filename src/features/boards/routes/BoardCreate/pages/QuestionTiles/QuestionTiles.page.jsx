@@ -97,11 +97,11 @@ function QuestionTilesPage({ form }) {
       return
     }
 
-    form.setSelectedQuestionTiles((current) => [...current, tile])
+    form.updateSelectedQuestionTiles((current) => [...current, tile])
   }
 
   const deselectQuestionTile = (tile) => {
-    form.setSelectedQuestionTiles((current) => current.filter((item) => item.id !== tile.id))
+    form.updateSelectedQuestionTiles((current) => current.filter((item) => item.id !== tile.id))
   }
 
   const saveQuestionTile = async () => {
@@ -139,7 +139,7 @@ function QuestionTilesPage({ form }) {
         setAvailableQuestionTiles((current) => current.map((tile) => (
           tile.id === updatedQuestionTile.id ? updatedQuestionTile : tile
         )))
-        form.setSelectedQuestionTiles((current) => current.map((tile) => (
+        form.updateSelectedQuestionTiles((current) => current.map((tile) => (
           tile.id === updatedQuestionTile.id ? updatedQuestionTile : tile
         )))
 
@@ -156,7 +156,7 @@ function QuestionTilesPage({ form }) {
 
         setAvailableQuestionTiles((current) => [...current, savedQuestionTile])
         if (form.selectedQuestionTiles.length < 6) {
-          form.setSelectedQuestionTiles((current) => [...current, savedQuestionTile])
+          form.updateSelectedQuestionTiles((current) => [...current, savedQuestionTile])
         } else {
           toast.message('Tile created. Select it later by removing another selected tile.')
         }
