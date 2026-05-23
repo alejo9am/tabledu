@@ -123,10 +123,8 @@ function QuestionTilesPage({ form }) {
         <BoardCreateStepTitle currentStep={3} />
 
         <QuestionScoringPanel
-          scoreCorrect={form.scoreCorrect}
-          scoreIncorrect={form.scoreIncorrect}
-          onScoreCorrectChange={form.setScoreCorrect}
-          onScoreIncorrectChange={form.setScoreIncorrect}
+          scores={form.scores}
+          onScoresChange={form.updateScores}
         />
 
         <section className="space-y-4 lg:col-span-2">

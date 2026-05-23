@@ -117,19 +117,17 @@ function BoardLayoutPage({ form }) {
         tileIdsByKey.set(getTileKey(tile), savedTile.id)
       }
 
-      const penaltyTile = form.specialTiles.penalty
-      const duelTile = form.specialTiles.duel
       const board = await createBoard({
         board: {
           name: form.name.trim(),
           description: form.description.trim(),
-          scoreCorrect: Number(form.scoreCorrect),
-          scoreIncorrect: Number(form.scoreIncorrect),
-          scoreAttack: Number(penaltyTile.scoreAttack),
-          scoreChallengeWinner: Number(duelTile.scoreChallengeWinner),
-          scoreChallengeLoser: Number(duelTile.scoreChallengeLoser),
-          scoreChallengeDrawDefender: Number(duelTile.scoreChallengeDrawDefender),
-          scoreChallengeDrawAttacker: Number(duelTile.scoreChallengeDrawAttacker),
+          scoreCorrect: Number(form.scores.scoreCorrect),
+          scoreIncorrect: Number(form.scores.scoreIncorrect),
+          scoreAttack: Number(form.scores.scoreAttack),
+          scoreChallengeWinner: Number(form.scores.scoreChallengeWinner),
+          scoreChallengeLoser: Number(form.scores.scoreChallengeLoser),
+          scoreChallengeDrawDefender: Number(form.scores.scoreChallengeDrawDefender),
+          scoreChallengeDrawAttacker: Number(form.scores.scoreChallengeDrawAttacker),
         },
       })
 

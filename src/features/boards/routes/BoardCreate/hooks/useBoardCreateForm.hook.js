@@ -12,8 +12,15 @@ export function useBoardCreateForm() {
   const [description, setDescription] = useState('')
   const [specialTiles, setSpecialTiles] = useState(null)
   const [isLoadingSpecialTiles, setIsLoadingSpecialTiles] = useState(true)
-  const [scoreCorrect, setScoreCorrect] = useState(3)
-  const [scoreIncorrect, setScoreIncorrect] = useState(-1)
+  const [scores, setScores] = useState({
+    scoreCorrect: 3,
+    scoreIncorrect: -1,
+    scoreAttack: -2,
+    scoreChallengeWinner: 2,
+    scoreChallengeLoser: -2,
+    scoreChallengeDrawDefender: 0,
+    scoreChallengeDrawAttacker: 0,
+  })
   const [selectedQuestionTiles, setSelectedQuestionTiles] = useState([])
   const [generatedLayout, setGeneratedLayout] = useState([])
 
@@ -60,6 +67,10 @@ export function useBoardCreateForm() {
     }))
   }, [])
 
+  const updateScores = useCallback((updates) => {
+    setScores((current) => ({ ...current, ...updates }))
+  }, [])
+
   const getStepValidationError = useCallback((step) => {
     if (step === 1) {
       if (!hasText(name)) return 'Add a board name.'
@@ -77,15 +88,15 @@ export function useBoardCreateForm() {
         if (!hasText(tile.name)) return `${label} needs a name.`
         if (!hasText(tile.description)) return `${label} needs a description.`
 
-        if (type === 'penalty' && !hasNumber(tile.scoreAttack)) {
+        if (type === 'penalty' && !hasNumber(scores.scoreAttack)) {
           return 'Penalty needs a valid score value.'
         }
 
         if (type === 'duel') {
-          if (!hasNumber(tile.scoreChallengeWinner)) return 'Duel needs a winner score.'
-          if (!hasNumber(tile.scoreChallengeLoser)) return 'Duel needs a loser score.'
-          if (!hasNumber(tile.scoreChallengeDrawDefender)) return 'Duel draw needs a defender score.'
-          if (!hasNumber(tile.scoreChallengeDrawAttacker)) return 'Duel draw needs an attacker score.'
+          if (!hasNumber(scores.scoreChallengeWinner)) return 'Duel needs a winner score.'
+          if (!hasNumber(scores.scoreChallengeLoser)) return 'Duel needs a loser score.'
+          if (!hasNumber(scores.scoreChallengeDrawDefender)) return 'Duel draw needs a defender score.'
+          if (!hasNumber(scores.scoreChallengeDrawAttacker)) return 'Duel draw needs an attacker score.'
         }
       }
 
@@ -104,14 +115,13 @@ export function useBoardCreateForm() {
     }
 
     return 'Complete the current step.'
-  }, [description, generatedLayout.length, name, selectedQuestionTiles.length, specialTiles])
+  }, [description, generatedLayout.length, name, scores, selectedQuestionTiles.length, specialTiles])
 
   return {
     name, setName,
     description, setDescription,
     specialTiles, isLoadingSpecialTiles, updateSpecialTile, loadSpecialTiles,
-    scoreCorrect, setScoreCorrect,
-    scoreIncorrect, setScoreIncorrect,
+    scores, updateScores,
     selectedQuestionTiles, setSelectedQuestionTiles,
     generatedLayout, setGeneratedLayout,
     getStepValidationError,

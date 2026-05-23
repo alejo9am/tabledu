@@ -1,7 +1,7 @@
 import { Label } from '@/components/ui/label'
 import { NumberInput } from '@/components/ui/number-input'
 
-function QuestionScoringPanel({ scoreCorrect, scoreIncorrect, onScoreCorrectChange, onScoreIncorrectChange }) {
+function QuestionScoringPanel({ scores, onScoresChange }) {
   return (
     <aside className="rounded-2xl border bg-card p-4">
       <h3 className="font-semibold">Scoring rules</h3>
@@ -9,11 +9,19 @@ function QuestionScoringPanel({ scoreCorrect, scoreIncorrect, onScoreCorrectChan
       <div className="mt-4 flex justify-center gap-6">
         <div className="grid gap-1 w-full">
           <Label id="score-correct-label" className="justify-center text-xs font-semibold text-muted-foreground">Correct answer</Label>
-          <NumberInput aria-labelledby="score-correct-label" value={scoreCorrect} onChange={onScoreCorrectChange} />
+          <NumberInput
+            aria-labelledby="score-correct-label"
+            value={scores.scoreCorrect}
+            onChange={(scoreCorrect) => onScoresChange({ scoreCorrect })}
+          />
         </div>
         <div className="grid gap-1 w-full">
           <Label id="score-incorrect-label" className="justify-center text-xs font-semibold text-muted-foreground">Incorrect answer</Label>
-          <NumberInput aria-labelledby="score-incorrect-label" value={scoreIncorrect} onChange={onScoreIncorrectChange} />
+          <NumberInput
+            aria-labelledby="score-incorrect-label"
+            value={scores.scoreIncorrect}
+            onChange={(scoreIncorrect) => onScoresChange({ scoreIncorrect })}
+          />
         </div>
       </div>
     </aside>

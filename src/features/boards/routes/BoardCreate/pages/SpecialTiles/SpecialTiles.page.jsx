@@ -52,15 +52,21 @@ function SpecialTilesPage({ form }) {
           <>
             <SpecialTileCard
               tile={specialTiles.duel}
+              scores={form.scores}
               onChange={(updates) => form.updateSpecialTile('duel', updates)}
+              onScoresChange={form.updateScores}
             />
             <SpecialTileCard
               tile={specialTiles.penalty}
+              scores={form.scores}
               onChange={(updates) => form.updateSpecialTile('penalty', updates)}
+              onScoresChange={form.updateScores}
             />
             <SpecialTileCard
               tile={specialTiles.reroll}
+              scores={form.scores}
               onChange={(updates) => form.updateSpecialTile('reroll', updates)}
+              onScoresChange={form.updateScores}
             />
           </>
         )}

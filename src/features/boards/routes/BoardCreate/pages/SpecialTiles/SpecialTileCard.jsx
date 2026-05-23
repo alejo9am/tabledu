@@ -16,7 +16,7 @@ const tileMetaByType = {
   reroll: { name: 'Reroll', label: 'Reroll tile' },
 }
 
-function SpecialTileCard({ tile, onChange }) {
+function SpecialTileCard({ tile, scores, onChange, onScoresChange }) {
   const [isIconDialogOpen, setIsIconDialogOpen] = useState(false)
   const type = tile.type
   const tileMeta = tileMetaByType[type] ?? { name: 'Tile', label: 'Special tile' }
@@ -81,39 +81,39 @@ function SpecialTileCard({ tile, onChange }) {
         <div className={cn('mt-4 grid grid-cols-2 gap-3 transition-opacity', !tile.enabled && 'pointer-events-none opacity-60')}>
           <div className="grid gap-1">
             <Label id="score-challenge-winner-label" className="justify-center text-xs font-semibold text-muted-foreground">Winner</Label>
-            <NumberInput
-              aria-labelledby="score-challenge-winner-label"
-              value={tile.scoreChallengeWinner}
-              disabled={!tile.enabled}
-              onChange={(scoreChallengeWinner) => onChange({ scoreChallengeWinner })}
-            />
+              <NumberInput
+                aria-labelledby="score-challenge-winner-label"
+                value={scores.scoreChallengeWinner}
+                disabled={!tile.enabled}
+                onChange={(scoreChallengeWinner) => onScoresChange({ scoreChallengeWinner })}
+              />
           </div>
           <div className="grid gap-1">
             <Label id="score-challenge-loser-label" className="justify-center text-xs font-semibold text-muted-foreground">Loser</Label>
-            <NumberInput
-              aria-labelledby="score-challenge-loser-label"
-              value={tile.scoreChallengeLoser}
-              disabled={!tile.enabled}
-              onChange={(scoreChallengeLoser) => onChange({ scoreChallengeLoser })}
-            />
+              <NumberInput
+                aria-labelledby="score-challenge-loser-label"
+                value={scores.scoreChallengeLoser}
+                disabled={!tile.enabled}
+                onChange={(scoreChallengeLoser) => onScoresChange({ scoreChallengeLoser })}
+              />
           </div>
           <div className="grid gap-1">
             <Label id="score-challenge-draw-attacker-label" className="justify-center text-xs font-semibold text-muted-foreground">Draw attacker</Label>
-            <NumberInput
-              aria-labelledby="score-challenge-draw-attacker-label"
-              value={tile.scoreChallengeDrawAttacker}
-              disabled={!tile.enabled}
-              onChange={(scoreChallengeDrawAttacker) => onChange({ scoreChallengeDrawAttacker })}
-            />
+              <NumberInput
+                aria-labelledby="score-challenge-draw-attacker-label"
+                value={scores.scoreChallengeDrawAttacker}
+                disabled={!tile.enabled}
+                onChange={(scoreChallengeDrawAttacker) => onScoresChange({ scoreChallengeDrawAttacker })}
+              />
           </div>
           <div className="grid gap-1">
             <Label id="score-challenge-draw-defender-label" className="justify-center text-xs font-semibold text-muted-foreground">Draw defender</Label>
-            <NumberInput
-              aria-labelledby="score-challenge-draw-defender-label"
-              value={tile.scoreChallengeDrawDefender}
-              disabled={!tile.enabled}
-              onChange={(scoreChallengeDrawDefender) => onChange({ scoreChallengeDrawDefender })}
-            />
+              <NumberInput
+                aria-labelledby="score-challenge-draw-defender-label"
+                value={scores.scoreChallengeDrawDefender}
+                disabled={!tile.enabled}
+                onChange={(scoreChallengeDrawDefender) => onScoresChange({ scoreChallengeDrawDefender })}
+              />
           </div>
         </div>
       ) : null}
@@ -124,9 +124,9 @@ function SpecialTileCard({ tile, onChange }) {
             <Label id="score-attack-label" className="justify-center text-xs font-semibold text-muted-foreground">Points deducted</Label>
             <NumberInput
               aria-labelledby="score-attack-label"
-              value={tile.scoreAttack}
+              value={scores.scoreAttack}
               disabled={!tile.enabled}
-              onChange={(scoreAttack) => onChange({ scoreAttack })}
+              onChange={(scoreAttack) => onScoresChange({ scoreAttack })}
             />
           </div>
         </div>
