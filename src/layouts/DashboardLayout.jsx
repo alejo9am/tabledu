@@ -40,40 +40,44 @@ import { Icon } from "@/components/ui/Icon"
 import logoDark from "@/assets/logo-dark.svg"
 import logoLight from "@/assets/logo-light.svg"
 import {
-  Home01Icon,
   DashboardSquare02Icon,
-  Quiz05Icon,
   ClipboardIcon,
+  Quiz05Icon,
   PlayCircleIcon,
   LogoutIcon,
   UnfoldMoreIcon,
 } from "@hugeicons/core-free-icons"
 
-const dashboardRoutes = [
+const dashboardRouteGroups = [
   {
-    title: "Home",
-    to: "/",
-    icon: <Icon icon={Home01Icon}/>,
+    label: "Content",
+    routes: [
+      {
+        title: "Boards",
+        to: "/boards",
+        icon: <Icon icon={DashboardSquare02Icon} />,
+      },
+      {
+        title: "Special Tiles",
+        to: "/tiles/special",
+        icon: <Icon icon={ClipboardIcon} />,
+      },
+      {
+        title: "Question Tiles",
+        to: "/tiles/questions",
+        icon: <Icon icon={Quiz05Icon} />,
+      },
+    ],
   },
   {
-    title: "Boards",
-    to: "/boards",
-    icon: <Icon icon={DashboardSquare02Icon} />,
-  },
-  {
-    title: "Questions",
-    to: "/questions",
-    icon: <Icon icon={Quiz05Icon} />,
-  },
-  {
-    title: "Tiles",
-    to: "/tiles",
-    icon: <Icon icon={ClipboardIcon} />,
-  },
-  {
-    title: "Game Sessions",
-    to: "/games",
-    icon: <Icon icon={PlayCircleIcon} />, 
+    label: "Play",
+    routes: [
+      {
+        title: "Game Sessions",
+        to: "/games",
+        icon: <Icon icon={PlayCircleIcon} />,
+      },
+    ],
   },
 ]
 
@@ -81,29 +85,33 @@ function SidebarNavigation() {
   const location = useLocation()
 
   return (
-    <SidebarGroup>
-      {/* <SidebarGroupLabel>Navigation</SidebarGroupLabel> */}
-      <SidebarMenu>
-        {dashboardRoutes.map((item) => {
-          const isActive = location.pathname === item.to || location.pathname.startsWith(`${item.to}/`)
+    <>
+      {dashboardRouteGroups.map((group) => (
+        <SidebarGroup key={group.label}>
+          <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+          <SidebarMenu>
+            {group.routes.map((item) => {
+              const isActive = location.pathname === item.to || location.pathname.startsWith(`${item.to}/`)
 
-          return (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild
-                isActive={isActive}
-                tooltip={item.title}
-              >
-                <NavLink to={item.to} state={{ from: location.pathname }} end={item.to === "/"}>
-                  {item.icon}
-                  <span>{item.title}</span>
-                </NavLink>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          )
-        })}
-      </SidebarMenu>
-    </SidebarGroup>
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive}
+                    tooltip={item.title}
+                  >
+                    <NavLink to={item.to} state={{ from: location.pathname }}>
+                      {item.icon}
+                      <span>{item.title}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )
+            })}
+          </SidebarMenu>
+        </SidebarGroup>
+      ))}
+    </>
   )
 }
 
@@ -162,29 +170,35 @@ function SidebarUserMenu({ user }) {
 }
 
 function DashboardBreadcrumb({ pathname }) {
-  const breadcrumbs = [{ title: "Home", to: "/" }]
-
   if (pathname === "/") {
     return null
   }
 
-  if (pathname.startsWith("/boards")) {
-    breadcrumbs.push({ title: "Boards", to: "/boards" })
+  const breadcrumbs = [{ title: "Home", to: "/" }]
 
-    if (pathname === "/boards/new") {
+  switch (true) {
+    case pathname === "/boards":
+      breadcrumbs.push({ title: "Boards" })
+      break
+    case pathname === "/boards/new":
+      breadcrumbs.push({ title: "Boards", to: "/boards" })
       breadcrumbs.push({ title: "Create Board" })
-      // Keep details breadcrumb only for /boards/:boardId, not the /boards index route.
-    } else if (/^\/boards\/[^/]+$/.test(pathname)) {
+      break
+    case /^\/boards\/[^/]+$/.test(pathname):
+      breadcrumbs.push({ title: "Boards", to: "/boards" })
       breadcrumbs.push({ title: "Board Details" })
-    }
-  } else {
-    const currentRoute = dashboardRoutes.find((route) => route.to === pathname)
-
-    if (!currentRoute) {
+      break
+    case pathname === "/tiles/special":
+      breadcrumbs.push({ title: "Special Tiles" })
+      break
+    case pathname === "/tiles/questions":
+      breadcrumbs.push({ title: "Question Tiles" })
+      break
+    case pathname === "/games":
+      breadcrumbs.push({ title: "Game Sessions" })
+      break
+    default:
       return null
-    }
-
-    breadcrumbs.push({ title: currentRoute.title })
   }
 
   if (breadcrumbs.length <= 1) {
