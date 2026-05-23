@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
-import { defaultSpecialTiles, hydrateSpecialTiles } from '@/features/boards/routes/BoardCreate/pages/SpecialTiles/specialTiles.constants'
 import { fetchUserTiles } from '@/services/tiles'
 
 const hasText = (value) => String(value ?? '').trim().length > 0
@@ -29,15 +28,27 @@ export function useBoardCreateForm() {
 
     try {
       const tiles = await fetchUserTiles(user?.id)
-      const specialTiles = tiles.filter((tile) => tile.type !== 'question')
-      setSpecialTiles(hydrateSpecialTiles(specialTiles))
+      const persistedSpecialTiles = tiles.filter((tile) => tile.type !== 'question')
+      const penalty = persistedSpecialTiles.find((tile) => tile.type === 'penalty')
+      const reroll = persistedSpecialTiles.find((tile) => tile.type === 'reroll')
+      const duel = persistedSpecialTiles.find((tile) => tile.type === 'duel')
+
+      if (!penalty || !reroll || !duel) {
+        throw new Error('Missing default special tiles for this user. Contact support.')
+      }
+
+      setSpecialTiles({
+        penalty: { ...penalty, enabled: true },
+        reroll: { ...reroll, enabled: true },
+        duel: { ...duel, enabled: true },
+      })
     } catch {
-      setSpecialTiles(hydrateSpecialTiles([]))
-      throw new Error('Could not load your saved special tiles. Defaults are available.')
+      setSpecialTiles(null)
+      throw new Error('Could not load your special tiles.')
     } finally {
       setIsLoadingSpecialTiles(false)
     }
-  }, [isLoadingAuth, isLoadingSpecialTiles, specialTiles, user?.id])
+  }, [isLoadingAuth, specialTiles, user?.id])
 
   const updateSpecialTile = useCallback((type, updates) => {
     setSpecialTiles((current) => ({
@@ -57,24 +68,24 @@ export function useBoardCreateForm() {
     }
 
     if (step === 2) {
-      if (!specialTiles) return 'Special tiles are still loading.'
+      if (!specialTiles) return 'Special tiles are not ready.'
 
       for (const [type, tile] of Object.entries(specialTiles)) {
         if (!tile.enabled) continue
 
-        const label = defaultSpecialTiles[type].name
+        const label = `${ String(type ?? '').charAt(0).toUpperCase()}${ String(type ?? '').slice(1)}` || 'Special tile'
         if (!hasText(tile.name)) return `${label} needs a name.`
         if (!hasText(tile.description)) return `${label} needs a description.`
 
-        if (type === 'attack' && !hasNumber(tile.scoreAttack)) {
-          return 'Attack needs a valid score value.'
+        if (type === 'penalty' && !hasNumber(tile.scoreAttack)) {
+          return 'Penalty needs a valid score value.'
         }
 
-        if (type === 'challenge') {
-          if (!hasNumber(tile.scoreChallengeWinner)) return 'Challenge needs a winner score.'
-          if (!hasNumber(tile.scoreChallengeLoser)) return 'Challenge needs a loser score.'
-          if (!hasNumber(tile.scoreChallengeDrawDefender)) return 'Challenge draw needs a defender score.'
-          if (!hasNumber(tile.scoreChallengeDrawAttacker)) return 'Challenge draw needs an attacker score.'
+        if (type === 'duel') {
+          if (!hasNumber(tile.scoreChallengeWinner)) return 'Duel needs a winner score.'
+          if (!hasNumber(tile.scoreChallengeLoser)) return 'Duel needs a loser score.'
+          if (!hasNumber(tile.scoreChallengeDrawDefender)) return 'Duel draw needs a defender score.'
+          if (!hasNumber(tile.scoreChallengeDrawAttacker)) return 'Duel draw needs an attacker score.'
         }
       }
 

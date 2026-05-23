@@ -36,11 +36,11 @@ export const createTile = async ({ tile }) => {
   return data
 }
 
-export const upsertTile = async ({ tile }) => {
+export const updateTile = async ({ tile }) => {
   const userId = await getAuthenticatedUserId()
 
   if (!tile?.id) {
-    return createTile({ tile })
+    throw new Error('[supabase] Failed to update tile: missing tile id')
   }
 
   const { data, error } = await supabase

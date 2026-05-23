@@ -10,7 +10,7 @@ import ReplaceTileDialog from '@/features/boards/routes/BoardCreate/pages/BoardL
 import useAppNavigation from '@/hooks/useAppNavigation.hook'
 import { createBoardLayout } from '@/services/boardLayouts'
 import { createBoard } from '@/services/boards'
-import { createTile, upsertTile } from '@/services/tiles'
+import { createTile, updateTile } from '@/services/tiles'
 import { fetchQuestionCountsByTileIds } from '@/services/questions'
 
 function BoardLayoutPage({ form }) {
@@ -108,7 +108,7 @@ function BoardLayoutPage({ form }) {
       const newQuestionTiles = form.selectedQuestionTiles.filter((tile) => !tile.id)
 
       for (const tile of activeSpecialTiles) {
-        const savedTile = await upsertTile({ tile })
+        const savedTile = await updateTile({ tile })
         tileIdsByKey.set(getTileKey(tile), savedTile.id)
       }
 
@@ -117,19 +117,19 @@ function BoardLayoutPage({ form }) {
         tileIdsByKey.set(getTileKey(tile), savedTile.id)
       }
 
-      const attackTile = form.specialTiles.attack
-      const challengeTile = form.specialTiles.challenge
+      const penaltyTile = form.specialTiles.penalty
+      const duelTile = form.specialTiles.duel
       const board = await createBoard({
         board: {
           name: form.name.trim(),
           description: form.description.trim(),
           scoreCorrect: Number(form.scoreCorrect),
           scoreIncorrect: Number(form.scoreIncorrect),
-          scoreAttack: Number(attackTile.scoreAttack),
-          scoreChallengeWinner: Number(challengeTile.scoreChallengeWinner),
-          scoreChallengeLoser: Number(challengeTile.scoreChallengeLoser),
-          scoreChallengeDrawDefender: Number(challengeTile.scoreChallengeDrawDefender),
-          scoreChallengeDrawAttacker: Number(challengeTile.scoreChallengeDrawAttacker),
+          scoreAttack: Number(penaltyTile.scoreAttack),
+          scoreChallengeWinner: Number(duelTile.scoreChallengeWinner),
+          scoreChallengeLoser: Number(duelTile.scoreChallengeLoser),
+          scoreChallengeDrawDefender: Number(duelTile.scoreChallengeDrawDefender),
+          scoreChallengeDrawAttacker: Number(duelTile.scoreChallengeDrawAttacker),
         },
       })
 

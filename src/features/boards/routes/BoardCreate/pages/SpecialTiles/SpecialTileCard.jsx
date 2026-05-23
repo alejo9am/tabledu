@@ -9,18 +9,18 @@ import { Textarea } from '@/components/ui/textarea'
 import { Toggle } from '@/components/ui/toggle'
 import { cn } from '@/lib/utils'
 import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/components/TileIconPickerDialog'
-import { specialTileLabels } from '@/features/boards/routes/BoardCreate/pages/SpecialTiles/specialTiles.constants'
 
-const defaultTileNameByType = {
-  attack: 'Attack',
-  challenge: 'Challenge',
-  pipe: 'Pipe',
+const tileMetaByType = {
+  penalty: { name: 'Penalty', label: 'Penalty tile' },
+  duel: { name: 'Duel', label: 'Duel tile' },
+  reroll: { name: 'Reroll', label: 'Reroll tile' },
 }
 
 function SpecialTileCard({ tile, onChange }) {
   const [isIconDialogOpen, setIsIconDialogOpen] = useState(false)
   const type = tile.type
-  const tileLabel = specialTileLabels[type]
+  const tileMeta = tileMetaByType[type] ?? { name: 'Tile', label: 'Special tile' }
+  const tileLabel = tileMeta.label
 
   return (
     <article className="rounded-2xl border bg-card p-4">
@@ -77,7 +77,7 @@ function SpecialTileCard({ tile, onChange }) {
         </div>
       </div>
 
-      {type === 'challenge' ? (
+      {type === 'duel' ? (
         <div className={cn('mt-4 grid grid-cols-2 gap-3 transition-opacity', !tile.enabled && 'pointer-events-none opacity-60')}>
           <div className="grid gap-1">
             <Label id="score-challenge-winner-label" className="justify-center text-xs font-semibold text-muted-foreground">Winner</Label>
@@ -118,7 +118,7 @@ function SpecialTileCard({ tile, onChange }) {
         </div>
       ) : null}
 
-      {type === 'attack' ? (
+      {type === 'penalty' ? (
         <div className={cn('mt-4 flex flex-col items-center transition-opacity', !tile.enabled && 'pointer-events-none opacity-60')}>
           <div className="grid w-full max-w-40 gap-1">
             <Label id="score-attack-label" className="justify-center text-xs font-semibold text-muted-foreground">Points deducted</Label>
@@ -136,7 +136,7 @@ function SpecialTileCard({ tile, onChange }) {
         open={isIconDialogOpen}
         onOpenChange={setIsIconDialogOpen}
         value={tile.icon}
-        tileName={tile.name || defaultTileNameByType[type]}
+        tileName={tile.name || tileMeta.name}
         tileType={type}
         onSelect={(icon) => onChange({ icon })}
       />

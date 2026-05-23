@@ -52,7 +52,7 @@ const TileCard = forwardRef(function TileCard(
 
   const tone = useMemo(() => {
     if (tile?.type === 'question') return 'question'
-    if (tile?.type === 'attack') return 'danger'
+    if (tile?.type === 'penalty') return 'danger'
     return 'special'
   }, [tile?.type, tile?.name])
 

@@ -79,15 +79,15 @@ export function useGameFlow(gameInfo) {
       case 'question':
         setTurnPhase(TURN_PHASES.QUESTION)
         break
-      case 'pipe':
+      case 'reroll':
         setTurnPhase(TURN_PHASES.IDLE)
         break
-      case 'attack':
+      case 'penalty':
         if (!currentTeam) return
         updateScore(currentTeam.id, board.score_attack)
         finishTurn()
         break
-      case 'challenge':
+      case 'duel':
         setTurnPhase(TURN_PHASES.CHALLENGE)
         break
       default:
