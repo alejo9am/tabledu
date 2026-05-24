@@ -1,10 +1,273 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  AddSquareIcon,
+  BubbleChatQuestionIcon,
+  DashboardSquare02Icon,
+  Alert02Icon,
+} from '@hugeicons/core-free-icons'
+import { toast } from 'sonner'
+
+import PageHeader from '@/components/layout/PageHeader'
+import { useAuth } from '@/context/AuthContext'
+import useAppNavigation from '@/hooks/useAppNavigation.hook'
+import QuestionTileSheet from '@/features/tiles/components/QuestionTileSheet'
+import TilesHelpCard from '@/features/tiles/components/TilesHelpCard'
+import DeleteQuestionTileDialog from '@/features/tiles/routes/QuestionTiles/components/DeleteQuestionTileDialog'
+import QuestionTilesGrid from '@/features/tiles/routes/QuestionTiles/components/QuestionTilesGrid'
+import { fetchQuestionCountsByTileIds } from '@/services/questions'
+import { createTile, deleteTileById, fetchUserTiles, updateTile } from '@/services/tiles'
+
 function QuestionTilesPage() {
+  const { goTo } = useAppNavigation()
+  const { user, isLoading: isLoadingAuth } = useAuth()
+
+  const [questionTiles, setQuestionTiles] = useState([])
+  const [questionCountsByTileId, setQuestionCountsByTileId] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const [newTileName, setNewTileName] = useState('')
+  const [newTileIcon, setNewTileIcon] = useState('')
+  const [newTileDescription, setNewTileDescription] = useState('')
+  const [isTileSheetOpen, setIsTileSheetOpen] = useState(false)
+  const [sheetMode, setSheetMode] = useState('create')
+  const [tileToEdit, setTileToEdit] = useState(null)
+  const [isSavingTile, setIsSavingTile] = useState(false)
+
+  const [tileToDelete, setTileToDelete] = useState(null)
+  const [isDeletingTile, setIsDeletingTile] = useState(false)
+
+  const loadQuestionTiles = useCallback(async () => {
+    if (isLoadingAuth) return
+
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      if (!user?.id) {
+        setQuestionTiles([])
+        setQuestionCountsByTileId({})
+        return
+      }
+
+      const tiles = await fetchUserTiles(user.id)
+      const onlyQuestionTiles = tiles.filter((tile) => tile.type === 'question')
+      setQuestionTiles(onlyQuestionTiles)
+
+      const countsByTileId = await fetchQuestionCountsByTileIds(
+        onlyQuestionTiles.map((tile) => tile.id)
+      )
+      setQuestionCountsByTileId(countsByTileId)
+    } catch (loadError) {
+      setQuestionTiles([])
+      setQuestionCountsByTileId({})
+      setError({
+        technicalMessage: loadError instanceof Error ? loadError.message : null,
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }, [isLoadingAuth, user?.id])
+
+  useEffect(() => {
+    loadQuestionTiles()
+  }, [loadQuestionTiles])
+
+  const sortedQuestionTiles = useMemo(
+    () => [...questionTiles].sort((a, b) => a.name.localeCompare(b.name)),
+    [questionTiles]
+  )
+
+  const closeTileSheet = () => {
+    if (isSavingTile) return
+
+    setIsTileSheetOpen(false)
+    setSheetMode('create')
+    setTileToEdit(null)
+    setNewTileName('')
+    setNewTileIcon('')
+    setNewTileDescription('')
+  }
+
+  const openCreateTileSheet = () => {
+    setSheetMode('create')
+    setTileToEdit(null)
+    setNewTileName('')
+    setNewTileIcon('')
+    setNewTileDescription('')
+    setIsTileSheetOpen(true)
+  }
+
+  const openEditTileSheet = (tile) => {
+    setSheetMode('edit')
+    setTileToEdit(tile)
+    setNewTileName(tile.name ?? '')
+    setNewTileIcon(tile.icon ?? '')
+    setNewTileDescription(tile.description ?? '')
+    setIsTileSheetOpen(true)
+  }
+
+  const saveQuestionTile = async () => {
+    const trimmedName = newTileName.trim()
+    const trimmedDescription = newTileDescription.trim()
+
+    if (!trimmedName) {
+      toast.error('Add a name for the new question tile.')
+      return
+    }
+
+    if (!trimmedDescription) {
+      toast.error('Add a description. It helps students understand the topic context.')
+      return
+    }
+
+    setIsSavingTile(true)
+
+    try {
+      if (sheetMode === 'edit') {
+        if (!tileToEdit?.id) {
+          throw new Error('Missing tile id for edit.')
+        }
+
+        const updatedTile = await updateTile({
+          tile: {
+            ...tileToEdit,
+            name: trimmedName,
+            icon: newTileIcon,
+            description: trimmedDescription,
+          },
+        })
+
+        setQuestionTiles((current) => current.map((tile) => (
+          tile.id === updatedTile.id ? updatedTile : tile
+        )))
+        toast.success('Question tile updated.')
+      } else {
+        const createdTile = await createTile({
+          tile: {
+            type: 'question',
+            name: trimmedName,
+            icon: newTileIcon,
+            description: trimmedDescription,
+          },
+        })
+
+        setQuestionTiles((current) => [...current, createdTile])
+        setQuestionCountsByTileId((current) => ({ ...current, [createdTile.id]: 0 }))
+        toast.success('Question tile created.')
+      }
+
+      setIsTileSheetOpen(false)
+      setSheetMode('create')
+      setTileToEdit(null)
+      setNewTileName('')
+      setNewTileIcon('')
+      setNewTileDescription('')
+    } catch {
+      toast.error(sheetMode === 'edit' ? 'Could not update question tile.' : 'Could not create question tile.')
+    } finally {
+      setIsSavingTile(false)
+    }
+  }
+
+  const openDeleteDialog = (tile) => {
+    setTileToDelete(tile)
+  }
+
+  const closeDeleteDialog = () => {
+    if (isDeletingTile) return
+    setTileToDelete(null)
+  }
+
+  const deleteQuestionTile = async () => {
+    if (!tileToDelete?.id) return
+
+    setIsDeletingTile(true)
+    try {
+      await deleteTileById({ tileId: tileToDelete.id })
+      setQuestionTiles((current) => current.filter((tile) => tile.id !== tileToDelete.id))
+      setQuestionCountsByTileId((current) => {
+        const next = { ...current }
+        delete next[tileToDelete.id]
+        return next
+      })
+      setTileToDelete(null)
+      toast.success('Question tile deleted.')
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith('TILE_IN_USE_BY_BOARDS::')) {
+        toast.error(error.message.split('::')[1])
+      } else {
+        toast.error('Could not delete question tile.')
+      }
+    } finally {
+      setIsDeletingTile(false)
+    }
+  }
+
   return (
     <section className="flex flex-1 flex-col gap-4 p-4 pt-0" aria-label="Question tiles page">
-      <div className="rounded-xl border bg-card p-6">
-        <h1 className="text-xl font-semibold">Question Tiles</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Manage your question tiles here.</p>
+      <PageHeader
+        title="Question Tiles"
+        description="Create and manage topic-based question banks. Open each tile to manage its individual questions."
+        ctaLabel="Create tile"
+        ctaSubtitle="Add a new topic bank"
+        ctaIcon={AddSquareIcon}
+        ctaOnClick={openCreateTileSheet}
+      />
+
+      <div className="space-y-4">
+        <TilesHelpCard
+          title="How Question Tiles Work"
+          sections={[
+            {
+              icon: BubbleChatQuestionIcon,
+              iconClassName: 'text-warning',
+              title: 'Questions Live Inside',
+              description: 'Open a tile to add, edit, and organize the individual questions students will answer in gameplay.',
+            },
+            {
+              icon: DashboardSquare02Icon,
+              iconClassName: 'text-success',
+              title: 'Board Reuse',
+              description: 'The same question tile can be reused across multiple boards, so updates to its question bank stay centralized.',
+            },
+            {
+              icon: Alert02Icon,
+              iconClassName: 'text-destructive',
+              title: 'Delete with Caution',
+              description: 'Deleting a question tile permanently removes its full question bank. If the tile is already used in board layouts, remove it from those boards before deleting it here.',
+            },
+          ]}
+        />
       </div>
+
+      <QuestionTileSheet
+        open={isTileSheetOpen}
+        mode={sheetMode}
+        isSaving={isSavingTile}
+        name={newTileName}
+        icon={newTileIcon}
+        description={newTileDescription}
+        onOpenChange={(open) => {
+          if (open) {
+            setIsTileSheetOpen(true)
+            return
+          }
+
+          closeTileSheet()
+        }}
+        onNameChange={setNewTileName}
+        onIconChange={setNewTileIcon}
+        onDescriptionChange={setNewTileDescription}
+        onSave={saveQuestionTile}
+      />
+
+      <DeleteQuestionTileDialog
+        tile={tileToDelete}
+        isDeleting={isDeletingTile}
+        onCancel={closeDeleteDialog}
+        onConfirm={deleteQuestionTile}
+      />
     </section>
   )
 }
