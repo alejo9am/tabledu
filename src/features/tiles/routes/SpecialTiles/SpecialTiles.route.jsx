@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { ChampionIcon, CircleLock01Icon, PaintBoardIcon } from '@hugeicons/core-free-icons'
 import PageHeader from '@/components/layout/PageHeader'
 import ErrorState from '@/components/ui/error-state'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
+import TilesHelpCard from '@/features/tiles/components/TilesHelpCard'
 import SpecialTileEditCard from '@/features/tiles/routes/SpecialTiles/components/SpecialTileEditCard'
-import SpecialTilesHelpCard from '@/features/tiles/routes/SpecialTiles/components/SpecialTilesHelpCard'
 import { fetchUserTiles, updateTile } from '@/services/tiles'
 
 function SpecialTilesPage() {
@@ -69,7 +70,29 @@ function SpecialTilesPage() {
         description="Special tiles are fixed mechanics provided by Tabledu and shared across all your boards. You can customize their icon, name, and description for your classes."
       />
 
-      <SpecialTilesHelpCard />
+      <TilesHelpCard
+        title="How Special Tiles Work"
+        sections={[
+          {
+            icon: CircleLock01Icon,
+            iconClassName: 'text-destructive',
+            title: 'Fixed Set',
+            description: 'Tabledu provides exactly three special tiles. You cannot create or delete special tile types.',
+          },
+          {
+            icon: PaintBoardIcon,
+            iconClassName: 'text-primary',
+            title: 'Customizable',
+            description: 'Here you can edit each tile\'s icon, name, and description.',
+          },
+          {
+            icon: ChampionIcon,
+            iconClassName: 'text-warning',
+            title: 'Scoring',
+            description: 'Scoring for these mechanics is configured later per board during setup.',
+          },
+        ]}
+      />
 
       {loadError ? (
         <div className="flex justify-center">

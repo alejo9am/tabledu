@@ -3,7 +3,7 @@ import { Icon } from '@/components/ui/Icon'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Separator } from '@/components/ui/separator'
 
-function TilesHelpCard({ title = 'How this section works', sections = [], defaultOpen = true }) {
+function TilesHelpCard({ title = 'How this section works', sections = [], defaultOpen = false }) {
   return (
     <Collapsible defaultOpen={defaultOpen} className="rounded-xl border bg-card data-[state=closed]:p-2.5 data-[state=open]:p-4">
       <CollapsibleTrigger asChild>
