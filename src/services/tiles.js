@@ -2,8 +2,6 @@ import { supabase } from '@/lib/supabase'
 import { getAuthenticatedUserId } from '@/services/core/auth'
 import { throwIfSupabaseError } from '@/services/core/errors'
 
-const POSTGRES_FOREIGN_KEY_VIOLATION = '23503'
-
 export const fetchUserTiles = async (userId) => {
   if (!userId) {
     throw new Error('[supabase] Failed to fetch user tiles: missing user id')
@@ -34,7 +32,7 @@ export const createTile = async ({ tile }) => {
     .select('*')
     .maybeSingle()
 
-  throwIfSupabaseError(error, 'tiles')
+  throwIfSupabaseError(error, 'tiles', 'create')
   return data
 }
 
@@ -58,7 +56,7 @@ export const updateTile = async ({ tile }) => {
     .select('*')
     .maybeSingle()
 
-  throwIfSupabaseError(error, 'tiles')
+  throwIfSupabaseError(error, 'tiles', 'update')
   return data
 }
 
@@ -76,11 +74,7 @@ export const deleteTileById = async ({ tileId }) => {
     .eq('user_id', userId)
 
   if (error) {
-    if (error.code === POSTGRES_FOREIGN_KEY_VIOLATION) {
-      throw new Error('TILE_IN_USE_BY_BOARDS::Remove this tile from your boards before deleting it.')
-    }
-
-    throwIfSupabaseError(error, 'tiles')
+    throwIfSupabaseError(error, 'tiles', 'delete')
   }
 }
 

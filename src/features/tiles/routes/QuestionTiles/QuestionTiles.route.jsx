@@ -163,8 +163,9 @@ function QuestionTilesPage() {
       setNewTileName('')
       setNewTileIcon('')
       setNewTileDescription('')
-    } catch {
-      toast.error(sheetMode === 'edit' ? 'Could not update question tile.' : 'Could not create question tile.')
+    } catch (error) {
+      const fallbackMessage = sheetMode === 'edit' ? 'Could not update question tile.' : 'Could not create question tile.'
+      toast.error(error instanceof Error ? error.message : fallbackMessage)
     } finally {
       setIsSavingTile(false)
     }
@@ -194,11 +195,7 @@ function QuestionTilesPage() {
       setTileToDelete(null)
       toast.success('Question tile deleted.')
     } catch (error) {
-      if (error instanceof Error && error.message.startsWith('TILE_IN_USE_BY_BOARDS::')) {
-        toast.error(error.message.split('::')[1])
-      } else {
-        toast.error('Could not delete question tile.')
-      }
+      toast.error(error instanceof Error ? error.message : 'Could not delete question tile.')
     } finally {
       setIsDeletingTile(false)
     }

@@ -165,8 +165,9 @@ function QuestionTilesPage({ form }) {
       }
 
       closeTileSheet()
-    } catch {
-      toast.error(sheetMode === 'edit' ? 'Could not update tile.' : 'Could not create tile.')
+    } catch (error) {
+      const fallbackMessage = sheetMode === 'edit' ? 'Could not update tile.' : 'Could not create tile.'
+      toast.error(error instanceof Error ? error.message : fallbackMessage)
     } finally {
       setIsSavingQuestionTile(false)
     }
