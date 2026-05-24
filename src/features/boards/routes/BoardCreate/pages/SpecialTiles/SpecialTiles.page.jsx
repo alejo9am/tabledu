@@ -14,7 +14,7 @@ function SpecialTilesPage({ form }) {
   const runLoadSpecialTiles = useCallback(() => {
     setLoadError(null)
     loadSpecialTiles().catch((error) => {
-      setLoadError(error instanceof Error ? error.message : genericLoadError)
+      setLoadError(error?.message ?? genericLoadError)
     })
   }, [loadSpecialTiles])
 

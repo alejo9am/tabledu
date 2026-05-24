@@ -58,11 +58,11 @@ function QuestionTilesPage() {
         onlyQuestionTiles.map((tile) => tile.id)
       )
       setQuestionCountsByTileId(countsByTileId)
-    } catch (loadError) {
+    } catch (error) {
       setQuestionTiles([])
       setQuestionCountsByTileId({})
       setError({
-        technicalMessage: loadError instanceof Error ? loadError.message : null,
+        technicalMessage: error?.message ?? null,
       })
     } finally {
       setIsLoading(false)
@@ -165,7 +165,7 @@ function QuestionTilesPage() {
       setNewTileDescription('')
     } catch (error) {
       const fallbackMessage = sheetMode === 'edit' ? 'Could not update question tile.' : 'Could not create question tile.'
-      toast.error(error instanceof Error ? error.message : fallbackMessage)
+      toast.error(error?.message ?? fallbackMessage)
     } finally {
       setIsSavingTile(false)
     }
@@ -195,7 +195,7 @@ function QuestionTilesPage() {
       setTileToDelete(null)
       toast.success('Question tile deleted.')
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Could not delete question tile.')
+      toast.error(error?.message ?? 'Could not delete question tile.')
     } finally {
       setIsDeletingTile(false)
     }

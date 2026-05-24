@@ -39,7 +39,7 @@ function SpecialTilesPage() {
       setSpecialTiles(orderedTiles)
     } catch (error) {
       setSpecialTiles([])
-      setLoadError(error instanceof Error ? error.message : 'Could not load your special tiles.')
+      setLoadError(error?.message ?? 'Could not load your special tiles.')
     } finally {
       setIsLoading(false)
     }

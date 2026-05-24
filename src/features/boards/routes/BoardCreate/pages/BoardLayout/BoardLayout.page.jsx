@@ -142,7 +142,7 @@ function BoardLayoutPage({ form }) {
       toast.success('Board created.')
       goTo(`/boards/${board.id}`)
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unexpected error while creating board')
+      toast.error(error?.message ?? 'Unexpected error while creating board')
       setIsCreatingBoard(false)
     }
   }

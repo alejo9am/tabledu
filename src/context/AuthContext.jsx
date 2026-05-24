@@ -60,10 +60,10 @@ export function AuthProvider({ children }) {
         }
 
         setIsLoading(false)
-      } catch (err) {
-        console.error('Auth initialization error:', err)
+      } catch (error) {
+        console.error('Auth initialization error:', error)
         if (isMounted) {
-          setError(err)
+          setError(error)
           setIsLoading(false)
         }
       }
