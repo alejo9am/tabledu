@@ -47,7 +47,7 @@ function SelectedQuestionTile({ tile, questionCount, isLoadingQuestionCounts, on
           <Icon icon={Edit02Icon} className="size-4" />
           Edit
         </Button>
-        <Button type="button" size="sm" variant="destructive" onClick={() => onDeselect(tile)}>
+        <Button type="button" size="sm" variant="destructive-soft" onClick={() => onDeselect(tile)}>
           <Icon icon={RemoveCircleHalfDotIcon} className="size-4" />
           Remove
         </Button>
