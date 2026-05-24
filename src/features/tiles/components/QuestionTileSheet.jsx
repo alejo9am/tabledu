@@ -43,13 +43,13 @@ function QuestionTileSheet({
   const sheetMetadata = isEditMode
     ? {
       title: 'Edit question tile',
-      description: 'Teams will answer from this bank when they land on the tile during gameplay.',
+      description: 'This tile represents a topic from your class. Edit its name, icon, or intro without changing its questions.',
       actionLabel: 'Save changes',
       actionLoadingLabel: 'Saving changes...',
     }
     : {
       title: 'Create question tile',
-      description: 'Create the tile now and add its questions later. Teams will answer from this bank when they land on the tile during gameplay.',
+      description: 'Create a tile for a concept, topic, or unit you teach. Later, you will add the questions that belong inside it.',
       actionLabel: 'Create tile',
       actionLoadingLabel: 'Creating tile...',
     }
@@ -78,27 +78,27 @@ function QuestionTileSheet({
                 <TileCard tile={previewTile} showShadow={false} className="size-32" />
               </button>
               <p className="w-3/4 text-xs text-muted-foreground text-center">
-                Choose an icon, or use the first letter of the tile name as the icon
+                Choose an icon for the board tile, or keep the first letter of the topic.
               </p>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="create-question-tile-name">Tile name</Label>
+              <Label htmlFor="create-question-tile-name">Topic name</Label>
               <Input
                 id="create-question-tile-name"
                 value={name}
-                placeholder="e.g. Roman Empire"
+                placeholder="e.g. Culture"
                 onChange={(event) => onNameChange(event.target.value)}
                 disabled={isSaving}
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="create-question-tile-description">Description</Label>
+              <Label htmlFor="create-question-tile-description">Gameplay intro</Label>
               <Textarea
                 id="create-question-tile-description"
                 value={description}
-                placeholder="Write the prompt shown before teams answer"
+                placeholder="Tell students what kind of questions to expect."
                 onChange={(event) => onDescriptionChange(event.target.value)}
                 required
                 disabled={isSaving}
@@ -106,7 +106,7 @@ function QuestionTileSheet({
               />
               <p className="flex items-start gap-2 rounded-lg border border-warning bg-warning-200 px-3 py-2 text-xs font-semibold text-warning-850">
                 <Icon icon={InformationCircleIcon} className="mt-0.5 size-4 shrink-0" />
-                This description is shown in gameplay before the question appears.
+                Students see this before the question appears. Keep it short and focused on the topic.
               </p>
             </div>
 
