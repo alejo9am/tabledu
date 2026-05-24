@@ -77,7 +77,7 @@ function QuestionTileSheet({
               >
                 <TileCard tile={previewTile} showShadow={false} className="size-32" />
               </button>
-              <p className="w-3/4 text-xs text-muted-foreground text-center">
+              <p className="w-3/4 text-center text-xs text-muted-foreground">
                 Choose an icon for the board tile, or keep the first letter of the topic.
               </p>
             </div>

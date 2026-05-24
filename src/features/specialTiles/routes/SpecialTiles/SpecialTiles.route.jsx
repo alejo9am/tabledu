@@ -4,9 +4,9 @@ import PageHeader from '@/components/layout/PageHeader'
 import ErrorState from '@/components/ui/error-state'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
+import TilesHelpCard from '@/components/tiles/TilesHelpCard'
 import { useAuth } from '@/context/AuthContext'
-import TilesHelpCard from '@/features/tiles/components/TilesHelpCard'
-import SpecialTileEditCard from '@/features/tiles/routes/SpecialTiles/components/SpecialTileEditCard'
+import SpecialTileEditCard from '@/features/specialTiles/routes/SpecialTiles/components/SpecialTileEditCard'
 import { fetchUserTiles, updateTile } from '@/services/tiles'
 
 function SpecialTilesPage() {
@@ -108,22 +108,22 @@ function SpecialTilesPage() {
         ) : null}
 
         <div className="grid w-full items-start justify-items-center gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-3">
-        {isLoading ? (
-          <>
-            <Skeleton className="h-60 w-full max-w-md rounded-2xl" />
-            <Separator orientation="vertical" className="hidden lg:block" />
-            <Skeleton className="h-60 w-full max-w-md rounded-2xl" />
-            <Separator orientation="vertical" className="hidden lg:block" />
-            <Skeleton className="h-60 w-full max-w-md rounded-2xl" />
-          </>
-        ) : (
-          tileCards.flatMap((card, index) => [
-            card,
-            index < tileCards.length - 1 ? (
-              <Separator key={`tile-separator-${index}`} orientation="vertical" className="hidden lg:block" />
-            ) : null,
-          ])
-        )}
+          {isLoading ? (
+            <>
+              <Skeleton className="h-60 w-full max-w-md rounded-2xl" />
+              <Separator orientation="vertical" className="hidden lg:block" />
+              <Skeleton className="h-60 w-full max-w-md rounded-2xl" />
+              <Separator orientation="vertical" className="hidden lg:block" />
+              <Skeleton className="h-60 w-full max-w-md rounded-2xl" />
+            </>
+          ) : (
+            tileCards.flatMap((card, index) => [
+              card,
+              index < tileCards.length - 1 ? (
+                <Separator key={`tile-separator-${index}`} orientation="vertical" className="hidden lg:block" />
+              ) : null,
+            ])
+          )}
         </div>
       </div>
 

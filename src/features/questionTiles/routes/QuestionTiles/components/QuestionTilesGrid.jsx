@@ -1,5 +1,5 @@
 import { Skeleton } from '@/components/ui/skeleton'
-import QuestionTileCard from '@/features/tiles/routes/QuestionTiles/components/QuestionTileCard'
+import QuestionTileCard from '@/features/questionTiles/routes/QuestionTiles/components/QuestionTileCard'
 
 function QuestionTilesGrid({
   isLoading,
