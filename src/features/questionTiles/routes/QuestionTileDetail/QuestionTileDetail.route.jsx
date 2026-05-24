@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 import ErrorState from '@/components/ui/error-state'
 import { Skeleton } from '@/components/ui/skeleton'
 import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/components/TileIconPickerDialog'
+import DeleteQuestionsDialog from '@/features/questionTiles/routes/QuestionTileDetail/components/DeleteQuestionsDialog'
 import QuestionTileHeaderCard from '@/features/questionTiles/routes/QuestionTileDetail/components/QuestionTileHeaderCard'
 import QuestionTileToolbar from '@/features/questionTiles/routes/QuestionTileDetail/components/QuestionTileToolbar'
 import useQuestionTileDetail from '@/features/questionTiles/routes/QuestionTileDetail/hooks/useQuestionTileDetail.hook'
@@ -61,6 +62,12 @@ function QuestionTileDetailRoute() {
         totalCount={vm.toolbar.totalCount}
       />
       
+      <DeleteQuestionsDialog
+        questionIds={vm.table.questionIdsToDelete}
+        isDeleting={vm.bulk.isApplyingBulkAction}
+        onCancel={vm.table.cancelDeleteQuestions}
+        onConfirm={vm.table.confirmDeleteQuestions}
+      />
 
 
       <TileIconPickerDialog

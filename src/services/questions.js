@@ -80,3 +80,20 @@ export const fetchQuestionsByTileId = async (tileId) => {
   throwIfSupabaseError(error, 'questions')
   return data ?? []
 }
+
+/** Delete many questions by id for the authenticated user. */
+export const deleteQuestionsByIds = async ({ questionIds }) => {
+  const userId = await getAuthenticatedUserId()
+
+  if (!(questionIds ?? []).length) {
+    return
+  }
+
+  const { error } = await supabase
+    .from('questions')
+    .delete()
+    .in('id', questionIds)
+    .eq('user_id', userId)
+
+  throwIfSupabaseError(error, 'questions', 'delete')
+}
