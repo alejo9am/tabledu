@@ -1,9 +1,9 @@
-import { BubbleChatQuestionIcon } from '@hugeicons/core-free-icons'
 import { useParams } from 'react-router-dom'
 import ErrorState from '@/components/ui/error-state'
 import { Skeleton } from '@/components/ui/skeleton'
 import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/components/TileIconPickerDialog'
 import QuestionTileHeaderCard from '@/features/questionTiles/routes/QuestionTileDetail/components/QuestionTileHeaderCard'
+import QuestionTileToolbar from '@/features/questionTiles/routes/QuestionTileDetail/components/QuestionTileToolbar'
 import useQuestionTileDetail from '@/features/questionTiles/routes/QuestionTileDetail/hooks/useQuestionTileDetail.hook'
 
 function QuestionTileDetailRoute() {
@@ -51,20 +51,16 @@ function QuestionTileDetailRoute() {
         onBeginEdit={vm.header.beginTileHeaderEdit}
       />
 
-      <PageHeader
-        title="Question Tile"
-        description="Manage the question bank inside this tile."
-      />
 
-      <div className="rounded-2xl border bg-card p-6">
-        <p className="flex items-center gap-2 font-semibold text-foreground">
-          <Icon icon={BubbleChatQuestionIcon} className="size-5 text-primary" />
-          Tile detail route scaffold ready
-        </p>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Tile ID: <span className="font-mono">{tileId}</span>
-        </p>
-      </div>
+      <QuestionTileToolbar
+        search={vm.toolbar.search}
+        onSearchChange={vm.toolbar.setSearch}
+        answerFilter={vm.toolbar.answerFilter}
+        onAnswerFilterChange={vm.toolbar.setAnswerFilter}
+        filteredCount={vm.toolbar.filteredCount}
+        totalCount={vm.toolbar.totalCount}
+      />
+      
 
 
       <TileIconPickerDialog
