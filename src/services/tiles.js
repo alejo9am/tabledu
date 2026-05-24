@@ -2,10 +2,9 @@ import { supabase } from '@/lib/supabase'
 import { getAuthenticatedUserId } from '@/services/core/auth'
 import { throwIfSupabaseError } from '@/services/core/errors'
 
-export const fetchUserTiles = async (userId) => {
-  if (!userId) {
-    throw new Error('[supabase] Failed to fetch user tiles: missing user id')
-  }
+/** Fetch all tiles owned by the authenticated user. */
+export const fetchUserTiles = async () => {
+  const userId = await getAuthenticatedUserId()
 
   const { data, error } = await supabase
     .from('tiles')
@@ -18,16 +17,13 @@ export const fetchUserTiles = async (userId) => {
 }
 
 /**
- * Fetches only question-type tiles for a user and enriches each row
+ * Fetches only question-type tiles for the authenticated user and enriches each row
  * with `questionCount` (number of questions assigned to that tile).
  *
- * @param {string} userId - Authenticated user id.
  * @returns {Promise<Array<object>>} Question tiles with `questionCount`.
  */
-export const fetchUserQuestionTilesWithCounts = async (userId) => {
-  if (!userId) {
-    throw new Error('[supabase] Failed to fetch user question tiles: missing user id')
-  }
+export const fetchUserQuestionTilesWithCounts = async () => {
+  const userId = await getAuthenticatedUserId()
 
   const { data: tiles, error: tilesError } = await supabase
     .from('tiles')
@@ -63,6 +59,7 @@ export const fetchUserQuestionTilesWithCounts = async (userId) => {
   }))
 }
 
+/** Create one tile for the authenticated user. */
 export const createTile = async ({ tile }) => {
   const userId = await getAuthenticatedUserId()
 
@@ -82,6 +79,7 @@ export const createTile = async ({ tile }) => {
   return data
 }
 
+/** Update tile metadata for a tile owned by the authenticated user. */
 export const updateTile = async ({ tile }) => {
   const userId = await getAuthenticatedUserId()
 
@@ -106,6 +104,7 @@ export const updateTile = async ({ tile }) => {
   return data
 }
 
+/** Delete one tile by id for the authenticated user. */
 export const deleteTileById = async ({ tileId }) => {
   const userId = await getAuthenticatedUserId()
 
@@ -146,4 +145,20 @@ export const fetchBoardTiles = async (boardId) => {
   return (data ?? [])
     .map((item) => item.tile)
     .filter((tile) => tile && !seenTileIds.has(tile.id) && seenTileIds.add(tile.id))
+}
+
+/** Fetch a single tile by id (RLS-scoped read). */
+export const fetchTileById = async ({ tileId }) => {
+  if (!tileId) {
+    throw new Error('[supabase] Failed to fetch tile: missing tile id')
+  }
+
+  const { data, error } = await supabase
+    .from('tiles')
+    .select('*')
+    .eq('id', tileId)
+    .maybeSingle()
+
+  throwIfSupabaseError(error, 'tiles')
+  return data
 }

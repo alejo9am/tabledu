@@ -43,6 +43,7 @@ export const fetchQuestionsByBoardId = async (boardId) => {
   return data ?? []
 }
 
+/** Build a `{ [tileId]: count }` map for a tile id list. */
 export const fetchQuestionCountsByTileIds = async (tileIds) => {
   if (!(tileIds ?? []).length) {
     return {}
@@ -62,4 +63,20 @@ export const fetchQuestionCountsByTileIds = async (tileIds) => {
   }
 
   return countsByTileId
+}
+
+/** Fetch all questions that belong to one tile. */
+export const fetchQuestionsByTileId = async (tileId) => {
+  if (!tileId) {
+    throw new Error('[supabase] Failed to fetch questions: missing tile id')
+  }
+
+  const { data, error } = await supabase
+    .from('questions')
+    .select('*')
+    .eq('tile_id', tileId)
+    .order('id', { ascending: true })
+
+  throwIfSupabaseError(error, 'questions')
+  return data ?? []
 }
