@@ -108,7 +108,7 @@ const TileCard = forwardRef(function TileCard(
         </span>
       )}
 
-      <div className="inline-flex size-[70%] items-center justify-center">
+      <div className="inline-flex size-[70%] items-center justify-center @container">
         {showIcon ? (
           <img
             src={iconUrl}
@@ -121,7 +121,7 @@ const TileCard = forwardRef(function TileCard(
           <span
             aria-hidden="true"
             role="presentation"
-            className="inline-flex items-center justify-center font-display text-[clamp(1.75rem,4vw,3rem)] font-black leading-none text-card"
+            className="inline-flex items-center justify-center font-display text-[clamp(1.75rem,65cqw,5rem)] font-black leading-none text-card"
           >
             {fallbackLabel}
           </span>

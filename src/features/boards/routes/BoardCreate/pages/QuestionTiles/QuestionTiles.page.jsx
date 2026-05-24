@@ -12,7 +12,7 @@ import BoardCreateStepTitle from '@/features/boards/routes/BoardCreate/component
 import QuestionScoringPanel from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/QuestionScoringPanel'
 import SelectedQuestionTiles from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/SelectedQuestionTiles'
 import AvailableQuestionTilesList from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/AvailableQuestionTilesList'
-import CreateQuestionTileSheet from '@/features/tiles/components/CreateQuestionTileSheet'
+import QuestionTileSheet from '@/features/tiles/components/QuestionTileSheet'
 import { createTile, fetchUserTiles, updateTile } from '@/services/tiles'
 import { fetchQuestionCountsByTileIds } from '@/services/questions'
 
@@ -221,7 +221,7 @@ function QuestionTilesPage({ form }) {
             onCreateTile={openCreateTileSheet}
           />
 
-          <CreateQuestionTileSheet
+          <QuestionTileSheet
             open={isTileSheetOpen}
             mode={sheetMode}
             isSaving={isSavingQuestionTile}

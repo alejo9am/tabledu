@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { InformationCircleIcon } from '@hugeicons/core-free-icons'
 import TileCard from '@/components/game/TileCard'
+import { Icon } from '@/components/ui/Icon'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,7 +16,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/components/TileIconPickerDialog'
 
-function CreateQuestionTileSheet({
+function QuestionTileSheet({
   open,
   mode,
   isSaving,
@@ -63,7 +65,7 @@ function CreateQuestionTileSheet({
             </SheetDescription>
           </SheetHeader>
 
-          <div className="grid gap-4 px-6 pb-2">
+          <div className="grid gap-3 px-6 pb-2">
             <div className="flex flex-col items-center gap-2">
               <Label className="self-start">Tile icon</Label>
               <button
@@ -73,7 +75,7 @@ function CreateQuestionTileSheet({
                 aria-label="Choose tile icon"
                 disabled={isSaving}
               >
-                <TileCard tile={previewTile} showShadow={false} className="size-20" />
+                <TileCard tile={previewTile} showShadow={false} className="size-32" />
               </button>
               <p className="w-3/4 text-xs text-muted-foreground text-center">
                 Choose an icon, or use the first letter of the tile name as the icon
@@ -100,8 +102,10 @@ function CreateQuestionTileSheet({
                 onChange={(event) => onDescriptionChange(event.target.value)}
                 required
                 disabled={isSaving}
+                className="min-h-32"
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="flex items-start gap-2 rounded-lg border border-warning bg-warning-200 px-3 py-2 text-xs font-semibold text-warning-850">
+                <Icon icon={InformationCircleIcon} className="mt-0.5 size-4 shrink-0" />
                 This description is shown in gameplay before the question appears.
               </p>
             </div>
@@ -131,4 +135,4 @@ function CreateQuestionTileSheet({
   )
 }
 
-export default CreateQuestionTileSheet
+export default QuestionTileSheet
