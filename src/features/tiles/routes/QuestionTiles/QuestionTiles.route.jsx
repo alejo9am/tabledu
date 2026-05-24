@@ -8,6 +8,17 @@ import {
 import { toast } from 'sonner'
 
 import PageHeader from '@/components/layout/PageHeader'
+import { Icon } from '@/components/ui/Icon'
+import { Button } from '@/components/ui/button'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
+import ErrorState from '@/components/ui/error-state'
 import { useAuth } from '@/context/AuthContext'
 import useAppNavigation from '@/hooks/useAppNavigation.hook'
 import QuestionTileSheet from '@/features/tiles/components/QuestionTileSheet'
@@ -88,15 +99,6 @@ function QuestionTilesPage() {
     setIsTileSheetOpen(true)
   }
 
-  const openEditTileSheet = (tile) => {
-    setSheetMode('edit')
-    setTileToEdit(tile)
-    setNewTileName(tile.name ?? '')
-    setNewTileIcon(tile.icon ?? '')
-    setNewTileDescription(tile.description ?? '')
-    setIsTileSheetOpen(true)
-  }
-
   const saveQuestionTile = async () => {
     const trimmedName = newTileName.trim()
     const trimmedDescription = newTileDescription.trim()
@@ -166,10 +168,6 @@ function QuestionTilesPage() {
     }
   }
 
-  const openDeleteDialog = (tile) => {
-    setTileToDelete(tile)
-  }
-
   const closeDeleteDialog = () => {
     if (isDeletingTile) return
     setTileToDelete(null)
@@ -202,7 +200,7 @@ function QuestionTilesPage() {
         ctaOnClick={openCreateTileSheet}
       />
 
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4">
         <TilesHelpCard
           title="How Question Tiles Work"
           sections={[
@@ -226,6 +224,54 @@ function QuestionTilesPage() {
             },
           ]}
         />
+        {error ? (
+          <div className="flex justify-center">
+            <ErrorState
+              title="We could not load your question tiles"
+              description="Something went wrong while loading your topic containers. Please try again."
+              technicalDetails={error.technicalMessage}
+              onRetry={loadQuestionTiles}
+            />
+          </div>
+        ) : !isLoading && !sortedQuestionTiles.length ? (
+          <div className="flex min-h-[55vh] items-center justify-center">
+            <Empty className="w-full max-w-xl rounded-2xl border-3 border-dashed bg-card p-8">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Icon icon={BubbleChatQuestionIcon} className="size-6 text-primary" />
+                </EmptyMedia>
+                <EmptyTitle>Create your first question tile</EmptyTitle>
+                <EmptyDescription>
+                  Start with one topic you teach often. You can add its questions next, then reuse the tile when building classroom boards.
+                </EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button variant="warning" onClick={openCreateTileSheet}>
+                  <Icon icon={AddSquareIcon} className="size-4" />
+                  Create first question tile
+                </Button>
+              </EmptyContent>
+            </Empty>
+          </div>
+        ) : (
+          <QuestionTilesGrid
+            isLoading={isLoading}
+            tiles={sortedQuestionTiles}
+            isDeletingTile={isDeletingTile}
+            onOpenTile={(tileId) => goTo(`/tiles/questions/${tileId}`)}
+            onEditTile={(tile) => {
+              setSheetMode('edit')
+              setTileToEdit(tile)
+              setNewTileName(tile.name ?? '')
+              setNewTileIcon(tile.icon ?? '')
+              setNewTileDescription(tile.description ?? '')
+              setIsTileSheetOpen(true)
+            }}
+            onDeleteTile={(tile) => {
+              setTileToDelete(tile)
+            }}
+          />
+        )}
       </div>
 
       <QuestionTileSheet
