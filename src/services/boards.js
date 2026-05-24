@@ -47,6 +47,6 @@ export const createBoard = async ({ board }) => {
     .select('*')
     .maybeSingle()
 
-  throwIfSupabaseError(error, 'boards')
+  throwIfSupabaseError(error, 'boards', 'create')
   return data
 }

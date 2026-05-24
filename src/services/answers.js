@@ -28,6 +28,6 @@ export const createAnswer = async ({ answer }) => {
     .select('*')
     .maybeSingle()
 
-  throwIfSupabaseError(error, 'answers')
+  throwIfSupabaseError(error, 'answers', 'create')
   return data
 }

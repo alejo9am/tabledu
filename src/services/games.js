@@ -41,7 +41,7 @@ export const updateGameById = async ({ gameId, updates }) => {
     .select('*')
     .maybeSingle()
 
-  throwIfSupabaseError(error, 'games')
+  throwIfSupabaseError(error, 'games', 'update')
   return data
 }
 
@@ -80,6 +80,6 @@ export const createGame = async ({ boardId, userId, status = 'lobby' }) => {
     attempts += 1
   }
 
-  throwIfSupabaseError(lastError, 'games')
+  throwIfSupabaseError(lastError, 'games', 'create')
   return null
 }
