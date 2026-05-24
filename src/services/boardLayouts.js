@@ -37,6 +37,6 @@ export const createBoardLayout = async ({ boardId, layout }) => {
     .insert(rows)
     .select('*')
 
-  throwIfSupabaseError(error, 'board_layouts')
+  throwIfSupabaseError(error, 'board_layouts', 'create')
   return data ?? []
 }

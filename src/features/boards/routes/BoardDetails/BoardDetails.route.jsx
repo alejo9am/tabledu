@@ -30,9 +30,9 @@ function BoardDetailsPage() {
 
       const data = await fetchBoardById(boardId)
       setBoard(data)
-    } catch (err) {
+    } catch (error) {
       setError({
-        technicalMessage: err instanceof Error ? err.message : null,
+        technicalMessage: error?.message ?? null,
       })
     } finally {
       setIsLoading(false)

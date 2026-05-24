@@ -45,7 +45,7 @@ function NewGameSetupPage({ boardId }) {
       const data = await fetchBoardById(boardId)
       setBoard(data)
     } catch (error) {
-      setBoardError(error instanceof Error ? error.message : 'Unexpected error')
+      setBoardError(error?.message ?? 'Unexpected error')
     } finally {
       setIsLoadingBoard(false)
     }
@@ -64,7 +64,7 @@ function NewGameSetupPage({ boardId }) {
       const data = await fetchBoardTiles(boardId)
       setTiles(data)
     } catch (error) {
-      setTilesError(error instanceof Error ? error.message : 'Unexpected error')
+      setTilesError(error?.message ?? 'Unexpected error')
     } finally {
       setIsLoadingTiles(false)
     }
@@ -132,7 +132,7 @@ function NewGameSetupPage({ boardId }) {
 
       goTo('/games')
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unexpected error while creating game')
+      toast.error(error?.message ?? 'Unexpected error while creating game')
       setSubmitIntent(null)
     }
   }

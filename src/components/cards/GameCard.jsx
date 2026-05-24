@@ -41,7 +41,7 @@ function GameCard({ game = null, isLoading = false, primaryActionLabel = 'Open S
 
       <div className="flex h-full flex-col">
         <div className="flex items-start justify-between gap-3">
-          <p className="truncate text-xl leading-tight text-primary-700 dark:text-primary-200">{title}</p>
+          <p className="truncate text-xl leading-tight text-primary-700">{title}</p>
           <Badge variant={badgeVariant}>{status}</Badge>
         </div>
 

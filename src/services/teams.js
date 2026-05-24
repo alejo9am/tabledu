@@ -34,7 +34,7 @@ export const updateTeamById = async ({ teamId, gameId, updates }) => {
     .select('*')
     .maybeSingle()
 
-  throwIfSupabaseError(error, 'teams')
+  throwIfSupabaseError(error, 'teams', 'update')
   if (!data) {
     return null
   }
@@ -69,6 +69,6 @@ export const createTeams = async ({ gameId, teams }) => {
     .insert(payload)
     .select('*')
 
-  throwIfSupabaseError(error, 'teams')
+  throwIfSupabaseError(error, 'teams', 'create')
   return data ?? []
 }

@@ -94,7 +94,7 @@ function TeamEditorCard({
             <TooltipTrigger asChild>
               <Button
                 type="button"
-                variant="destructive"
+                variant="destructive-soft"
                 size="icon"
                 onClick={() => removeTeam(index)}
                 disabled={isSubmitting || !canRemoveTeams}

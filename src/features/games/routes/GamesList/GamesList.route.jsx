@@ -37,9 +37,9 @@ function GamesListRoute() {
 
       const data = await fetchGames()
       setGames(data)
-    } catch (err) {
+    } catch (error) {
       setError({
-        technicalMessage: err instanceof Error ? err.message : null,
+        technicalMessage: error?.message ?? null,
       })
     } finally {
       setIsLoading(false)

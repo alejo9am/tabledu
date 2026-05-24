@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { ChampionIcon, CircleLock01Icon, PaintBoardIcon } from '@hugeicons/core-free-icons'
 import PageHeader from '@/components/layout/PageHeader'
 import ErrorState from '@/components/ui/error-state'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
+import TilesHelpCard from '@/features/tiles/components/TilesHelpCard'
 import SpecialTileEditCard from '@/features/tiles/routes/SpecialTiles/components/SpecialTileEditCard'
-import SpecialTilesHelpCard from '@/features/tiles/routes/SpecialTiles/components/SpecialTilesHelpCard'
 import { fetchUserTiles, updateTile } from '@/services/tiles'
 
 function SpecialTilesPage() {
@@ -38,7 +39,7 @@ function SpecialTilesPage() {
       setSpecialTiles(orderedTiles)
     } catch (error) {
       setSpecialTiles([])
-      setLoadError(error instanceof Error ? error.message : 'Could not load your special tiles.')
+      setLoadError(error?.message ?? 'Could not load your special tiles.')
     } finally {
       setIsLoading(false)
     }
@@ -69,21 +70,44 @@ function SpecialTilesPage() {
         description="Special tiles are fixed mechanics provided by Tabledu and shared across all your boards. You can customize their icon, name, and description for your classes."
       />
 
-      <SpecialTilesHelpCard />
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4">
+        <TilesHelpCard
+          title="How Special Tiles Work"
+          sections={[
+            {
+              icon: CircleLock01Icon,
+              iconClassName: 'text-destructive',
+              title: 'Fixed Set',
+              description: 'Tabledu provides exactly three special tiles. You cannot create or delete special tile types.',
+            },
+            {
+              icon: PaintBoardIcon,
+              iconClassName: 'text-primary',
+              title: 'Customizable',
+              description: 'Here you can edit each tile\'s icon, name, and description.',
+            },
+            {
+              icon: ChampionIcon,
+              iconClassName: 'text-warning',
+              title: 'Scoring',
+              description: 'Scoring for these mechanics is configured later per board during setup.',
+            },
+          ]}
+        />
 
-      {loadError ? (
-        <div className="flex justify-center">
-          <ErrorState
-            title="Could not load special tiles"
-            description="We could not load your platform special tiles. Retry to continue editing them."
-            technicalDetails={loadError}
-            retryLabel="Retry"
-            onRetry={loadSpecialTiles}
-          />
-        </div>
-      ) : null}
+        {loadError ? (
+          <div className="flex justify-center">
+            <ErrorState
+              title="Could not load special tiles"
+              description="We could not load your platform special tiles. Retry to continue editing them."
+              technicalDetails={loadError}
+              retryLabel="Retry"
+              onRetry={loadSpecialTiles}
+            />
+          </div>
+        ) : null}
 
-      <div className="grid items-start justify-items-center gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-3">
+        <div className="grid w-full items-start justify-items-center gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-3">
         {isLoading ? (
           <>
             <Skeleton className="h-60 w-full max-w-md rounded-2xl" />
@@ -100,6 +124,7 @@ function SpecialTilesPage() {
             ) : null,
           ])
         )}
+        </div>
       </div>
 
     </section>

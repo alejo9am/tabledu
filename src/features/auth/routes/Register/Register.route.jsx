@@ -59,8 +59,8 @@ function RegisterPage() {
       }
 
       setNotice('Verify your email using the link we just sent. No email? The account may already exist.')
-    } catch (err) {
-      setError(parseSupabaseError(err))
+    } catch (error) {
+      setError(parseSupabaseError(error))
     } finally {
       setLoading(false)
     }

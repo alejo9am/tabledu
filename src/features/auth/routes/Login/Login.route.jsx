@@ -42,8 +42,8 @@ function LoginPage() {
       }
 
       replaceTo(from)
-    } catch (err) {
-      setError([{ message: err?.message ?? String(err) }])
+    } catch (error) {
+      setError([{ message: error?.message ?? String(error) }])
     } finally {
       setLoading(false)
     }

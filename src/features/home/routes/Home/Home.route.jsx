@@ -114,8 +114,8 @@ function HomePage() {
     })
   }, [hasBoards, hasGames, hasQuestions])
   const shouldShowOnboarding = useMemo(
-    () => onboardingStepsWithStatus.some((step) => !step.isDone),
-    [onboardingStepsWithStatus]
+    () => !isLoadingBoards && onboardingStepsWithStatus.some((step) => !step.isDone),
+    [isLoadingBoards, onboardingStepsWithStatus]
   )
 
   const overviewCards = useMemo(() => {

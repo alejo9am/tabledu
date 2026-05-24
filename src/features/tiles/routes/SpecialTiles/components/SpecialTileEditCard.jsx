@@ -13,17 +13,17 @@ import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/component
 
 const tileMetaByType = {
   duel: {
-    label: 'Duel',
+    label: 'Duel tile',
     mechanic:
       'When a team lands here, it challenges another team in a duel made of two questions. Duel scoring is resolved with board-level winner/loser/draw values.',
   },
   penalty: {
-    label: 'Penalty',
+    label: 'Penalty tile',
     mechanic:
       'When a team lands here, it immediately receives the penalty score configured during board setup.',
   },
   reroll: {
-    label: 'Reroll',
+    label: 'Reroll tile',
     mechanic:
       'When a team lands here, it gets an extra die roll and moves again right away.',
   },
@@ -87,9 +87,9 @@ function SpecialTileEditCard({ tile, onSave }) {
         icon,
       })
       setIsEditing(false)
-      toast.success(`${tileMeta.label} tile updated.`)
+      toast.success(`${tileMeta.label} updated.`)
     } catch {
-      toast.error(`Could not update ${tileMeta.label} tile.`)
+      toast.error(`Could not update ${tileMeta.label}.`)
     } finally {
       setIsSaving(false)
     }
@@ -97,7 +97,7 @@ function SpecialTileEditCard({ tile, onSave }) {
 
   return (
     <article className={`w-full max-w-xs rounded-2xl border bg-card p-4 ${isEditing ? 'border-primary shadow-sm shadow-primary/30' : ''}`}>
-      <div className="mb-3 flex items-start gap-4">
+      <div className="mb-3 flex items-center gap-4">
         <button
           type="button"
           onClick={() => setIsIconDialogOpen(true)}
@@ -110,7 +110,7 @@ function SpecialTileEditCard({ tile, onSave }) {
 
         <div className="min-w-0 flex-1">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">{tileMeta.label} tile</p>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">{tileMeta.label}</p>
             {isEditing ? (
               <div className="mt-3">
                 <Label htmlFor={`${tile.id}-name`} className="text-xs">Tile name</Label>
