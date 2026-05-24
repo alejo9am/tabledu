@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { AddSquareIcon, CheckmarkSquare02Icon } from '@hugeicons/core-free-icons'
+import { AddSquareIcon, ArrowRight01Icon, CheckmarkSquare02Icon } from '@hugeicons/core-free-icons'
 import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
+import { Button } from '@/components/ui/button'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { NumberInput } from '@/components/ui/number-input'
@@ -11,15 +13,30 @@ import { cn } from '@/lib/utils'
 import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/components/TileIconPickerDialog'
 
 const tileMetaByType = {
-  penalty: { name: 'Penalty', label: 'Penalty tile' },
-  duel: { name: 'Duel', label: 'Duel tile' },
-  reroll: { name: 'Reroll', label: 'Reroll tile' },
+  duel: {
+    name: 'Duel',
+    label: 'Duel tile',
+    mechanic:
+      'When a team lands here, it challenges another team in a duel made of two questions. Configure the winner, loser, and draw scores here for this board.',
+  },
+  penalty: {
+    name: 'Penalty',
+    label: 'Penalty tile',
+    mechanic:
+      'When a team lands here, it immediately receives the penalty score configured here for this board.',
+  },
+  reroll: {
+    name: 'Reroll',
+    label: 'Reroll tile',
+    mechanic:
+      'When a team lands here, it gets an extra die roll and moves again right away. This mechanic has no extra score setting.',
+  },
 }
 
 function SpecialTileCard({ tile, scores, onChange, onScoresChange }) {
   const [isIconDialogOpen, setIsIconDialogOpen] = useState(false)
   const type = tile.type
-  const tileMeta = tileMetaByType[type] ?? { name: 'Tile', label: 'Special tile' }
+  const tileMeta = tileMetaByType[type] ?? { name: 'Tile', label: 'Special tile', mechanic: '' }
   const tileLabel = tileMeta.label
 
   return (
@@ -38,6 +55,18 @@ function SpecialTileCard({ tile, scores, onChange, onScoresChange }) {
           {tile.enabled ? 'Included' : 'Add tile'}
         </Toggle>
       </div>
+
+      <Collapsible>
+        <CollapsibleTrigger asChild>
+          <Button type="button" variant="link" className="group h-8 w-fit px-1 text-xs text-muted-foreground">
+            <Icon icon={ArrowRight01Icon} className="size-3 transition-transform group-data-[state=open]:rotate-90" />
+            More details
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <p className="rounded-xl bg-muted/40 p-3 text-sm text-foreground">{tileMeta.mechanic}</p>
+        </CollapsibleContent>
+      </Collapsible>
 
       <div className={cn('mt-4 space-y-4 transition-opacity', !tile.enabled && 'pointer-events-none opacity-60')}>
         <div className="grid grid-cols-[5.5rem_1fr] items-center gap-4 sm:grid-cols-[6.5rem_1fr]">
@@ -65,13 +94,13 @@ function SpecialTileCard({ tile, scores, onChange, onScoresChange }) {
         </div>
 
         <div className="grid gap-1">
-          <Label className="font-semibold text-muted-foreground" htmlFor={`${type}-tile-description`}>Description</Label>
+          <Label className="ml-1 font-semibold text-muted-foreground" htmlFor={`${type}-tile-description`}>Description</Label>
           <Textarea
             id={`${type}-tile-description`}
             value={tile.description}
             disabled={!tile.enabled}
             aria-label={`${tileLabel} description`}
-            className="min-h-18 bg-card"
+            className="min-h-18 mt-1 bg-card"
             onChange={(event) => onChange({ description: event.target.value })}
           />
         </div>
