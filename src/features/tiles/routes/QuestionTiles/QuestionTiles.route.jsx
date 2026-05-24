@@ -14,15 +14,13 @@ import QuestionTileSheet from '@/features/tiles/components/QuestionTileSheet'
 import TilesHelpCard from '@/features/tiles/components/TilesHelpCard'
 import DeleteQuestionTileDialog from '@/features/tiles/routes/QuestionTiles/components/DeleteQuestionTileDialog'
 import QuestionTilesGrid from '@/features/tiles/routes/QuestionTiles/components/QuestionTilesGrid'
-import { fetchQuestionCountsByTileIds } from '@/services/questions'
-import { createTile, deleteTileById, fetchUserTiles, updateTile } from '@/services/tiles'
+import { createTile, deleteTileById, fetchUserQuestionTilesWithCounts, updateTile } from '@/services/tiles'
 
 function QuestionTilesPage() {
   const { goTo } = useAppNavigation()
   const { user, isLoading: isLoadingAuth } = useAuth()
 
   const [questionTiles, setQuestionTiles] = useState([])
-  const [questionCountsByTileId, setQuestionCountsByTileId] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -46,21 +44,13 @@ function QuestionTilesPage() {
     try {
       if (!user?.id) {
         setQuestionTiles([])
-        setQuestionCountsByTileId({})
         return
       }
 
-      const tiles = await fetchUserTiles(user.id)
-      const onlyQuestionTiles = tiles.filter((tile) => tile.type === 'question')
-      setQuestionTiles(onlyQuestionTiles)
-
-      const countsByTileId = await fetchQuestionCountsByTileIds(
-        onlyQuestionTiles.map((tile) => tile.id)
-      )
-      setQuestionCountsByTileId(countsByTileId)
+      const tiles = await fetchUserQuestionTilesWithCounts(user.id)
+      setQuestionTiles(tiles)
     } catch (error) {
       setQuestionTiles([])
-      setQuestionCountsByTileId({})
       setError({
         technicalMessage: error?.message ?? null,
       })
@@ -131,15 +121,21 @@ function QuestionTilesPage() {
 
         const updatedTile = await updateTile({
           tile: {
-            ...tileToEdit,
+            id: tileToEdit.id,
+            type: tileToEdit.type,
             name: trimmedName,
             icon: newTileIcon,
             description: trimmedDescription,
           },
         })
 
+        const enrichedUpdatedTile = {
+          ...updatedTile,
+          questionCount: tileToEdit?.questionCount ?? 0,
+        }
+
         setQuestionTiles((current) => current.map((tile) => (
-          tile.id === updatedTile.id ? updatedTile : tile
+          tile.id === enrichedUpdatedTile.id ? enrichedUpdatedTile : tile
         )))
         toast.success('Question tile updated.')
       } else {
@@ -152,8 +148,7 @@ function QuestionTilesPage() {
           },
         })
 
-        setQuestionTiles((current) => [...current, createdTile])
-        setQuestionCountsByTileId((current) => ({ ...current, [createdTile.id]: 0 }))
+        setQuestionTiles((current) => [...current, { ...createdTile, questionCount: 0 }])
         toast.success('Question tile created.')
       }
 
@@ -187,11 +182,6 @@ function QuestionTilesPage() {
     try {
       await deleteTileById({ tileId: tileToDelete.id })
       setQuestionTiles((current) => current.filter((tile) => tile.id !== tileToDelete.id))
-      setQuestionCountsByTileId((current) => {
-        const next = { ...current }
-        delete next[tileToDelete.id]
-        return next
-      })
       setTileToDelete(null)
       toast.success('Question tile deleted.')
     } catch (error) {

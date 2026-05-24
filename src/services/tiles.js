@@ -17,6 +17,52 @@ export const fetchUserTiles = async (userId) => {
   return data ?? []
 }
 
+/**
+ * Fetches only question-type tiles for a user and enriches each row
+ * with `questionCount` (number of questions assigned to that tile).
+ *
+ * @param {string} userId - Authenticated user id.
+ * @returns {Promise<Array<object>>} Question tiles with `questionCount`.
+ */
+export const fetchUserQuestionTilesWithCounts = async (userId) => {
+  if (!userId) {
+    throw new Error('[supabase] Failed to fetch user question tiles: missing user id')
+  }
+
+  const { data: tiles, error: tilesError } = await supabase
+    .from('tiles')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('type', 'question')
+    .order('name', { ascending: true })
+
+  throwIfSupabaseError(tilesError, 'tiles')
+
+  const questionTiles = tiles ?? []
+  if (!questionTiles.length) {
+    return []
+  }
+
+  const tileIds = questionTiles.map((tile) => tile.id)
+  const { data: questions, error: questionsError } = await supabase
+    .from('questions')
+    .select('tile_id')
+    .in('tile_id', tileIds)
+
+  throwIfSupabaseError(questionsError, 'questions')
+
+  const countsByTileId = {}
+  for (const question of questions ?? []) {
+    const tileId = question.tile_id
+    countsByTileId[tileId] = (countsByTileId[tileId] ?? 0) + 1
+  }
+
+  return questionTiles.map((tile) => ({
+    ...tile,
+    questionCount: countsByTileId[tile.id] ?? 0,
+  }))
+}
+
 export const createTile = async ({ tile }) => {
   const userId = await getAuthenticatedUserId()
 
