@@ -58,7 +58,7 @@ function QuestionTilesPage() {
         return
       }
 
-      const tiles = await fetchUserQuestionTilesWithCounts(user.id)
+      const tiles = await fetchUserQuestionTilesWithCounts()
       setQuestionTiles(tiles)
     } catch (error) {
       setQuestionTiles([])

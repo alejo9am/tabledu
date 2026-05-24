@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group'
 import { Separator } from '@/components/ui/separator'
 
-import { useAuth } from '@/context/AuthContext'
 import BoardCreateStepTitle from '@/features/boards/routes/BoardCreate/components/BoardCreateStepTitle'
 import QuestionScoringPanel from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/QuestionScoringPanel'
 import SelectedQuestionTiles from '@/features/boards/routes/BoardCreate/pages/QuestionTiles/SelectedQuestionTiles'
@@ -17,7 +16,6 @@ import { createTile, fetchUserTiles, updateTile } from '@/services/tiles'
 import { fetchQuestionCountsByTileIds } from '@/services/questions'
 
 function QuestionTilesPage({ form }) {
-  const { user } = useAuth()
   const [availableQuestionTiles, setAvailableQuestionTiles] = useState([])
   const [questionCountsByTileId, setQuestionCountsByTileId] = useState({})
   const [isLoadingQuestionTiles, setIsLoadingQuestionTiles] = useState(true)
@@ -61,7 +59,7 @@ function QuestionTilesPage({ form }) {
     setIsLoadingQuestionTiles(true)
 
     try {
-      const tiles = await fetchUserTiles(user?.id)
+      const tiles = await fetchUserTiles()
       const questionTiles = tiles.filter((tile) => tile.type === 'question')
       setAvailableQuestionTiles(questionTiles)
 
@@ -76,7 +74,7 @@ function QuestionTilesPage({ form }) {
     } finally {
       setIsLoadingQuestionTiles(false)
     }
-  }, [user?.id])
+  }, [])
 
   useEffect(() => {
     loadQuestionTiles()

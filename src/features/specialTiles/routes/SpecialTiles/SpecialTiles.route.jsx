@@ -10,7 +10,7 @@ import SpecialTileEditCard from '@/features/specialTiles/routes/SpecialTiles/com
 import { fetchUserTiles, updateTile } from '@/services/tiles'
 
 function SpecialTilesPage() {
-  const { user, isLoading: isLoadingAuth } = useAuth()
+  const { isLoading: isLoadingAuth } = useAuth()
   const [specialTiles, setSpecialTiles] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState(null)
@@ -22,7 +22,7 @@ function SpecialTilesPage() {
     setLoadError(null)
 
     try {
-      const tiles = await fetchUserTiles(user?.id)
+      const tiles = await fetchUserTiles()
       const specialTiles = tiles.filter((tile) => tile.type !== 'question')
       const requiredOrder = ['duel', 'penalty', 'reroll']
       const orderedTiles = []
@@ -43,7 +43,7 @@ function SpecialTilesPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [isLoadingAuth, user?.id])
+  }, [isLoadingAuth])
 
   useEffect(() => {
     loadSpecialTiles()
