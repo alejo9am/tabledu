@@ -3,6 +3,7 @@ import ErrorState from '@/components/ui/error-state'
 import { Skeleton } from '@/components/ui/skeleton'
 import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/components/TileIconPickerDialog'
 import DeleteQuestionsDialog from '@/features/questionTiles/routes/QuestionTileDetail/components/DeleteQuestionsDialog'
+import QuestionTileBulkActionsBar from '@/features/questionTiles/routes/QuestionTileDetail/components/QuestionTileBulkActionsBar'
 import QuestionTileHeaderCard from '@/features/questionTiles/routes/QuestionTileDetail/components/QuestionTileHeaderCard'
 import QuestionTileToolbar from '@/features/questionTiles/routes/QuestionTileDetail/components/QuestionTileToolbar'
 import useQuestionTileDetail from '@/features/questionTiles/routes/QuestionTileDetail/hooks/useQuestionTileDetail.hook'
@@ -61,6 +62,9 @@ function QuestionTileDetailRoute() {
         filteredCount={vm.toolbar.filteredCount}
         totalCount={vm.toolbar.totalCount}
       />
+        
+        
+      <QuestionTileBulkActionsBar model={vm.bulk} />
       
       <DeleteQuestionsDialog
         questionIds={vm.table.questionIdsToDelete}

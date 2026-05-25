@@ -97,3 +97,26 @@ export const deleteQuestionsByIds = async ({ questionIds }) => {
 
   throwIfSupabaseError(error, 'questions', 'delete')
 }
+
+/** Move multiple questions to another tile in one update query. */
+export const moveQuestionsToTile = async ({ questionIds, destinationTileId }) => {
+  const userId = await getAuthenticatedUserId()
+
+  if (!(questionIds ?? []).length) {
+    return []
+  }
+
+  if (!destinationTileId) {
+    throw new Error('[supabase] Failed to move questions: missing destination tile id')
+  }
+
+  const { data, error } = await supabase
+    .from('questions')
+    .update({ tile_id: destinationTileId })
+    .in('id', questionIds)
+    .eq('user_id', userId)
+    .select('id')
+
+  throwIfSupabaseError(error, 'questions', 'update')
+  return data ?? []
+}
