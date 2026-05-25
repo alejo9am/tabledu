@@ -52,6 +52,7 @@ function QuestionTileDetailRoute() {
         onSave={vm.header.saveTileHeader}
         onCancel={vm.header.cancelTileHeaderEdit}
         onBeginEdit={vm.header.beginTileHeaderEdit}
+        onAddQuestion={vm.table.openAddRow}
       />
 
 
@@ -62,7 +63,6 @@ function QuestionTileDetailRoute() {
         onAnswerFilterChange={vm.toolbar.setAnswerFilter}
         filteredCount={vm.toolbar.filteredCount}
         totalCount={vm.toolbar.totalCount}
-        onAddQuestion={vm.table.openAddRow}
       />
         
         

@@ -1,6 +1,5 @@
 import { Cancel01Icon, Search01Icon } from '@hugeicons/core-free-icons'
 import { Icon } from '@/components/ui/Icon'
-import { Button } from '@/components/ui/button'
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 

@@ -1,4 +1,4 @@
-import { Cancel01Icon, CheckmarkCircle02Icon, Edit02Icon } from '@hugeicons/core-free-icons'
+import { Add01Icon, Cancel01Icon, CheckmarkCircle02Icon, Edit02Icon } from '@hugeicons/core-free-icons'
 import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
 import { Badge } from '@/components/ui/badge'
@@ -20,6 +20,7 @@ function QuestionTileHeaderCard({
   onSave,
   onCancel,
   onBeginEdit,
+  onAddQuestion,
 }) {
   return (
     <div className="relative rounded-3xl border bg-card p-4 sm:p-6">
@@ -92,8 +93,12 @@ function QuestionTileHeaderCard({
         </div>
       </div>
 
-      <div className="mt-4 flex justify-start">
+      <div className="mt-4 flex items-center justify-between gap-3">
         <Badge variant="ghost" className="px-3 py-1 text-sm">Total questions: {questionCount}</Badge>
+        <Button size="sm" variant="warning" onClick={onAddQuestion}>
+          <Icon icon={Add01Icon} className="size-4" />
+          Add question
+        </Button>
       </div>
     </div>
   )
