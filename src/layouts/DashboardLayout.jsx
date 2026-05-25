@@ -242,6 +242,10 @@ function getDashboardBreadcrumbs(pathname) {
     case pathname === "/tiles/questions":
       breadcrumbs.push({ title: "Question Tiles" })
       break
+    case /^\/tiles\/questions\/[^/]+$/.test(pathname):
+      breadcrumbs.push({ title: "Question Tiles", to: "/tiles/questions" })
+      breadcrumbs.push({ title: "Question Bank" })
+      break
     case pathname === "/games":
       breadcrumbs.push({ title: "Game Sessions" })
       break

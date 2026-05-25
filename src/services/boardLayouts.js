@@ -17,6 +17,7 @@ export const fetchBoardLayout = async (boardId) => {
   return data ?? []
 }
 
+/** Create the 29 persisted layout rows for one board. */
 export const createBoardLayout = async ({ boardId, layout }) => {
   if (!boardId) {
     throw new Error('[supabase] Failed to create board_layouts: missing board id')

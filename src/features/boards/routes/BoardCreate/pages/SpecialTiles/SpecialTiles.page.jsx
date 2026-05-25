@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import ErrorState from '@/components/ui/error-state'
 import BoardCreateStepTitle from '@/features/boards/routes/BoardCreate/components/BoardCreateStepTitle'
 import SpecialTileCard from '@/features/boards/routes/BoardCreate/pages/SpecialTiles/SpecialTileCard'
-import TilesHelpCard from '@/features/tiles/components/TilesHelpCard'
+import TilesHelpCard from '@/components/tiles/TilesHelpCard'
 
 function SpecialTilesPage({ form }) {
   const { specialTiles, isLoadingSpecialTiles, loadSpecialTiles } = form

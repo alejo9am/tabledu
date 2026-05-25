@@ -4,6 +4,7 @@ import { Icon } from '@/components/ui/Icon'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -21,7 +22,7 @@ function SelectedQuestionTile({ tile, questionCount, isLoadingQuestionCounts, on
       : 'This bank has enough questions for good variety during play.'
 
   return (
-    <article className="flex w-full max-w-52 flex-col gap-3 rounded-xl border bg-card p-3">
+    <article className="flex w-full max-w-52 shrink-0 flex-col gap-3 rounded-xl border bg-card p-3">
       <div className="flex items-center gap-3">
         <TileCard tile={{ ...tile, type: 'question' }} showShadow={false} className="size-16 shrink-0" />
         <div className="min-w-0 flex-1 space-y-2">
@@ -106,18 +107,21 @@ function SelectedQuestionTiles({ selectedTiles, questionCountsByTileId, isLoadin
           </EmptyHeader>
         </Empty>
       ) : (
-        <div className="mt-3 flex flex-wrap justify-center gap-3 lg:flex-nowrap">
-          {selectedTiles.map((tile) => (
-            <SelectedQuestionTile
-              key={tile.id}
-              tile={tile}
-              questionCount={questionCountsByTileId[tile.id] ?? 0}
-              isLoadingQuestionCounts={isLoadingQuestionCounts}
-              onDeselect={onDeselect}
-              onEdit={onEdit}
-            />
-          ))}
-        </div>
+        <ScrollArea className="mt-3 w-full">
+          <div className="flex min-w-full justify-center gap-3 pb-3">
+            {selectedTiles.map((tile) => (
+              <SelectedQuestionTile
+                key={tile.id}
+                tile={tile}
+                questionCount={questionCountsByTileId[tile.id] ?? 0}
+                isLoadingQuestionCounts={isLoadingQuestionCounts}
+                onDeselect={onDeselect}
+                onEdit={onEdit}
+              />
+            ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       )}
     </div>
   )

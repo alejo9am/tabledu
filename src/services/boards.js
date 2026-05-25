@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase'
 import { getAuthenticatedUserId } from '@/services/core/auth'
 import { throwIfSupabaseError } from '@/services/core/errors'
 
+/** Fetch one board by id (RLS-scoped read). */
 export const fetchBoardById = async (boardId) => {
   if (!boardId) {
     throw new Error('[supabase] Failed to fetch board: missing board id')
@@ -17,6 +18,7 @@ export const fetchBoardById = async (boardId) => {
   return data
 }
 
+/** Fetch all boards visible to the authenticated user. */
 export const fetchBoards = async () => {
   const { data, error } = await supabase
     .from('boards')
@@ -27,6 +29,7 @@ export const fetchBoards = async () => {
   return data ?? []
 }
 
+/** Create one board with scoring settings for the authenticated user. */
 export const createBoard = async ({ board }) => {
   const userId = await getAuthenticatedUserId()
 

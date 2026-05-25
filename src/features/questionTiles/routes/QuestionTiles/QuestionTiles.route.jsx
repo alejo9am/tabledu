@@ -19,12 +19,12 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 import ErrorState from '@/components/ui/error-state'
+import QuestionTileSheet from '@/components/tiles/QuestionTileSheet'
+import TilesHelpCard from '@/components/tiles/TilesHelpCard'
 import { useAuth } from '@/context/AuthContext'
 import useAppNavigation from '@/hooks/useAppNavigation.hook'
-import QuestionTileSheet from '@/features/tiles/components/QuestionTileSheet'
-import TilesHelpCard from '@/features/tiles/components/TilesHelpCard'
-import DeleteQuestionTileDialog from '@/features/tiles/routes/QuestionTiles/components/DeleteQuestionTileDialog'
-import QuestionTilesGrid from '@/features/tiles/routes/QuestionTiles/components/QuestionTilesGrid'
+import DeleteQuestionTileDialog from '@/features/questionTiles/routes/QuestionTiles/components/DeleteQuestionTileDialog'
+import QuestionTilesGrid from '@/features/questionTiles/routes/QuestionTiles/components/QuestionTilesGrid'
 import { createTile, deleteTileById, fetchUserQuestionTilesWithCounts, updateTile } from '@/services/tiles'
 
 function QuestionTilesPage() {
@@ -58,7 +58,7 @@ function QuestionTilesPage() {
         return
       }
 
-      const tiles = await fetchUserQuestionTilesWithCounts(user.id)
+      const tiles = await fetchUserQuestionTilesWithCounts()
       setQuestionTiles(tiles)
     } catch (error) {
       setQuestionTiles([])

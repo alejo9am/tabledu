@@ -5,6 +5,10 @@
 // - 23502: not_null_violation
 // - 42501: insufficient_privilege (often RLS/policy denial)
 
+/**
+ * Translate a Supabase/Postgres error into a user-facing Error and throw it.
+ * If `error` is falsy, this function is a no-op.
+ */
 export const throwIfSupabaseError = (error, entityName, operation = 'fetch') => {
   if (!error) return
 

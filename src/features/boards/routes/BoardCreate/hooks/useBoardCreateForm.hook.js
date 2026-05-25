@@ -7,7 +7,7 @@ const hasText = (value) => String(value ?? '').trim().length > 0
 const hasNumber = (value) => Number.isFinite(Number(value))
 
 export function useBoardCreateForm() {
-  const { user, isLoading: isLoadingAuth } = useAuth()
+  const { isLoading: isLoadingAuth } = useAuth()
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [specialTiles, setSpecialTiles] = useState(null)
@@ -35,7 +35,7 @@ export function useBoardCreateForm() {
     setIsLoadingSpecialTiles(true)
 
     try {
-      const tiles = await fetchUserTiles(user?.id)
+      const tiles = await fetchUserTiles()
       const persistedSpecialTiles = tiles.filter((tile) => tile.type !== 'question')
       const penalty = persistedSpecialTiles.find((tile) => tile.type === 'penalty')
       const reroll = persistedSpecialTiles.find((tile) => tile.type === 'reroll')
@@ -56,7 +56,7 @@ export function useBoardCreateForm() {
     } finally {
       setIsLoadingSpecialTiles(false)
     }
-  }, [isLoadingAuth, specialTiles, user?.id])
+  }, [isLoadingAuth, specialTiles])
 
   const updateSpecialTile = useCallback((type, updates) => {
     setSpecialTiles((current) => ({

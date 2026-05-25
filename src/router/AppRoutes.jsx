@@ -6,8 +6,9 @@ import BoardDetailsRoute from '@/features/boards/routes/BoardDetails/BoardDetail
 import GamesListRoute from '@/features/games/routes/GamesList/GamesList.route'
 import NewGameRoute from '@/features/games/routes/NewGame/NewGame.route'
 import HomeRoute from '@/features/home/routes/Home/Home.route'
-import SpecialTilesRoute from '@/features/tiles/routes/SpecialTiles/SpecialTiles.route'
-import QuestionTilesRoute from '@/features/tiles/routes/QuestionTiles/QuestionTiles.route'
+import SpecialTilesRoute from '@/features/specialTiles/routes/SpecialTiles/SpecialTiles.route'
+import QuestionTilesRoute from '@/features/questionTiles/routes/QuestionTiles/QuestionTiles.route'
+import QuestionTileDetailRoute from '@/features/questionTiles/routes/QuestionTileDetail/QuestionTileDetail.route'
 import DashboardLayout from '@/layouts/DashboardLayout'
 import LoginRoute from '@/features/auth/routes/Login/Login.route'
 import NotFoundRoute from '@/features/system/routes/NotFound/NotFound.route'
@@ -26,6 +27,7 @@ function AppRoutes() {
           <Route path="/boards/:boardId" element={<BoardDetailsRoute />} />
           <Route path="/tiles/special" element={<SpecialTilesRoute />} />
           <Route path="/tiles/questions" element={<QuestionTilesRoute />} />
+          <Route path="/tiles/questions/:tileId" element={<QuestionTileDetailRoute />} />
           <Route path="/games" element={<GamesListRoute />} />
         </Route>
         <Route path="/games/new" element={<NewGameRoute />} />
