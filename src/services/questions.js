@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { getAuthenticatedUserId } from '@/services/core/auth'
 import { throwIfSupabaseError } from '@/services/core/errors'
 
 /** Fetch all questions for current authenticated user (RLS-scoped). */
@@ -79,6 +80,49 @@ export const fetchQuestionsByTileId = async (tileId) => {
 
   throwIfSupabaseError(error, 'questions')
   return data ?? []
+}
+
+/** Create a new true/false question inside a tile. */
+export const createQuestion = async ({ tileId, text, answer }) => {
+  const userId = await getAuthenticatedUserId()
+
+  if (!tileId) {
+    throw new Error('[supabase] Failed to create question: missing tile id')
+  }
+
+  const { data, error } = await supabase
+    .from('questions')
+    .insert({
+      tile_id: tileId,
+      text: text ?? '',
+      answer: Boolean(answer),
+      user_id: userId,
+    })
+    .select('*')
+    .maybeSingle()
+
+  throwIfSupabaseError(error, 'questions', 'create')
+  return data
+}
+
+/** Patch a question row by id for the authenticated user. */
+export const updateQuestionById = async ({ questionId, patch }) => {
+  const userId = await getAuthenticatedUserId()
+
+  if (!questionId) {
+    throw new Error('[supabase] Failed to update question: missing question id')
+  }
+
+  const { data, error } = await supabase
+    .from('questions')
+    .update(patch)
+    .eq('id', questionId)
+    .eq('user_id', userId)
+    .select('*')
+    .maybeSingle()
+
+  throwIfSupabaseError(error, 'questions', 'update')
+  return data
 }
 
 /** Delete many questions by id for the authenticated user. */
