@@ -3,6 +3,7 @@ import ErrorState from '@/components/ui/error-state'
 import { Skeleton } from '@/components/ui/skeleton'
 import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/components/TileIconPickerDialog'
 import DeleteQuestionsDialog from '@/features/questionTiles/routes/QuestionTileDetail/components/DeleteQuestionsDialog'
+import QuestionBankTable from '@/features/questionTiles/routes/QuestionTileDetail/components/QuestionBankTable'
 import QuestionTileBulkActionsBar from '@/features/questionTiles/routes/QuestionTileDetail/components/QuestionTileBulkActionsBar'
 import QuestionTileHeaderCard from '@/features/questionTiles/routes/QuestionTileDetail/components/QuestionTileHeaderCard'
 import QuestionTileToolbar from '@/features/questionTiles/routes/QuestionTileDetail/components/QuestionTileToolbar'
@@ -61,11 +62,15 @@ function QuestionTileDetailRoute() {
         onAnswerFilterChange={vm.toolbar.setAnswerFilter}
         filteredCount={vm.toolbar.filteredCount}
         totalCount={vm.toolbar.totalCount}
+        onAddQuestion={vm.table.openAddRow}
       />
         
         
       <QuestionTileBulkActionsBar model={vm.bulk} />
       
+
+      <QuestionBankTable model={vm.table} />
+
       <DeleteQuestionsDialog
         questionIds={vm.table.questionIdsToDelete}
         isDeleting={vm.bulk.isApplyingBulkAction}
