@@ -57,7 +57,7 @@ function QuestionBankTable({ model }) {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b bg-muted/40 text-left">
-            <th className="w-10 p-3">
+            <th className="w-8 p-2 sm:w-10 sm:p-3">
               <Checkbox
                 checked={
                   model.allVisibleSelected
@@ -70,9 +70,9 @@ function QuestionBankTable({ model }) {
                 aria-label="Select all visible questions"
               />
             </th>
-            <th className="p-3">Question</th>
-            <th className="w-28 p-3">Answer</th>
-            <th className="w-32 p-3" />
+            <th className="p-2 sm:p-3">Question</th>
+            <th className="w-20 p-2 sm:w-28 sm:p-3">Answer</th>
+            <th className="w-16 p-2 sm:w-24 sm:p-3" />
           </tr>
         </thead>
         <tbody>
@@ -84,14 +84,14 @@ function QuestionBankTable({ model }) {
 
             return (
               <tr key={question.id} className={`border-b ${isEditing ? 'bg-primary/8' : ''} ${isSelected ? 'bg-primary/6' : ''}`}>
-                <td className="p-3 align-middle">
+                <td className="p-2 align-middle sm:p-3">
                   <Checkbox
                     checked={isSelected}
                     onCheckedChange={(checked) => model.toggleQuestionSelection(question.id, checked === true)}
                     aria-label={`Select question ${question.text}`}
                   />
                 </td>
-                <td className="p-3 align-middle">
+                <td className="p-2 align-middle sm:p-3">
                   {isEditing ? (
                     <Input
                       ref={rowInputRef}
@@ -100,12 +100,12 @@ function QuestionBankTable({ model }) {
                       onKeyDown={(event) => handleRowEditInputKeyDown(event, question.id)}
                     />
                   ) : (
-                    <button type="button" className="w-full text-left" onClick={() => model.beginRowEdit(question)}>
+                    <button type="button" className="w-full text-left leading-relaxed" onClick={() => model.beginRowEdit(question)}>
                       {question.text}
                     </button>
                   )}
                 </td>
-                <td className="p-3 align-middle">
+                <td className="p-2 align-middle sm:p-3">
                   {/* Answer is staged during row edit and persisted on row confirm. */}
                   <button
                     type="button"
@@ -116,9 +116,9 @@ function QuestionBankTable({ model }) {
                     {answerValue ? 'True' : 'False'}
                   </button>
                 </td>
-                <td className="p-3 align-middle">
+                <td className="p-2 align-middle sm:p-3">
                   {isEditing ? (
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-1">
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button size="icon-sm" variant="outline" onClick={() => model.confirmRowEdit(question.id)} disabled={model.isSavingRow}>
@@ -137,7 +137,7 @@ function QuestionBankTable({ model }) {
                       </Tooltip>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-1">
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button size="icon-sm" variant="ghost" onClick={() => model.beginRowEdit(question)}>
@@ -164,8 +164,8 @@ function QuestionBankTable({ model }) {
           {/* Draft row for creating a new question */}
           {model.isAddingRow ? (
             <tr className="border-b bg-primary-200">
-              <td className="p-3" />
-              <td className="p-3">
+              <td className="p-2 sm:p-3" />
+              <td className="p-2 sm:p-3">
                 <Input
                   ref={newQuestionInputRef}
                   className="bg-card border border-primary-700"
@@ -176,7 +176,7 @@ function QuestionBankTable({ model }) {
                   disabled={model.isSavingNewQuestion}
                 />
               </td>
-              <td className="p-3">
+              <td className="p-2 sm:p-3">
                 <button
                   type="button"
                   className={`rounded-full px-3 py-1 text-xs font-semibold ${model.newQuestionAnswer ? 'bg-success-200 text-success-700' : 'bg-destructive-200 text-destructive-700'}`}
@@ -185,7 +185,7 @@ function QuestionBankTable({ model }) {
                   {model.newQuestionAnswer ? 'True' : 'False'}
                 </button>
               </td>
-              <td className="p-3">
+              <td className="p-2 sm:p-3">
                 <div className="flex items-center justify-end gap-2">
                   <Button size="icon-sm" variant="outline" onClick={model.confirmAddRow} disabled={model.isSavingNewQuestion}>
                     <Icon icon={CheckmarkCircle02Icon} className="size-4" />
@@ -200,7 +200,7 @@ function QuestionBankTable({ model }) {
 
           {/* Row-level trigger to start draft mode */}
           <tr>
-            <td colSpan={4} className="p-3">
+            <td colSpan={4} className="p-2 sm:p-3">
               <Button type="button" variant="warning" size="sm" onClick={model.openAddRow}>
                 <Icon icon={Add01Icon} className="size-4" />
                 Add question
