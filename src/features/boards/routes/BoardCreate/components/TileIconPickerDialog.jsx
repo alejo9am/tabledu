@@ -16,7 +16,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import { tileIconOptions } from '@/features/boards/routes/BoardCreate/components/tileIconOptions'
-import { getTileIconPublicUrl } from '@/services/api'
+import { getTileIconPublicUrl } from '@/services/storage'
 
 function TileIconPickerDialog({ open, onOpenChange, value, tileName, tileType = 'question', onSelect }) {
   const [draftIcon, setDraftIcon] = useState(value ?? '')

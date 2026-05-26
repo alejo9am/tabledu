@@ -1,7 +1,7 @@
 import { forwardRef, useMemo, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { cva } from 'class-variance-authority'
-import { getTileIconPublicUrl } from '@/services/api'
+import { getTileIconPublicUrl } from '@/services/storage'
 
 const tileVariants = cva(
   'flex items-center justify-center bg-card text-card-foreground ring-2 ring-border-dark border-[6px] shadow-[inset_0_0_0_2px_var(--card)] rounded-lg relative transition-colors duration-200',

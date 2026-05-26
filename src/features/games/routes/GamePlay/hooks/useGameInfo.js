@@ -1,8 +1,60 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
+import { fetchAnswersByGameId, createAnswer } from '@/services/answers'
+import { fetchBoardLayout } from '@/services/boardLayouts'
+import { fetchBoardById } from '@/services/boards'
+import { fetchGameById, updateGameById } from '@/services/games'
+import { fetchQuestionsByBoardId } from '@/services/questions'
+import { fetchTeamsByGameIds, updateTeamById } from '@/services/teams'
+import { fetchBoardTiles } from '@/services/tiles'
 
-import { fetchGameData, updateGameById, updateTeamById, createAnswer } from '@/services/api'
+async function fetchGameData({ gameId }) {
+  if (!gameId) {
+    throw new Error('[supabase] Failed to load game data: missing game id')
+  }
+
+  const game = await fetchGameById(gameId)
+  if (!game) {
+    throw new Error('Game not found or you do not have access to it.')
+  }
+
+  const [board, teams, answers, layout, tiles, questions] = await Promise.all([
+    fetchBoardById(game.board_id),
+    fetchTeamsByGameIds([gameId]),
+    fetchAnswersByGameId(gameId),
+    fetchBoardLayout(game.board_id),
+    fetchBoardTiles(game.board_id),
+    fetchQuestionsByBoardId(game.board_id),
+  ])
+
+  const questionTileIds = (tiles ?? [])
+    .filter((tile) => tile.type === 'question')
+    .map((tile) => tile.id)
+  const tileIdsWithQuestions = new Set(
+    (questions ?? [])
+      .map((question) => question.tile_id ?? question.tileId)
+      .filter(Boolean)
+  )
+
+  let hasQuestionTileWithoutQuestions = false
+  for (const tileId of questionTileIds) {
+    if (!tileIdsWithQuestions.has(tileId)) {
+      hasQuestionTileWithoutQuestions = true
+      break
+    }
+  }
+
+  if (hasQuestionTileWithoutQuestions) {
+    throw new Error('BOARD_QUESTIONS_INCOMPLETE::This board has question tiles without questions.')
+  }
+
+  if (!board || !game || teams.length === 0 || tiles.length === 0 || layout.length === 0 || questions.length === 0) {
+    throw new Error('Incomplete game data, check your board configuration.')
+  }
+
+  return { board, game, teams, answers, tiles, layout, questions }
+}
 
 /** Owns runtime game state and persistence actions. */
 export function useGameInfo() {
@@ -40,7 +92,7 @@ export function useGameInfo() {
           throw new Error('Missing game route context. Open this page from a game session.')
         }
 
-        const data = await fetchGameData({ gameId, userId: user.id })
+        const data = await fetchGameData({ gameId })
         setBoard(data.board)
         setGame(data.game)
         setTeams(data.teams)
