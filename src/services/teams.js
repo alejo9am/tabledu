@@ -1,7 +1,16 @@
 import { supabase } from '@/lib/supabase'
 import { throwIfSupabaseError } from '@/services/core/errors'
 
-/** Fetch teams for one or more games. Always pass an array of game ids. */
+/**
+ * Fetch teams for one or more games.
+ *
+ * Returns a flat array of `teams` rows filtered by `game_id IN (...)`.
+ * The result is not grouped by game; callers can group/count by `team.game_id`
+ * when they need per-game aggregates.
+ *
+ * @param {string[]} gameIds - Array of game ids to filter by.
+ * @returns {Promise<Array<object>>} Flat list of matching team rows.
+ */
 export const fetchTeamsByGameIds = async (gameIds) => {
   if (!(gameIds ?? []).length) {
     return []
