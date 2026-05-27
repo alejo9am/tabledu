@@ -15,8 +15,17 @@ import {
 } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
-import { tileIconOptions } from '@/features/boards/routes/BoardCreate/components/tileIconOptions'
 import { getTileIconPublicUrl } from '@/services/storage'
+
+const tileIconOptions = [
+  { path: 'system/lightbulb.png', label: 'Lightbulb' },
+  { path: 'system/padlock.png', label: 'Lock' },
+  { path: 'system/hourglass.png', label: 'Hourglass' },
+  { path: 'system/shield.png', label: 'Shield' },
+  { path: 'system/hacker.png', label: 'Hacker' },
+  { path: 'system/pipe.png', label: 'Pipe' },
+  { path: 'system/swords.png', label: 'Swords' },
+]
 
 function TileIconPickerDialog({ open, onOpenChange, value, tileName, tileType = 'question', onSelect }) {
   const [draftIcon, setDraftIcon] = useState(value ?? '')
@@ -117,7 +126,7 @@ function TileIconPickerDialog({ open, onOpenChange, value, tileName, tileType = 
                         <Icon icon={CheckmarkCircle02Icon} className="absolute top-2 right-2 size-4 text-primary" />
                       ) : null}
                       {iconUrl ? (
-                        <img src={iconUrl} alt="" aria-hidden="true" className="size-14 object-contain" />
+                        <img src={iconUrl} alt={option.label} className="size-14 object-contain" />
                       ) : (
                         <span className="font-display text-5xl font-bold uppercase text-foreground">
                           {option.label.charAt(0)}
