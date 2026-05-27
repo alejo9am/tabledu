@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CheckmarkCircle02Icon, Search01Icon } from '@hugeicons/core-free-icons'
 import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
@@ -22,13 +22,6 @@ function TileIconPickerDialog({ open, onOpenChange, value, tileName, tileType = 
   const [draftIcon, setDraftIcon] = useState(value ?? '')
   const [search, setSearch] = useState('')
 
-  useEffect(() => {
-    if (open) {
-      setDraftIcon(value ?? '')
-      setSearch('')
-    }
-  }, [open, value])
-
   const filteredIconOptions = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase()
     if (!normalizedSearch) return tileIconOptions
@@ -49,8 +42,16 @@ function TileIconPickerDialog({ open, onOpenChange, value, tileName, tileType = 
     onOpenChange(false)
   }
 
+  const handleOpenChange = (nextOpen) => {
+    if (nextOpen) {
+      setDraftIcon(value ?? '')
+      setSearch('')
+    }
+    onOpenChange(nextOpen)
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Choose tile icon</DialogTitle>
@@ -132,7 +133,7 @@ function TileIconPickerDialog({ open, onOpenChange, value, tileName, tileType = 
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>
+          <Button type="button" variant="secondary" onClick={() => handleOpenChange(false)}>
             Cancel
           </Button>
           <Button type="button" onClick={handleSave}>

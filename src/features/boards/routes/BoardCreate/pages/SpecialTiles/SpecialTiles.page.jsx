@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ChampionIcon, CircleLock01Icon, PaintBoardIcon } from '@hugeicons/core-free-icons'
 import { Skeleton } from '@/components/ui/skeleton'
 import ErrorState from '@/components/ui/error-state'
@@ -11,16 +11,18 @@ function SpecialTilesPage({ form }) {
   const [loadError, setLoadError] = useState(null)
   const genericLoadError = 'Could not load your special tiles.'
 
-  const runLoadSpecialTiles = useCallback(() => {
+  const handleRetryLoadSpecialTiles = () => {
     setLoadError(null)
     loadSpecialTiles().catch((error) => {
       setLoadError(error?.message ?? genericLoadError)
     })
-  }, [loadSpecialTiles])
+  }
 
   useEffect(() => {
-    runLoadSpecialTiles()
-  }, [runLoadSpecialTiles])
+    loadSpecialTiles().catch((error) => {
+      setLoadError(error?.message ?? genericLoadError)
+    })
+  }, [loadSpecialTiles])
 
   if (loadError) {
     return (
@@ -32,7 +34,7 @@ function SpecialTilesPage({ form }) {
             description="We could not prepare this step. Retry to continue creating your board."
             technicalDetails={loadError === genericLoadError ? null : loadError}
             retryLabel="Retry"
-            onRetry={runLoadSpecialTiles}
+            onRetry={handleRetryLoadSpecialTiles}
           />
         </div>
       </div>

@@ -50,11 +50,11 @@ const TileCard = forwardRef(function TileCard(
 ) {
   const [failedIconUrl, setFailedIconUrl] = useState(null)
 
-  const tone = useMemo(() => {
-    if (tile?.type === 'question') return 'question'
-    if (tile?.type === 'penalty') return 'danger'
-    return 'special'
-  }, [tile?.type, tile?.name])
+  const tone = tile?.type === 'question'
+    ? 'question'
+    : tile?.type === 'penalty'
+      ? 'danger'
+      : 'special'
 
   const iconUrl = useMemo(() => getTileIconPublicUrl(tile?.icon), [tile?.icon])
   const showIcon = tile?.showIcon !== false && Boolean(iconUrl) && failedIconUrl !== iconUrl

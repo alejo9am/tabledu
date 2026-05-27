@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CheckmarkCircle02Icon } from '@hugeicons/core-free-icons'
 import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
@@ -31,18 +31,8 @@ function ReplaceTileDialog({
     ]
   }, [selectedQuestionTiles, specialTiles])
 
-  const currentTile = generatedLayout.find((tile) => tile.position === editingTilePosition)?.tile ?? null
-
-  useEffect(() => {
-    if (!isOpen) {
-      setSelectedTileId(null)
-      return
-    }
-
-    setSelectedTileId(currentTile?.id ?? null)
-  }, [currentTile?.id, isOpen])
-
-  const selectedTile = allOptions.find((tile) => tile.id === selectedTileId) ?? null
+  const currentTileId = generatedLayout.find((tile) => tile.position === editingTilePosition)?.tile?.id ?? null
+  const selectedTile = allOptions.find((tile) => tile.id === (selectedTileId ?? currentTileId)) ?? null
 
   const handleOpenChange = (nextOpen) => {
     if (!nextOpen) {
@@ -58,7 +48,7 @@ function ReplaceTileDialog({
   }
 
   const renderOptionPill = (tile) => {
-    const isSelected = tile.id === selectedTileId
+    const isSelected = tile.id === (selectedTileId ?? currentTileId)
 
     return (
         <button
