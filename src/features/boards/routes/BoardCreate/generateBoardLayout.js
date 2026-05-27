@@ -17,6 +17,15 @@ const shuffle = (items) => {
   return shuffledItems
 }
 
+/**
+ * Generate the 29 playable board cells.
+ *
+ * @param {object} params
+ * @param {Array<object>} params.questionTiles - Array of question tile objects.
+ * @param {Record<string, object>} params.specialTiles - Object keyed by special tile type.
+ * Each value is a special tile object and can include `enabled` to allow/disallow usage.
+ * @returns {Array<{position: number, tile: object}>} Array with positions 1..29.
+ */
 export function generateBoardLayout({ questionTiles, specialTiles }) {
   const questionTilePool = shuffle(questionTiles ?? [])
   const specialTilePool = shuffle(
