@@ -14,24 +14,24 @@ import {
 import { cn } from '@/lib/utils'
 
 function ReplaceTileDialog({
-  editingTilePosition,
-  generatedLayout,
-  selectedQuestionTiles,
+  editingPosition,
+  layout,
+  questionTiles,
   specialTiles,
   onClose,
   onReplaceTile,
 }) {
   const [selectedTileId, setSelectedTileId] = useState(null)
-  const isOpen = Boolean(editingTilePosition)
+  const isOpen = Boolean(editingPosition)
 
   const allOptions = useMemo(() => {
     return [
-      ...selectedQuestionTiles,
+      ...questionTiles,
       ...Object.values(specialTiles ?? {}).filter((tile) => tile.enabled),
     ]
-  }, [selectedQuestionTiles, specialTiles])
+  }, [questionTiles, specialTiles])
 
-  const currentTileId = generatedLayout.find((tile) => tile.position === editingTilePosition)?.tile?.id ?? null
+  const currentTileId = layout.find((tile) => tile.position === editingPosition)?.tile?.id ?? null
   const selectedTile = allOptions.find((tile) => tile.id === (selectedTileId ?? currentTileId)) ?? null
 
   const handleOpenChange = (nextOpen) => {
@@ -42,8 +42,8 @@ function ReplaceTileDialog({
   }
 
   const handleApply = () => {
-    if (!editingTilePosition || !selectedTile) return
-    onReplaceTile(editingTilePosition, selectedTile)
+    if (!editingPosition || !selectedTile) return
+    onReplaceTile(editingPosition, selectedTile)
     setSelectedTileId(null)
   }
 
@@ -72,7 +72,7 @@ function ReplaceTileDialog({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">Edit tile {editingTilePosition}</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">Edit tile {editingPosition}</DialogTitle>
           <DialogDescription>
             Pick another tile for this position. Use this for quick corrections after shuffling.
           </DialogDescription>
