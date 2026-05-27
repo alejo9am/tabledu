@@ -1,16 +1,16 @@
 import { supabase } from '@/lib/supabase'
 import { throwIfSupabaseError } from '@/services/core/errors'
 
-/** Fetch teams for one game. */
-export const fetchTeamsByGameId = async (gameId) => {
-  if (!gameId) {
-    throw new Error('[supabase] Failed to fetch teams: missing game id')
+/** Fetch teams for one or more games. Always pass an array of game ids. */
+export const fetchTeamsByGameIds = async (gameIds) => {
+  if (!(gameIds ?? []).length) {
+    return []
   }
 
   const { data, error } = await supabase
     .from('teams')
     .select('*')
-    .eq('game_id', gameId)
+    .in('game_id', gameIds)
     .order('id', { ascending: true })
 
   throwIfSupabaseError(error, 'teams')
