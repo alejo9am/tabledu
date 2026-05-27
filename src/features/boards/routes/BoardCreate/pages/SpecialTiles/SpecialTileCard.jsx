@@ -10,7 +10,7 @@ import { NumberInput } from '@/components/ui/number-input'
 import { Textarea } from '@/components/ui/textarea'
 import { Toggle } from '@/components/ui/toggle'
 import { cn } from '@/lib/utils'
-import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/components/TileIconPickerDialog'
+import TileIconPickerDialog from '@/components/tiles/TileIconPickerDialog'
 
 const tileMetaByType = {
   duel: {

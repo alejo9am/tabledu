@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 import ErrorState from '@/components/ui/error-state'
 import { Skeleton } from '@/components/ui/skeleton'
-import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/components/TileIconPickerDialog'
+import TileIconPickerDialog from '@/components/tiles/TileIconPickerDialog'
 import DeleteQuestionsDialog from '@/features/questionTiles/routes/QuestionTileDetail/components/DeleteQuestionsDialog'
 import QuestionBankTable from '@/features/questionTiles/routes/QuestionTileDetail/components/QuestionBankTable'
 import QuestionTileBulkActionsBar from '@/features/questionTiles/routes/QuestionTileDetail/components/QuestionTileBulkActionsBar'

@@ -9,7 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/components/TileIconPickerDialog'
+import TileIconPickerDialog from '@/components/tiles/TileIconPickerDialog'
 
 const tileMetaByType = {
   duel: {
