@@ -30,6 +30,12 @@ export function useBoardInfoEditor({ board }) {
     // Compare trimmed values to avoid unnecessary update calls.
     const nextName = draftInfo.name.trim()
     const nextDescription = draftInfo.description.trim()
+
+    // Safety guard at hook level: never persist empty required fields.
+    if (!nextName || !nextDescription) {
+      throw new Error('Name and description are required.')
+    }
+
     const currentName = board?.name?.trim?.() ?? ''
     const currentDescription = board?.description?.trim?.() ?? ''
 
