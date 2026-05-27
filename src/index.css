@@ -174,7 +174,7 @@
   --foreground: #f8fafc;
   --card: #1e293b;
   --card-foreground: #f8fafc;
-  --popover: #1e293b;
+  --popover: #162133;
   --popover-foreground: #f8fafc;
 
   --sketch-dot: #1e293b; /* slate-800 */
@@ -208,7 +208,7 @@
   --success-foreground: #ffffff;
   --muted: #1e293b;
   --muted-foreground: #94a3b8;
-  --accent: #1e293b;
+  --accent: #152033;
   --accent-foreground: #f8fafc;
 
   --border: #243041;
