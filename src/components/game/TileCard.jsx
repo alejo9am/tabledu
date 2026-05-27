@@ -10,6 +10,7 @@ const tileVariants = cva(
       corner: {
         none: '',
         bottomRight: 'rounded-br-tile',
+        bottomLeft: 'rounded-bl-tile',
         topRight: 'rounded-tr-tile',
         topLeft: 'rounded-tl-tile',
         goal: 'rounded-r-tile'
