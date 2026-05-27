@@ -28,8 +28,8 @@ function ScoringRulesCard({ scoring, isEditingScoring, isSavingScoring, onChange
         <h2 className="font-display text-xl font-semibold">Scoring rules</h2>
         {isEditingScoring ? (
           <div className="flex gap-2">
-            <Button size="sm" onClick={onSave} disabled={isSavingScoring}>{isSavingScoring ? 'Saving...' : 'Save'}</Button>
             <Button size="sm" variant="outline" onClick={onCancel} disabled={isSavingScoring}>Cancel</Button>
+            <Button size="sm" onClick={onSave} disabled={isSavingScoring}>{isSavingScoring ? 'Saving...' : 'Save'}</Button>
           </div>
         ) : (
           <Button size="sm" variant="outline" onClick={onEdit}>

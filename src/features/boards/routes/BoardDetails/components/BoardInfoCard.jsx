@@ -57,13 +57,13 @@ function BoardInfoCard({
               <Input className="uppercase font-display text-2xl! font-semibold" value={draftInfo.name} onChange={(event) => onDraftInfoChange({ name: event.target.value })} aria-label="Board title" />
               <Textarea value={draftInfo.description} onChange={(event) => onDraftInfoChange({ description: event.target.value })} aria-label="Board description" />
               <div className="flex gap-2">
-                <Button size="sm" onClick={onSaveInfo} disabled={!canSaveInfo}>
-                  <Icon icon={CheckmarkCircle02Icon} className="size-4" />
-                  {isSavingInfo ? 'Saving...' : 'Save'}
-                </Button>
                 <Button size="sm" variant="outline" onClick={onCancelInfo} disabled={isSavingInfo}>
                   <Icon icon={Cancel01Icon} className="size-4" />
                   Cancel
+                </Button>
+                <Button size="sm" onClick={onSaveInfo} disabled={!canSaveInfo}>
+                  <Icon icon={CheckmarkCircle02Icon} className="size-4" />
+                  {isSavingInfo ? 'Saving...' : 'Save'}
                 </Button>
               </div>
             </div>
