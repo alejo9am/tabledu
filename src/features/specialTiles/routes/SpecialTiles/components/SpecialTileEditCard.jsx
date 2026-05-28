@@ -10,24 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import TileIconPickerDialog from '@/components/tiles/TileIconPickerDialog'
-
-const tileMetaByType = {
-  duel: {
-    label: 'Duel tile',
-    mechanic:
-      'When a team lands here, it challenges another team in a duel made of two questions. Duel scoring is resolved with board-level winner/loser/draw values.',
-  },
-  penalty: {
-    label: 'Penalty tile',
-    mechanic:
-      'When a team lands here, it immediately receives the penalty score configured during board setup.',
-  },
-  reroll: {
-    label: 'Reroll tile',
-    mechanic:
-      'When a team lands here, it gets an extra die roll and moves again right away.',
-  },
-}
+import { getSpecialTileMeta } from '@/lib/constants/specialTileMeta'
 
 function SpecialTileEditCard({ tile, onSave }) {
   const [draftName, setDraftName] = useState(tile.name ?? '')
@@ -36,7 +19,7 @@ function SpecialTileEditCard({ tile, onSave }) {
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [isIconDialogOpen, setIsIconDialogOpen] = useState(false)
-  const tileMeta = tileMetaByType[tile.type] ?? { label: 'Special tile', mechanic: '' }
+  const tileMeta = getSpecialTileMeta(tile.type, 'specialTiles')
 
   useEffect(() => {
     setDraftName(tile.name ?? '')
@@ -154,7 +137,7 @@ function SpecialTileEditCard({ tile, onSave }) {
           </Button>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <p className="p-3 text-sm text-foreground">{tileMeta.mechanic}</p>
+          <p className="p-3 text-sm text-foreground">{tileMeta.description}</p>
         </CollapsibleContent>
       </Collapsible>
 
