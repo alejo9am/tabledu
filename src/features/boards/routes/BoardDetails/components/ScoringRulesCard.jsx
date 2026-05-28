@@ -24,7 +24,7 @@ function ScoreRow({ isLoading, label, value, isEditing, onChange }) {
   )
 }
 
-function ScoringRulesCard({ isLoading, scoring, isEditingScoring, isSavingScoring, onChange, onEdit, onCancel, onSave }) {
+function ScoringRulesCard({ isLoading, hasActiveEditor = false, scoring, isEditingScoring, isSavingScoring, onChange, onEdit, onCancel, onSave }) {
   return (
     <article className="rounded-2xl border bg-card p-4 lg:col-span-5">
       <div className="mb-3 flex items-center justify-between gap-3">
@@ -35,7 +35,7 @@ function ScoringRulesCard({ isLoading, scoring, isEditingScoring, isSavingScorin
             <Button size="sm" onClick={onSave} disabled={isSavingScoring || isLoading}>{isSavingScoring ? 'Saving...' : 'Save'}</Button>
           </div>
         ) : (
-          <Button size="sm" variant="outline" onClick={onEdit} disabled={isLoading}>
+          <Button size="sm" variant="outline" onClick={onEdit} disabled={isLoading || hasActiveEditor}>
             <Icon icon={Edit02Icon} className="size-4" />
             Edit
           </Button>

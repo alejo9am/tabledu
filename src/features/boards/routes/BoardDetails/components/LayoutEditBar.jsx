@@ -3,15 +3,17 @@ import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/Icon'
 
 function LayoutEditBar({
+  isLoading,
   isEditingLayout,
   isSavingLayout,
   hasUnsavedLayoutChanges,
+  hasActiveEditor = false,
   onStartLayoutEdit,
   onDiscardLayout,
   onSaveLayout,
 }) {
   return (
-    <div className="flex items-center justify-between rounded-2xl border lg:col-span-12 bg-card font-medium text-muted-foreground p-3 lg:col-span-12'">
+    <div className="flex items-center justify-between rounded-2xl border bg-card p-3 font-medium text-muted-foreground lg:col-span-12">
       <p className={`flex items-center gap-2 text-sm ${hasUnsavedLayoutChanges ? 'bg-warning-200 font-semibold text-warning-850 rounded-full p-2' : ''}`}>
         <Icon
           icon={hasUnsavedLayoutChanges ? Alert02Icon : InformationCircleIcon}
@@ -32,7 +34,7 @@ function LayoutEditBar({
           <Button onClick={onSaveLayout} disabled={isSavingLayout}>{isSavingLayout ? 'Saving...' : 'Save'}</Button>
         </div>
       ) : (
-        <Button variant="warning" onClick={onStartLayoutEdit}>Enable edit mode</Button>
+        <Button variant="warning" onClick={onStartLayoutEdit} disabled={hasActiveEditor || isLoading}>Enable edit mode</Button>
       )}
     </div>
   )

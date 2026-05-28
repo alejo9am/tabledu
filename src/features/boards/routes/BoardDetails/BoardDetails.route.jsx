@@ -78,6 +78,7 @@ function BoardDetailsPage() {
           scoring={displayedScoring}
           isEditingScoring={vm.scoringEditor.isEditingScoring}
           isSavingScoring={vm.scoringEditor.isSavingScoring}
+          hasActiveEditor={hasActiveEditor}
           onChange={vm.scoringEditor.updateDraftScoring}
           onEdit={vm.scoringEditor.startScoringEdit}
           onCancel={vm.scoringEditor.cancelScoringEdit}
@@ -85,9 +86,11 @@ function BoardDetailsPage() {
         />
 
         <LayoutEditBar
+          isLoading={isLoading}
           isEditingLayout={vm.layoutEditor.isEditingLayout}
           isSavingLayout={vm.layoutEditor.isSavingLayout}
           hasUnsavedLayoutChanges={vm.layoutEditor.hasUnsavedLayoutChanges}
+          hasActiveEditor={hasActiveEditor}
           onStartLayoutEdit={vm.layoutEditor.startLayoutEdit}
           onDiscardLayout={vm.layoutEditor.cancelLayoutEdit}
           onSaveLayout={vm.actions.saveLayout}

@@ -77,7 +77,7 @@ function BoardInfoCard({
                 ) : (
                   <h1 className="uppercase truncate font-display text-primary text-3xl font-semibold">{name}</h1>
                 )}
-                <Button size="icon-xs" variant="ghost" onClick={onEditInfo} aria-label="Edit board info" disabled={isLoading}>
+                <Button size="icon-xs" variant="ghost" onClick={onEditInfo} aria-label="Edit board info" disabled={isLoading || hasActiveEditor}>
                   <Icon icon={Edit02Icon} className="size-4" />
                 </Button>
               </div>
