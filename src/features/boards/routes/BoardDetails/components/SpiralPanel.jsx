@@ -4,6 +4,7 @@ import { useState } from 'react'
 import TileCard from '@/components/game/TileCard'
 import ReplaceTileDialog from '@/features/boards/components/ReplaceTileDialog'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import { Icon } from '@/components/ui/Icon'
 import { Touch08Icon } from '@hugeicons/core-free-icons'
@@ -13,7 +14,8 @@ import { CORNER_BY_TILE } from '@/features/games/routes/GamePlay/constants/token
 const startTile = { name: 'Start', showIcon: false }
 const goalTile = { icon: 'system/goal.png', name: 'Goal' }
 
-function SpiralPanel({ isEditing, layout, questionTiles, specialTiles, onUpdateCell }) {
+function SpiralPanel({ isLoading, isEditing, layout, questionTiles, specialTiles, onUpdateCell }) {
+  
   const [editingPosition, setEditingPosition] = useState(null)
   const layoutByPosition = new Map(layout.map((layoutEntry) => [layoutEntry.position, layoutEntry]))
   const enabledSpecialTiles = Object.fromEntries(specialTiles.map((tile) => [tile.type, tile]))
@@ -26,6 +28,14 @@ function SpiralPanel({ isEditing, layout, questionTiles, specialTiles, onUpdateC
   const handleReplaceTile = (position, tile) => {
     onUpdateCell({ position, tile })
     setEditingPosition(null)
+  }
+  
+  if (isLoading) {
+    return (
+      <article className="min-w-0 rounded-2xl border bg-card p-4 lg:col-span-8">
+        <Skeleton className="aspect-9/7 w-full rounded-xl" />
+      </article>
+    )
   }
 
   const renderTile = (spiralTile) => {

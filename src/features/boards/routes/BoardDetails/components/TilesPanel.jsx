@@ -17,6 +17,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Icon } from '@/components/ui/Icon'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Toggle } from '@/components/ui/toggle'
 import { cn } from '@/lib/utils'
@@ -50,6 +51,7 @@ function TileIcon({ tile, hasWarning = false }) {
 }
 
 function TilesPanel({
+  isLoading,
   isEditing,
   hasActiveEditor,
   specialTiles,
@@ -62,6 +64,19 @@ function TilesPanel({
   onSwapQuestionTile,
 }) {
   const [pickerAction, setPickerAction] = useState(null)
+
+  if (isLoading) {
+    return (
+      <aside className="space-y-4 rounded-2xl border bg-card p-4 lg:col-span-4">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-5 w-32" />
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-24 w-full rounded-xl" />
+        <Skeleton className="h-24 w-full rounded-xl" />
+      </aside>
+    )
+  }
+
   const selectedQuestionTileIds = new Set(questionTiles.map((tile) => tile.id))
   const unselectedQuestionTiles = availableQuestionTiles.filter((tile) => !selectedQuestionTileIds.has(tile.id))
 

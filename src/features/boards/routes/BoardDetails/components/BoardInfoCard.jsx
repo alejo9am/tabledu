@@ -6,6 +6,7 @@ import { Icon } from '@/components/ui/Icon'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
@@ -25,14 +26,15 @@ function formatSessionLabel(session) {
 
 function BoardInfoCard({
   boardId,
+  isLoading,
   name,
   description,
   questionTiles = [],
   hasActiveEditor = false,
-  sessions,
+  sessions = [],
   isEditingInfo,
   isSavingInfo,
-  draftInfo,
+  draftInfo = { name: '', description: '' },
   onEditInfo,
   onCancelInfo,
   onDraftInfoChange,
@@ -43,7 +45,7 @@ function BoardInfoCard({
   const warningLabel = emptyQuestionTileCount === 1
     ? '1 tile has no questions'
     : `${emptyQuestionTileCount} tiles have no questions`
-  const areGameActionsBlocked = emptyQuestionTileCount > 0 || hasActiveEditor
+  const areGameActionsBlocked = isLoading || emptyQuestionTileCount > 0 || hasActiveEditor
 
   const canSaveInfo = draftInfo.name.trim().length > 0 && draftInfo.description.trim().length > 0 && !isSavingInfo
 
@@ -70,23 +72,35 @@ function BoardInfoCard({
           ) : (
             <>
               <div className="flex items-center gap-2">
-                <h1 className="uppercase truncate font-display text-primary text-3xl font-semibold">{name}</h1>
-                <Button size="icon-xs" variant="ghost" onClick={onEditInfo} aria-label="Edit board info">
+                { isLoading ? (
+                  <Skeleton className="h-8 w-2/3" />
+                ) : (
+                  <h1 className="uppercase truncate font-display text-primary text-3xl font-semibold">{name}</h1>
+                )}
+                <Button size="icon-xs" variant="ghost" onClick={onEditInfo} aria-label="Edit board info" disabled={isLoading}>
                   <Icon icon={Edit02Icon} className="size-4" />
                 </Button>
               </div>
-              <p className="mt-1 max-w-2xl text-muted-foreground">{description}</p>
+              {isLoading ? (
+                <Skeleton className="mt-2 h-5 w-full" />
+              ) : (
+                <p className="mt-1 max-w-2xl text-muted-foreground">{description}</p>
+              )}
             </>
           )}
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Badge className="bg-success-200 text-success-700 text-sm">{questionCount} questions</Badge>
-            {emptyQuestionTileCount > 0 ? (
-              <Badge variant="warning" className="flex gap-1">
-                <Icon icon={Alert02Icon} className="size-3" />
-                {warningLabel}
-              </Badge>
-            ) : null}
-          </div>
+          {isLoading ? (
+            <Skeleton className="mt-4 h-6 w-28 rounded-full" />
+          ) : (
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Badge className="bg-success-200 text-success-700 text-sm">{questionCount} questions</Badge>
+              {emptyQuestionTileCount > 0 ? (
+                <Badge variant="warning" className="flex gap-1">
+                  <Icon icon={Alert02Icon} className="size-3" />
+                  {warningLabel}
+                </Badge>
+              ) : null}
+            </div>
+          )}
         </div>
 
         {areGameActionsBlocked ? (
@@ -119,61 +133,63 @@ function BoardInfoCard({
 
       <div>
         <h2 className="uppercase">Game sessions</h2>
-        {sessions.length ? (
-          <ScrollArea className="mt-2 w-full">
-            <div className="flex w-max gap-3 pb-3">
-              {sessions.map((session) => {
-                const { dateLabel, timeLabel, teamLabel } = formatSessionLabel(session)
-                const cardClassName = areGameActionsBlocked
-                  ? 'cursor-not-allowed opacity-70'
-                  : 'hover:opacity-90'
+        { isLoading ? (
+          <Skeleton className="mt-2 h-10 w-32" />
+        ) : sessions.length ? (
+            <ScrollArea className="mt-2 w-full">
+              <div className="flex w-max gap-3 pb-3">
+                {sessions.map((session) => {
+                  const { dateLabel, teamLabel } = formatSessionLabel(session)
+                  const cardClassName = areGameActionsBlocked
+                    ? 'cursor-not-allowed opacity-70'
+                    : 'hover:opacity-90'
 
-                const content = (
-                  <div className={`flex flex-col rounded-xl bg-accent border px-3 py-2.5 transition-colors ${cardClassName}`}>
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex p-2 shrink-0 items-center justify-center rounded-full bg-primary text-card">
-                        <Icon icon={PlayCircleIcon} className="size-5" />
+                  const content = (
+                    <div className={`flex flex-col rounded-xl bg-accent border px-3 py-2.5 transition-colors ${cardClassName}`}>
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex p-2 shrink-0 items-center justify-center rounded-full bg-primary text-card">
+                          <Icon icon={PlayCircleIcon} className="size-5" />
+                        </div>
+
+                        <div className="flex min-w-0 flex-col items-start gap-2">
+                          <p className="truncate font-display text-sm leading-none">{dateLabel}</p>
+                          <Separator />
+                          <p className="text-center text-sm font-medium text-destructive-700">{teamLabel}</p>
+                        </div>
                       </div>
 
-                      <div className="flex min-w-0 flex-col items-start gap-2">
-                        <p className="truncate font-display text-sm leading-none">{dateLabel} {timeLabel}</p>
-                        <Separator />
-                        <p className="text-center text-sm font-medium text-destructive-700">{teamLabel}</p>
-                      </div>
                     </div>
+                  )
 
-                  </div>
-                )
+                  if (areGameActionsBlocked) {
+                    return (
+                      <Tooltip key={session.id}>
+                        <TooltipTrigger asChild>
+                          <span aria-disabled="true">{content}</span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {hasActiveEditor
+                            ? 'Finish editing before opening game sessions.'
+                            : 'Add at least one question to each question tile before opening game sessions.'}
+                        </TooltipContent>
+                      </Tooltip>
+                    )
+                  }
 
-                if (areGameActionsBlocked) {
                   return (
                     <Tooltip key={session.id}>
                       <TooltipTrigger asChild>
-                        <span aria-disabled="true">{content}</span>
+                        <Link to={`/games/${session.id}/play`} className="rounded-xl">
+                          {content}
+                        </Link>
                       </TooltipTrigger>
-                      <TooltipContent>
-                        {hasActiveEditor
-                          ? 'Finish editing before opening game sessions.'
-                          : 'Add at least one question to each question tile before opening game sessions.'}
-                      </TooltipContent>
+                      <TooltipContent side="bottom">Continue session</TooltipContent>
                     </Tooltip>
                   )
-                }
-
-                return (
-                  <Tooltip key={session.id}>
-                    <TooltipTrigger asChild>
-                      <Link to={`/games/${session.id}/play`} className="rounded-xl">
-                        {content}
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">Continue session</TooltipContent>
-                  </Tooltip>
-                )
-              })}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+                })}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
         ) : (
           <p className="mt-2 text-sm italic text-muted-foreground">No sessions yet — start your first game above</p>
         )}

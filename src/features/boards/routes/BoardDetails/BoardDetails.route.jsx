@@ -7,7 +7,6 @@ import SpiralPanel from '@/features/boards/routes/BoardDetails/components/Spiral
 import TilesPanel from '@/features/boards/routes/BoardDetails/components/TilesPanel'
 import { useBoardDetails } from '@/features/boards/routes/BoardDetails/hooks/useBoardDetails.hook'
 import ErrorState from "@/components/ui/error-state"
-import { Skeleton } from "@/components/ui/skeleton"
 
 function BoardDetailsPage() {
   const { boardId } = useParams()
@@ -55,30 +54,17 @@ function BoardDetailsPage() {
     )
   }
 
-  if (isLoading) {
-    return (
-      <section className="flex flex-1 flex-col gap-4 p-4 pt-0" aria-label="Board details page">
-        <div className="grid gap-4 lg:grid-cols-12">
-          <Skeleton className="h-56 rounded-2xl lg:col-span-6" />
-          <Skeleton className="h-56 rounded-2xl lg:col-span-6" />
-          <Skeleton className="h-12 rounded-2xl lg:col-span-12" />
-          <Skeleton className="h-128 rounded-2xl lg:col-span-9" />
-          <Skeleton className="h-128 rounded-2xl lg:col-span-3" />
-        </div>
-      </section>
-    )
-  }
-
   return (
     <section className="flex flex-1 flex-col gap-4 p-4 pt-0" aria-label="Board details page">
       <div className="grid flex-1 grid-cols-1 gap-4 lg:grid-cols-12">
         <BoardInfoCard
-          boardId={details.board.id}
-          name={details.board.name}
-          description={details.board.description}
+          isLoading={isLoading}
+          boardId={details?.board?.id}
+          name={details?.board?.name}
+          description={details?.board?.description}
           questionTiles={displayedQuestionTiles}
           hasActiveEditor={hasActiveEditor}
-          sessions={details.sessions}
+          sessions={details?.sessions ?? []}
           isEditingInfo={vm.boardInfo.isEditingInfo}
           isSavingInfo={vm.boardInfo.isSavingInfo}
           draftInfo={vm.boardInfo.draftInfo}
@@ -88,6 +74,7 @@ function BoardDetailsPage() {
           onSaveInfo={vm.actions.saveInfo}
         />
         <ScoringRulesCard
+          isLoading={isLoading}
           scoring={displayedScoring}
           isEditingScoring={vm.scoringEditor.isEditingScoring}
           isSavingScoring={vm.scoringEditor.isSavingScoring}
@@ -107,6 +94,7 @@ function BoardDetailsPage() {
         />
 
         <SpiralPanel
+          isLoading={isLoading}
           isEditing={vm.layoutEditor.isEditingLayout}
           layout={displayedLayout}
           questionTiles={displayedQuestionTiles}
@@ -114,6 +102,7 @@ function BoardDetailsPage() {
           onUpdateCell={vm.layoutEditor.updateCell}
         />
         <TilesPanel
+          isLoading={isLoading}
           isEditing={vm.layoutEditor.isEditingLayout}
           hasActiveEditor={hasActiveEditor}
           specialTiles={displayedSpecialTiles}
