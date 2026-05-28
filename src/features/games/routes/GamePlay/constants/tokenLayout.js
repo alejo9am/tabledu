@@ -2,9 +2,11 @@ export const CORNER_BY_TILE = {
   6: 'bottomRight',
   10: 'topRight',
   15: 'topLeft',
+  18: 'bottomLeft',
   22: 'bottomRight',
   24: 'topRight',
   27: 'topLeft',
+  28: 'bottomLeft',
   30: 'goal'
 }
 

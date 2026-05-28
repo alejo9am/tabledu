@@ -31,13 +31,13 @@ function QuestionTileHeaderCard({
       >
         {isEditingTileHeader ? (
           <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
-            <Button size="sm" className="min-w-24 sm:min-w-28" variant="default" onClick={onSave} disabled={isSavingTileHeader}>
-              <Icon icon={CheckmarkCircle02Icon} className="size-4" />
-              Save
-            </Button>
             <Button size="sm" className="min-w-24 sm:min-w-28" variant="outline" onClick={onCancel} disabled={isSavingTileHeader}>
               <Icon icon={Cancel01Icon} className="size-4" />
               Cancel
+            </Button>
+            <Button size="sm" className="min-w-24 sm:min-w-28" variant="default" onClick={onSave} disabled={isSavingTileHeader}>
+              <Icon icon={CheckmarkCircle02Icon} className="size-4" />
+              Save
             </Button>
           </div>
         ) : (

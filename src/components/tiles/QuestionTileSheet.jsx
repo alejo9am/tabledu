@@ -14,7 +14,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { Textarea } from '@/components/ui/textarea'
-import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/components/TileIconPickerDialog'
+import TileIconPickerDialog from '@/components/tiles/TileIconPickerDialog'
 
 function QuestionTileSheet({
   open,

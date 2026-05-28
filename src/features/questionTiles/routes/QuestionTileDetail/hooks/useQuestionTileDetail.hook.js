@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { toSearchTokens } from '@/lib/search'
 import {
@@ -49,11 +49,11 @@ function useQuestionTileDetail({ tileId }) {
   const [questionIdsToDelete, setQuestionIdsToDelete] = useState([])
 
   // Keep draft fields in sync with a tile object.
-  const syncHeaderDraftsFromTile = (tileValue) => {
+  const syncHeaderDraftsFromTile = useCallback((tileValue) => {
     setNameDraft(tileValue?.name ?? '')
     setDescriptionDraft(tileValue?.description ?? '')
     setIconDraft(tileValue?.icon ?? '')
-  }
+  }, [])
 
   // Reset the temporary "new question" row to defaults.
   const resetNewQuestionDraft = () => {
@@ -64,7 +64,7 @@ function useQuestionTileDetail({ tileId }) {
   // ---------------------------------------------------------------------------
   // Data loading
   // ---------------------------------------------------------------------------
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!tileId) return
 
     setIsLoading(true)
@@ -95,11 +95,11 @@ function useQuestionTileDetail({ tileId }) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [syncHeaderDraftsFromTile, tileId])
 
   useEffect(() => {
     loadData()
-  }, [tileId])
+  }, [loadData])
 
   // ---------------------------------------------------------------------------
   // Derived data

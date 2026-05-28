@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CheckmarkCircle02Icon } from '@hugeicons/core-free-icons'
 import TileCard from '@/components/game/TileCard'
 import { Icon } from '@/components/ui/Icon'
@@ -11,38 +11,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 
 function ReplaceTileDialog({
-  editingTilePosition,
-  generatedLayout,
-  selectedQuestionTiles,
+  editingPosition,
+  layout,
+  questionTiles,
   specialTiles,
   onClose,
   onReplaceTile,
 }) {
   const [selectedTileId, setSelectedTileId] = useState(null)
-  const isOpen = Boolean(editingTilePosition)
+  const isOpen = Boolean(editingPosition)
 
   const allOptions = useMemo(() => {
     return [
-      ...selectedQuestionTiles,
+      ...questionTiles,
       ...Object.values(specialTiles ?? {}).filter((tile) => tile.enabled),
     ]
-  }, [selectedQuestionTiles, specialTiles])
+  }, [questionTiles, specialTiles])
 
-  const currentTile = generatedLayout.find((tile) => tile.position === editingTilePosition)?.tile ?? null
-
-  useEffect(() => {
-    if (!isOpen) {
-      setSelectedTileId(null)
-      return
-    }
-
-    setSelectedTileId(currentTile?.id ?? null)
-  }, [currentTile?.id, isOpen])
-
-  const selectedTile = allOptions.find((tile) => tile.id === selectedTileId) ?? null
+  const currentTileId = layout.find((tile) => tile.position === editingPosition)?.tile?.id ?? null
+  const selectedTile = allOptions.find((tile) => tile.id === (selectedTileId ?? currentTileId)) ?? null
 
   const handleOpenChange = (nextOpen) => {
     if (!nextOpen) {
@@ -52,13 +43,13 @@ function ReplaceTileDialog({
   }
 
   const handleApply = () => {
-    if (!editingTilePosition || !selectedTile) return
-    onReplaceTile(editingTilePosition, selectedTile)
+    if (!editingPosition || !selectedTile) return
+    onReplaceTile(editingPosition, selectedTile)
     setSelectedTileId(null)
   }
 
   const renderOptionPill = (tile) => {
-    const isSelected = tile.id === selectedTileId
+    const isSelected = tile.id === (selectedTileId ?? currentTileId)
 
     return (
         <button
@@ -82,7 +73,7 @@ function ReplaceTileDialog({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">Edit tile {editingTilePosition}</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">Edit tile {editingPosition}</DialogTitle>
           <DialogDescription>
             Pick another tile for this position. Use this for quick corrections after shuffling.
           </DialogDescription>
@@ -101,9 +92,11 @@ function ReplaceTileDialog({
 
             <section className="space-y-2">
               <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Question tiles</p>
-              <div className="space-y-2">
-                {allOptions.filter((tile) => tile.type === 'question').map(renderOptionPill)}
-              </div>
+              <ScrollArea className="h-90 pr-1">
+                <div className="space-y-2">
+                  {allOptions.filter((tile) => tile.type === 'question').map(renderOptionPill)}
+                </div>
+              </ScrollArea>
             </section>
           </div>
         </div>

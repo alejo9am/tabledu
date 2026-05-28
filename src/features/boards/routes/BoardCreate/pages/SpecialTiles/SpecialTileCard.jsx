@@ -10,33 +10,13 @@ import { NumberInput } from '@/components/ui/number-input'
 import { Textarea } from '@/components/ui/textarea'
 import { Toggle } from '@/components/ui/toggle'
 import { cn } from '@/lib/utils'
-import TileIconPickerDialog from '@/features/boards/routes/BoardCreate/components/TileIconPickerDialog'
-
-const tileMetaByType = {
-  duel: {
-    name: 'Duel',
-    label: 'Duel tile',
-    mechanic:
-      'When a team lands here, it challenges another team in a duel made of two questions. Configure the winner, loser, and draw scores here for this board.',
-  },
-  penalty: {
-    name: 'Penalty',
-    label: 'Penalty tile',
-    mechanic:
-      'When a team lands here, it immediately receives the penalty score configured here for this board.',
-  },
-  reroll: {
-    name: 'Reroll',
-    label: 'Reroll tile',
-    mechanic:
-      'When a team lands here, it gets an extra die roll and moves again right away. This mechanic has no extra score setting.',
-  },
-}
+import TileIconPickerDialog from '@/components/tiles/TileIconPickerDialog'
+import { getSpecialTileMeta } from '@/lib/constants/specialTileMeta'
 
 function SpecialTileCard({ tile, scores, onChange, onScoresChange }) {
   const [isIconDialogOpen, setIsIconDialogOpen] = useState(false)
   const type = tile.type
-  const tileMeta = tileMetaByType[type] ?? { name: 'Tile', label: 'Special tile', mechanic: '' }
+  const tileMeta = getSpecialTileMeta(type, 'boardCreate')
   const tileLabel = tileMeta.label
 
   return (
@@ -64,7 +44,7 @@ function SpecialTileCard({ tile, scores, onChange, onScoresChange }) {
           </Button>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <p className="rounded-xl bg-muted/40 p-3 text-sm text-foreground">{tileMeta.mechanic}</p>
+          <p className="rounded-xl bg-muted/40 p-3 text-sm text-foreground">{tileMeta.description}</p>
         </CollapsibleContent>
       </Collapsible>
 
@@ -165,7 +145,7 @@ function SpecialTileCard({ tile, scores, onChange, onScoresChange }) {
         open={isIconDialogOpen}
         onOpenChange={setIsIconDialogOpen}
         value={tile.icon}
-        tileName={tile.name || tileMeta.name}
+        tileName={tile.name || tileLabel}
         tileType={type}
         onSelect={(icon) => onChange({ icon })}
       />

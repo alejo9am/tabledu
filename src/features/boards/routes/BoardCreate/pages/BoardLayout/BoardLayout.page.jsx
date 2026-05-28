@@ -13,10 +13,10 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
+import ReplaceTileDialog from '@/features/boards/components/ReplaceTileDialog'
 import BoardCreateStepTitle from '@/features/boards/routes/BoardCreate/components/BoardCreateStepTitle'
 import BoardLayoutPreview from '@/features/boards/routes/BoardCreate/components/BoardLayoutPreview'
 import { generateBoardLayout } from '@/features/boards/routes/BoardCreate/generateBoardLayout'
-import ReplaceTileDialog from '@/features/boards/routes/BoardCreate/pages/BoardLayout/ReplaceTileDialog'
 import useAppNavigation from '@/hooks/useAppNavigation.hook'
 import { createBoardLayout } from '@/services/boardLayouts'
 import { createBoard } from '@/services/boards'
@@ -229,9 +229,9 @@ function BoardLayoutPage({ form }) {
       </div>
 
       <ReplaceTileDialog
-        editingTilePosition={editingTilePosition}
-        generatedLayout={form.generatedLayout}
-        selectedQuestionTiles={form.selectedQuestionTiles}
+        editingPosition={editingTilePosition}
+        layout={form.generatedLayout}
+        questionTiles={form.selectedQuestionTiles}
         specialTiles={form.specialTiles}
         onClose={() => setEditingTilePosition(null)}
         onReplaceTile={handleReplaceTile}

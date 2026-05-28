@@ -53,3 +53,20 @@ export const createBoard = async ({ board }) => {
   throwIfSupabaseError(error, 'boards', 'create')
   return data
 }
+
+/** Update one board by id. */
+export const updateBoardById = async ({ boardId, updates }) => {
+  if (!boardId) {
+    throw new Error('[supabase] Failed to update board: missing board id')
+  }
+
+  const { data, error } = await supabase
+    .from('boards')
+    .update(updates)
+    .eq('id', boardId)
+    .select('*')
+    .maybeSingle()
+
+  throwIfSupabaseError(error, 'boards', 'update')
+  return data
+}

@@ -28,6 +28,23 @@ export const fetchGameById = async (gameId) => {
   return data
 }
 
+/** Fetch only playing games for one board. */
+export const fetchPlayingGamesByBoardId = async (boardId) => {
+  if (!boardId) {
+    throw new Error('[supabase] Failed to fetch games: missing board id')
+  }
+
+  const { data, error } = await supabase
+    .from('games')
+    .select('*')
+    .eq('board_id', boardId)
+    .eq('status', 'playing')
+    .order('updated_at', { ascending: false })
+
+  throwIfSupabaseError(error, 'games')
+  return data ?? []
+}
+
 /** Update one game by id. */
 export const updateGameById = async ({ gameId, updates }) => {
   if (!gameId) {

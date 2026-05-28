@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { getTileIconPublicUrl } from '@/services/api'
+import { getTileIconPublicUrl } from '@/services/storage'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { getRandomQuestionForTile } from '@/utils/gameUtils'
