@@ -51,6 +51,7 @@ function TileIcon({ tile, hasWarning = false }) {
 
 function TilesPanel({
   isEditing,
+  hasActiveEditor,
   specialTiles,
   questionTiles,
   availableQuestionTiles,
@@ -194,9 +195,11 @@ function TilesPanel({
               ) : null}
             </div>
           )
-          return isEditing
-            ? <div key={tile.id}>{content}</div>
-            : <Link key={tile.id} to={`/tiles/questions/${tile.id}`} className="block">{content}</Link>
+          if (isEditing || hasActiveEditor) {
+            return <div key={tile.id}>{content}</div>
+          }
+
+          return <Link key={tile.id} to={`/tiles/questions/${tile.id}`} className="block">{content}</Link>
         })}
       </section>
 

@@ -1,47 +1,31 @@
 import { useParams } from "react-router-dom"
-import { useState, useEffect, useCallback } from "react"
-import PageHeader from "@/components/layout/PageHeader"
 import useAppNavigation from '@/hooks/useAppNavigation.hook'
-import BoardScoringCard from "@/features/boards/routes/BoardDetails/components/BoardScoringCard"
-import { fetchBoardById } from "@/services/boards"
-import { useAuth } from "@/context/AuthContext"
+import BoardInfoCard from '@/features/boards/routes/BoardDetails/components/BoardInfoCard'
+import LayoutEditBar from '@/features/boards/routes/BoardDetails/components/LayoutEditBar'
+import ScoringRulesCard from '@/features/boards/routes/BoardDetails/components/ScoringRulesCard'
+import SpiralPanel from '@/features/boards/routes/BoardDetails/components/SpiralPanel'
+import TilesPanel from '@/features/boards/routes/BoardDetails/components/TilesPanel'
+import { useBoardDetails } from '@/features/boards/routes/BoardDetails/hooks/useBoardDetails.hook'
 import ErrorState from "@/components/ui/error-state"
 import { Skeleton } from "@/components/ui/skeleton"
-import { PlayCircleIcon } from "@hugeicons/core-free-icons"
 
 function BoardDetailsPage() {
   const { boardId } = useParams()
   const { goTo } = useAppNavigation()
-  const { user } = useAuth()
+  const vm = useBoardDetails({ boardId })
+  const { details, isLoading, error, reload } = vm.page
 
-  const [board, setBoard] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  const loadBoard = useCallback(async () => {
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      if (!user?.id || !boardId) {
-        setBoard(null)
-        return
-      }
-
-      const data = await fetchBoardById(boardId)
-      setBoard(data)
-    } catch (error) {
-      setError({
-        technicalMessage: error?.message ?? null,
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }, [user?.id, boardId])
-
-  useEffect(() => {
-    loadBoard()
-  }, [loadBoard])
+  const displayedLayout = vm.layoutEditor.isEditingLayout ? vm.layoutEditor.draftLayout : details?.layout ?? []
+  const displayedSpecialTiles = vm.layoutEditor.isEditingLayout
+    ? Object.values(vm.layoutEditor.draftTiles.specialTiles)
+    : details?.specialTiles ?? []
+  const displayedQuestionTiles = vm.layoutEditor.isEditingLayout
+    ? vm.layoutEditor.draftTiles.questionTiles
+    : details?.selectedQuestionTiles ?? []
+  const displayedScoring = vm.scoringEditor.isEditingScoring
+    ? vm.scoringEditor.draftScoring
+    : vm.scoringEditor.scoring
+  const hasActiveEditor = vm.boardInfo.isEditingInfo || vm.scoringEditor.isEditingScoring || vm.layoutEditor.isEditingLayout
 
   if (error) {
     // Error while fetching board details (e.g. network error, supabase error, etc.)
@@ -51,13 +35,13 @@ function BoardDetailsPage() {
           title="We could not load this board"
           description="Something went wrong while fetching the board details. Please try again."
           technicalDetails={error.technicalMessage}
-          onRetry={loadBoard}
+          onRetry={reload}
         />
       </section>
     )
   }
 
-  if (!isLoading && !board) {
+  if (!isLoading && !details) {
     // Board not found or user does not have access to it
     return (
       <section className="flex flex-1 flex-col justify-center items-center gap-4 p-4 pt-0" aria-label="Board details page">
@@ -71,47 +55,76 @@ function BoardDetailsPage() {
     )
   }
 
+  if (isLoading) {
+    return (
+      <section className="flex flex-1 flex-col gap-4 p-4 pt-0" aria-label="Board details page">
+        <div className="grid gap-4 lg:grid-cols-12">
+          <Skeleton className="h-56 rounded-2xl lg:col-span-6" />
+          <Skeleton className="h-56 rounded-2xl lg:col-span-6" />
+          <Skeleton className="h-12 rounded-2xl lg:col-span-12" />
+          <Skeleton className="h-128 rounded-2xl lg:col-span-9" />
+          <Skeleton className="h-128 rounded-2xl lg:col-span-3" />
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="flex flex-1 flex-col gap-4 p-4 pt-0" aria-label="Board details page">
-      <PageHeader
-        isLoading={isLoading}
-        title={board?.name}
-        description="Review this board scoring profile and prepare the next game session."
-        ctaLabel="Start Game"
-        ctaSubtitle="Create a new session"
-        ctaIcon={PlayCircleIcon}
-        ctaOnClick={() => goTo(`/games/new/${board?.id}`)}
-      />
       <div className="grid flex-1 grid-cols-1 gap-4 lg:grid-cols-12">
-        <BoardScoringCard board={board} isLoading={isLoading} />
+        <BoardInfoCard
+          boardId={details.board.id}
+          name={details.board.name}
+          description={details.board.description}
+          questionTiles={displayedQuestionTiles}
+          hasActiveEditor={hasActiveEditor}
+          sessions={details.sessions}
+          isEditingInfo={vm.boardInfo.isEditingInfo}
+          isSavingInfo={vm.boardInfo.isSavingInfo}
+          draftInfo={vm.boardInfo.draftInfo}
+          onEditInfo={vm.boardInfo.startInfoEdit}
+          onCancelInfo={vm.boardInfo.cancelInfoEdit}
+          onDraftInfoChange={vm.boardInfo.updateDraftInfo}
+          onSaveInfo={vm.actions.saveInfo}
+        />
+        <ScoringRulesCard
+          scoring={displayedScoring}
+          isEditingScoring={vm.scoringEditor.isEditingScoring}
+          isSavingScoring={vm.scoringEditor.isSavingScoring}
+          onChange={vm.scoringEditor.updateDraftScoring}
+          onEdit={vm.scoringEditor.startScoringEdit}
+          onCancel={vm.scoringEditor.cancelScoringEdit}
+          onSave={vm.actions.saveScoring}
+        />
 
-        <article className="rounded-xl border bg-card p-4 sm:p-5 lg:col-span-4">
-          <h2 className="text-lg font-semibold sm:text-xl">Tiles</h2>
-          <div className="mt-4 space-y-3">
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-12 w-full" />
-          </div>
-        </article>
+        <LayoutEditBar
+          isEditingLayout={vm.layoutEditor.isEditingLayout}
+          isSavingLayout={vm.layoutEditor.isSavingLayout}
+          hasUnsavedLayoutChanges={vm.layoutEditor.hasUnsavedLayoutChanges}
+          onStartLayoutEdit={vm.layoutEditor.startLayoutEdit}
+          onDiscardLayout={vm.layoutEditor.cancelLayoutEdit}
+          onSaveLayout={vm.actions.saveLayout}
+        />
 
-        <article className="rounded-xl border bg-card p-4 sm:p-5 lg:col-span-7">
-          <h2 className="text-lg font-semibold sm:text-xl">Question Bank</h2>
-          <div className="mt-4 space-y-3">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-          </div>
-        </article>
-
-        <article className="rounded-xl border bg-card p-4 sm:p-5 lg:col-span-5">
-          <h2 className="text-lg font-semibold sm:text-xl">Recent Activity</h2>
-          <div className="mt-4 space-y-3">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-4 w-32" />
-          </div>
-        </article>
+        <SpiralPanel
+          isEditing={vm.layoutEditor.isEditingLayout}
+          layout={displayedLayout}
+          questionTiles={displayedQuestionTiles}
+          specialTiles={displayedSpecialTiles.filter((tile) => tile.enabled)}
+          onUpdateCell={vm.layoutEditor.updateCell}
+        />
+        <TilesPanel
+          isEditing={vm.layoutEditor.isEditingLayout}
+          hasActiveEditor={hasActiveEditor}
+          specialTiles={displayedSpecialTiles}
+          questionTiles={displayedQuestionTiles}
+          availableQuestionTiles={details?.availableQuestionTiles ?? []}
+          onRegenerateLayout={vm.layoutEditor.regenerateLayout}
+          onToggleSpecial={vm.layoutEditor.toggleSpecialTile}
+          onAddQuestionTile={vm.layoutEditor.addQuestionTile}
+          onRemoveQuestionTile={vm.layoutEditor.removeQuestionTile}
+          onSwapQuestionTile={vm.layoutEditor.swapQuestionTile}
+        />
       </div>
     </section>
   )
