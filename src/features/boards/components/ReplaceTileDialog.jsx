@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 
 function ReplaceTileDialog({
@@ -91,9 +92,11 @@ function ReplaceTileDialog({
 
             <section className="space-y-2">
               <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Question tiles</p>
-              <div className="space-y-2">
-                {allOptions.filter((tile) => tile.type === 'question').map(renderOptionPill)}
-              </div>
+              <ScrollArea className="h-90 pr-1">
+                <div className="space-y-2">
+                  {allOptions.filter((tile) => tile.type === 'question').map(renderOptionPill)}
+                </div>
+              </ScrollArea>
             </section>
           </div>
         </div>
