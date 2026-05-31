@@ -27,6 +27,11 @@ const tileIconOptions = [
   { path: 'system/swords.png', label: 'Swords' },
   { path: 'system/special_ladder.png', label: 'Ladder' }, 
   { path: 'system/anatomy.png', label: 'Anatomy' },
+  { path: 'system/cell.png', label: 'cell' },
+  { path: 'system/earth.png', label: 'earth' },
+  { path: 'system/plant.png', label: 'plant' },
+  { path: 'system/dna.png', label: 'dna' },
+  { path: 'system/geology.png', label: 'geology' },
 ]
 
 function TileIconPickerDialog({ open, onOpenChange, value, tileName, tileType = 'question', onSelect }) {
