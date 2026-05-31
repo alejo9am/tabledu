@@ -25,6 +25,7 @@ const tileIconOptions = [
   { path: 'system/hacker.png', label: 'Hacker' },
   { path: 'system/pipe.png', label: 'Pipe' },
   { path: 'system/swords.png', label: 'Swords' },
+  { path: 'system/special_ladder.png', label: 'Ladder' },
 ]
 
 function TileIconPickerDialog({ open, onOpenChange, value, tileName, tileType = 'question', onSelect }) {
