@@ -53,6 +53,15 @@ const tileIconOptions = [
   { path: 'system/woodwind.png', label: 'Woodwind' },
   { path: 'system/string.png', label: 'String' },
   { path: 'system/note.png', label: 'Notes' },
+   { path: 'system/special_thunder collision.png', label: 'Collision' },
+  { path: 'system/3R.png', label: '3 R´s' },
+  { path: 'system/bin.png', label: 'Bin' },
+  { path: 'system/climatechange.png', label: 'Climate Change' },
+  { path: 'system/habits.png', label: 'Environmental Habits' },
+  { path: 'system/industry.png', label: 'Industry Process' },
+  { path: 'system/insect.png', label: 'Insects' },
+  { path: 'system/oceans.png', label: 'Oceans' },
+  { path: 'system/recycle.png', label: 'Recycle' },
 ]
 
 function TileIconPickerDialog({ open, onOpenChange, value, tileName, tileType = 'question', onSelect }) {
