@@ -53,7 +53,6 @@ const tileIconOptions = [
   { path: 'system/woodwind.png', label: 'Woodwind' },
   { path: 'system/string.png', label: 'String' },
   { path: 'system/note.png', label: 'Notes' },
-   { path: 'system/special_thunder collision.png', label: 'Collision' },
   { path: 'system/3R.png', label: '3 R´s' },
   { path: 'system/bin.png', label: 'Bin' },
   { path: 'system/climatechange.png', label: 'Climate Change' },
