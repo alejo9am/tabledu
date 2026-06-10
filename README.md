@@ -71,7 +71,10 @@ La arquitectura de `src/` sigue una organización por features. Consulta [ARCHIT
 ## 4. Modelo de datos
 
 <div align="center">
+  <a href="https://dbdocs.io/arenasmoreira/tabledu?view=relationships" target="_blank">
   <img src="./docs/relational_model.svg" alt="Modelo relacional de Tabledu" width="700" />
+</a>
+
 </div>
 
 Las entidades principales son: `users`, `boards`, `tiles`, `questions`, `board_layouts`, `games`, `teams` y `answers`. Los scripts de creación del esquema están disponibles en [`docs/database/`](./docs/database/).
