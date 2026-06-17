@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 
 import privacyPolicyMarkdown from './privacy-policy.md?raw'
 
-const inlineTokenPattern = /(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\)|\*[^*]+\*)/g
+const inlineTokenPattern = /(\*\*.+?\*\*|\[[^\]]+\]\([^)]+\)|\*[^*]+\*)/g
 
 function renderInlineContent(text) {
   const nodes = []
@@ -17,7 +17,7 @@ function renderInlineContent(text) {
     }
 
     if (token.startsWith('**') && token.endsWith('**')) {
-      nodes.push(<strong key={`${match.index}-strong`}>{token.slice(2, -2)}</strong>)
+      nodes.push(<strong key={`${match.index}-strong`}>{renderInlineContent(token.slice(2, -2))}</strong>)
     } else if (token.startsWith('[')) {
       const closingBracketIndex = token.indexOf('](')
       const label = token.slice(1, closingBracketIndex)
@@ -31,11 +31,11 @@ function renderInlineContent(text) {
           rel="noreferrer"
           className="font-medium text-primary underline underline-offset-2 hover:text-primary/80"
         >
-          {label}
+          {renderInlineContent(label)}
         </a>
       )
     } else {
-      nodes.push(<em key={`${match.index}-em`}>{token.slice(1, -1)}</em>)
+      nodes.push(<em key={`${match.index}-em`}>{renderInlineContent(token.slice(1, -1))}</em>)
     }
 
     lastIndex = match.index + token.length
