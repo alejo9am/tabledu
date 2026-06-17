@@ -7,8 +7,11 @@ import registerBg from '@/assets/register-bg.svg'
 import AuthHeader from '@/features/auth/components/AuthHeader'
 import AuthVisualPanel from '@/features/auth/components/AuthVisualPanel'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Field, FieldLabel, FieldError } from '@/components/ui/field'
+import { Label } from '@/components/ui/label'
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupButton } from '@/components/ui/input-group'
+import PrivacyPolicyDialog from './PrivacyPolicyDialog'
 
 function parseSupabaseError(error) {
   if (error?.name === 'AuthWeakPasswordError' && error?.reasons) {
@@ -27,6 +30,7 @@ function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [acceptedPrivacyPolicy, setAcceptedPrivacyPolicy] = useState(false)
 
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -37,13 +41,18 @@ function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError(null)
-    setNotice(null)
+    if (!acceptedPrivacyPolicy) {
+      setError([{ message: 'You must accept the Privacy Policy to continue.' }])
+      return
+    }
 
     if (password !== confirmPassword) {
       setError([{ message: 'Passwords do not match.' }])
       return
     }
+
+    setError(null)
+    setNotice(null)
 
     setLoading(true)
 
@@ -108,11 +117,7 @@ function RegisterPage() {
                   <InputGroupInput
                     type={showPassword ? 'text' : 'password'}
                     value={password}
-                    onChange={(e) => {
-                      const val = e.target.value
-                      setPassword(val)
-                      setError(confirmPassword && val !== confirmPassword ? [{ message: 'Passwords do not match.' }] : null)
-                    }}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete="new-password"
                     placeholder="Min. 6 characters"
@@ -138,11 +143,7 @@ function RegisterPage() {
                   <InputGroupInput
                     type={showConfirm ? 'text' : 'password'}
                     value={confirmPassword}
-                    onChange={(e) => {
-                      const val = e.target.value
-                      setConfirmPassword(val)
-                      setError(password && val !== password ? [{ message: 'Passwords do not match.' }] : null)
-                    }}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     autoComplete="new-password"
                     placeholder="Repeat your password"
@@ -158,6 +159,23 @@ function RegisterPage() {
                   </InputGroupAddon>
                 </InputGroup>
               </Field>
+
+              <div className="flex items-center gap-2.5">
+                <Checkbox
+                  id="privacy-policy"
+                  checked={acceptedPrivacyPolicy}
+                  onCheckedChange={(checked) => {
+                    setAcceptedPrivacyPolicy(checked === true)
+                  }}
+                  disabled={loading}
+                />
+                <div className="flex flex-wrap items-center gap-x-1 gap-y-0.5 text-sm leading-snug">
+                  <Label htmlFor="privacy-policy" className="font-normal gap-0 text-muted-foreground">
+                    I have read and accept the
+                  </Label>
+                  <PrivacyPolicyDialog />
+                </div>
+              </div>
 
               {error && (
                 <Field data-invalid={true}>
