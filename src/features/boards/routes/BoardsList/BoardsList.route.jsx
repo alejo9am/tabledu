@@ -90,16 +90,12 @@ function BoardsListPage() {
     const items = isLoading ? placeholders : boards
 
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {items.map((item) => (
           <BoardCard
             key={item.id}
             board={item}
             isLoading={isLoading}
-            onPrimaryAction={() => goTo(`/boards/${item.id}`)}
-            secondaryActionLabel="Start New Game"
-            secondaryActionWarning={false}
-            onSecondaryAction={() => goTo(`/games/new/${item?.id}`)}
           />
         ))}
       </div>
