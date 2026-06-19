@@ -23,15 +23,21 @@ export const fetchBoardById = async (boardId) => {
  *
  * Returns each board row enriched with a `layout` array shaped like:
  * `{ position, name, type, icon }`.
+ * It also adds `questionCount`, which sums the questions attached to the unique
+ * question tiles present in that board layout.
  *
  * Example:
  * `{
  *   id: 'board-1',
  *   name: 'My Board',
- *   layout: [{ position: 1, name: 'Tile 1', type: 'question', icon: 'system/hourglass.png' }]
+ *   layout: [{ position: 1, name: 'Tile 1', type: 'question', icon: 'system/hourglass.png' }],
+ *   questionCount: 12
  * }`
  *
- * @returns {Promise<Array<object & { layout: Array<{ position: number, name: string, type: string | null, icon: string | null }> }>>}
+ * @returns {Promise<Array<object & {
+ *   layout: Array<{ position: number, name: string, type: string | null, icon: string | null }>,
+ *   questionCount: number,
+ * }>>}
  */
 export const fetchBoards = async () => {
   const { data: boards, error: boardsError } = await supabase
@@ -49,7 +55,7 @@ export const fetchBoards = async () => {
   // Load the full board layout in one query and join the tile metadata we need for cards.
   const { data: layoutRows, error: layoutError } = await supabase
     .from('board_layouts')
-    .select('board_id, position, tile:tiles!inner(name, type, icon)')
+    .select('board_id, position, tile:tiles!inner(id, name, type, icon)')
     .in('board_id', boardIds)
     .order('position', { ascending: true })
 
@@ -57,11 +63,13 @@ export const fetchBoards = async () => {
 
   // Example: { "board-1": [{ position: 1, name: 'Tile 1', type: 'question', icon: 'system/hourglass.png' }] }
   const layoutsByBoardId = new Map()
+  const questionTileIdsByBoardId = new Map()
+  const allQuestionTileIds = new Set()
   for (const row of layoutRows ?? []) {
     const tile = row.tile ?? null
-    // The list view only needs the tile name, type and icon.
     const layoutRow = {
       position: row.position,
+      tile_id: tile?.id ?? null,
       name: tile?.name ?? null,
       type: tile?.type ?? null,
       icon: tile?.icon ?? null,
@@ -72,11 +80,45 @@ export const fetchBoards = async () => {
     }
 
     layoutsByBoardId.get(row.board_id).push(layoutRow)
+
+    if (tile?.type === 'question' && tile?.id) {
+      allQuestionTileIds.add(tile.id)
+
+      if (!questionTileIdsByBoardId.has(row.board_id)) {
+        questionTileIdsByBoardId.set(row.board_id, new Set())
+      }
+      questionTileIdsByBoardId.get(row.board_id).add(tile.id)
+    }
+  }
+
+  const { data: questions, error: questionsError } = allQuestionTileIds.size
+    ? await supabase
+      .from('questions')
+      .select('tile_id')
+      .in('tile_id', [...allQuestionTileIds])
+    : { data: [], error: null }
+
+  throwIfSupabaseError(questionsError, 'questions')
+
+  const questionCountByTileId = new Map()
+  for (const question of questions ?? []) {
+    const currentCount = questionCountByTileId.get(question.tile_id) ?? 0
+    questionCountByTileId.set(question.tile_id, currentCount + 1)
+  }
+
+  const questionCountByBoardId = new Map()
+  for (const [boardId, tileIds] of questionTileIdsByBoardId.entries()) {
+    let count = 0
+    for (const tileId of tileIds) {
+      count += questionCountByTileId.get(tileId) ?? 0
+    }
+    questionCountByBoardId.set(boardId, count)
   }
 
   return boards.map((board) => ({
     ...board,
     layout: layoutsByBoardId.get(board.id) ?? [],
+    questionCount: questionCountByBoardId.get(board.id) ?? 0,
   }))
 }
 
