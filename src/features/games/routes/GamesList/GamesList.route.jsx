@@ -3,6 +3,7 @@ import PageHeader from '@/components/layout/PageHeader'
 import useAppNavigation from '@/hooks/useAppNavigation.hook'
 import { useAuth } from '@/context/AuthContext'
 import { fetchGames } from '@/services/games'
+import { fetchBoards } from '@/services/boards'
 import ErrorState from '@/components/ui/error-state'
 import GameCard from '@/components/cards/GameCard'
 import {
@@ -16,14 +17,19 @@ import {
 import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/Icon'
 import { AddCircleIcon, DiceFaces05Icon } from '@hugeicons/core-free-icons'
+import BoardSelectorDialog from './BoardSelectorDialog'
 
 function GamesListRoute() {
   const { goTo } = useAppNavigation()
   const { user } = useAuth()
 
   const [games, setGames] = useState([])
+  const [boards, setBoards] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingBoards, setIsLoadingBoards] = useState(true)
   const [error, setError] = useState(null)
+  const [boardsError, setBoardsError] = useState(null)
+  const [isBoardSelectorOpen, setIsBoardSelectorOpen] = useState(false)
 
   const loadGames = useCallback(async () => {
     setIsLoading(true)
@@ -46,9 +52,34 @@ function GamesListRoute() {
     }
   }, [user?.id])
 
+  const loadBoards = useCallback(async () => {
+    setIsLoadingBoards(true)
+    setBoardsError(null)
+
+    try {
+      if (!user?.id) {
+        setBoards([])
+        return
+      }
+
+      const data = await fetchBoards()
+      setBoards(data)
+    } catch (error) {
+      setBoardsError({
+        technicalMessage: error?.message ?? null,
+      })
+    } finally {
+      setIsLoadingBoards(false)
+    }
+  }, [user?.id])
+
   useEffect(() => {
     loadGames()
   }, [loadGames])
+
+  useEffect(() => {
+    loadBoards()
+  }, [loadBoards])
 
   const renderContent = () => {
     if (error) {
@@ -76,7 +107,7 @@ function GamesListRoute() {
               <EmptyDescription>Create a game from your boards to start playing.</EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <Button variant="warning" onClick={() => goTo('/games/new')}>
+              <Button variant="warning" onClick={() => setIsBoardSelectorOpen(true)}>
                 <Icon icon={AddCircleIcon} className="size-4" />
                 New Game
               </Button>
@@ -112,9 +143,17 @@ function GamesListRoute() {
         ctaLabel="New Game"
         ctaSubtitle="Create and configure a session"
         ctaIcon={AddCircleIcon}
-        ctaOnClick={() => goTo('/games/new')}
+        ctaOnClick={() => setIsBoardSelectorOpen(true)}
       />
       {renderContent()}
+      <BoardSelectorDialog
+        open={isBoardSelectorOpen}
+        onOpenChange={setIsBoardSelectorOpen}
+        boards={boards}
+        isLoading={isLoadingBoards}
+        error={boardsError}
+        onRetry={loadBoards}
+      />
     </section>
   )
 }

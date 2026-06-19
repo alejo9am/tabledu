@@ -27,10 +27,14 @@ import { Icon } from '@/components/ui/Icon'
 import { Alert02Icon, ArrowDown01Icon, Delete02Icon, PlayCircleIcon } from '@hugeicons/core-free-icons'
 import useAppNavigation from '@/hooks/useAppNavigation.hook'
 import { deleteBoardById } from '@/services/boards'
+import { cn } from '@/lib/utils'
 
 function BoardCard({
   board = null,
   isLoading = false,
+  linkTo = null,
+  showActions = false,
+  className = '',
   onDeleted,
 }) {
   const { goTo } = useAppNavigation()
@@ -68,9 +72,12 @@ function BoardCard({
   }
 
   return (
-    <article className="flex w-full flex-col rounded-xl border bg-card animate-in fade-in">
+    <article className={cn(
+      'flex w-full flex-col rounded-xl border bg-card animate-in fade-in',
+      className
+    )}>
       <Link
-        to={`/boards/${board?.id}`}
+        to={linkTo}
         state={{ from: location.pathname }}
         className="flex items-center justify-center overflow-hidden rounded-t-xl border-b border-border bg-muted p-5 transition-opacity hover:opacity-90"
         aria-label={`Open ${title} details`}
@@ -80,7 +87,7 @@ function BoardCard({
 
       <div className="flex items-start justify-between gap-3 p-5">
         <Link
-          to={`/boards/${board?.id}`}
+          to={linkTo}
           state={{ from: location.pathname }}
           className="min-w-0 flex-1"
           aria-label={`Open ${title} details`}
@@ -99,44 +106,46 @@ function BoardCard({
           </div>
         </Link>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="shrink-0 text-muted-foreground"
-              aria-label={`Board actions for ${title}`}
-            >
-              Actions
-              <Icon icon={ArrowDown01Icon} className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            {canStartGame ? (
-              <DropdownMenuItem onSelect={() => goTo(`/games/new/${board?.id}`)}>
-                <Icon icon={PlayCircleIcon} className="size-4" />
-                Start new game
+        {showActions && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="shrink-0 text-muted-foreground"
+                aria-label={`Board actions for ${title}`}
+              >
+                Actions
+                <Icon icon={ArrowDown01Icon} className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {canStartGame ? (
+                <DropdownMenuItem onSelect={() => goTo(`/games/new/${board?.id}`)}>
+                  <Icon icon={PlayCircleIcon} className="size-4" />
+                  Start new game
+                </DropdownMenuItem>
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <DropdownMenuItem disabled>
+                        <Icon icon={PlayCircleIcon} className="size-4" />
+                        Start new game
+                      </DropdownMenuItem>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side="left">Add questions to every question tile first.</TooltipContent>
+                </Tooltip>
+              )}
+              <DropdownMenuItem variant="destructive" onSelect={() => setIsDeleteDialogOpen(true)}>
+                <Icon icon={Delete02Icon} className="size-4" />
+                Delete board
               </DropdownMenuItem>
-            ) : (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span>
-                    <DropdownMenuItem disabled>
-                      <Icon icon={PlayCircleIcon} className="size-4" />
-                      Start new game
-                    </DropdownMenuItem>
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent side="left">Add questions to every question tile first.</TooltipContent>
-              </Tooltip>
-            )}
-            <DropdownMenuItem variant="destructive" onSelect={() => setIsDeleteDialogOpen(true)}>
-              <Icon icon={Delete02Icon} className="size-4" />
-              Delete board
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       <AlertDialog

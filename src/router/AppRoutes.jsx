@@ -30,7 +30,6 @@ function AppRoutes() {
           <Route path="/tiles/questions/:tileId" element={<QuestionTileDetailRoute />} />
           <Route path="/games" element={<GamesListRoute />} />
         </Route>
-        <Route path="/games/new" element={<NewGameRoute />} />
         <Route path="/games/new/:boardId" element={<NewGameRoute />} />
         <Route path="/games/:gameId/play" element={<GamePlayRoute />} />
       </Route>

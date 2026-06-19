@@ -18,7 +18,6 @@ src/features/
     routes/
       <RouteName>/
         <RouteName>.route.jsx
-        pages/
         components/
         hooks/
     components/
@@ -42,27 +41,7 @@ src/features/
 - Archivos de entrada de ruta: `*.route.jsx`
 - Pantallas internas de una ruta: `*.page.jsx`, nombradas por responsabilidad cuando el contexto de la carpeta ya identifica la ruta (por ejemplo, `SpecialTiles.page.jsx`, `QuestionTiles.page.jsx`).
 - Secciones o fragmentos específicos de ruta: `*.step.jsx` o nombres por responsabilidad
-- Hooks de ruta o feature: `*.hook.js|jsx` (por ejemplo, `useNewGameFlow.hook.js`)
-
-## 5. Patrón Recomendado para Rutas Multi-paso
-
-Cuando un flujo de URL contiene varias pantallas internas (por ejemplo `/games/new` y `/games/new/:boardId`, o el wizard `/boards/new`), se mantiene un único orquestador de ruta:
-
-```text
-features/games/
-  routes/
-    NewGame/
-      NewGame.route.jsx
-      pages/
-        NewGameBoardSelect.page.jsx
-        NewGameSetup.page.jsx
-      components/
-      hooks/
-```
-
-- `NewGame.route.jsx` decide qué pantalla interna se renderiza.
-- Las páginas internas gestionan su propio estado de UI y datos.
-- Los bloques compartidos entre esas páginas van en `components/` de esa ruta.
+- Hooks de ruta o feature: `*.hook.js|jsx` (por ejemplo, `useTeamsSetup.hook.js`)
 
 ## 6. Anti-patrones a Evitar
 

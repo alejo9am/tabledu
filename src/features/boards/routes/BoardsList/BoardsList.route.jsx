@@ -96,6 +96,8 @@ function BoardsListPage() {
             key={item.id}
             board={item}
             isLoading={isLoading}
+            linkTo={`/boards/${item.id}`}
+            showActions={true}
             onDeleted={(boardId) => setBoards((current) => current.filter((board) => board.id !== boardId))}
           />
         ))}
