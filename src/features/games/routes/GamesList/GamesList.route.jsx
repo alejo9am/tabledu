@@ -3,6 +3,7 @@ import PageHeader from '@/components/layout/PageHeader'
 import useAppNavigation from '@/hooks/useAppNavigation.hook'
 import { useAuth } from '@/context/AuthContext'
 import { fetchGames } from '@/services/games'
+import { fetchBoards } from '@/services/boards'
 import ErrorState from '@/components/ui/error-state'
 import GameCard from '@/components/cards/GameCard'
 import {
@@ -23,8 +24,11 @@ function GamesListRoute() {
   const { user } = useAuth()
 
   const [games, setGames] = useState([])
+  const [boards, setBoards] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingBoards, setIsLoadingBoards] = useState(true)
   const [error, setError] = useState(null)
+  const [boardsError, setBoardsError] = useState(null)
   const [isBoardSelectorOpen, setIsBoardSelectorOpen] = useState(false)
 
   const loadGames = useCallback(async () => {
@@ -48,9 +52,34 @@ function GamesListRoute() {
     }
   }, [user?.id])
 
+  const loadBoards = useCallback(async () => {
+    setIsLoadingBoards(true)
+    setBoardsError(null)
+
+    try {
+      if (!user?.id) {
+        setBoards([])
+        return
+      }
+
+      const data = await fetchBoards()
+      setBoards(data)
+    } catch (error) {
+      setBoardsError({
+        technicalMessage: error?.message ?? null,
+      })
+    } finally {
+      setIsLoadingBoards(false)
+    }
+  }, [user?.id])
+
   useEffect(() => {
     loadGames()
   }, [loadGames])
+
+  useEffect(() => {
+    loadBoards()
+  }, [loadBoards])
 
   const renderContent = () => {
     if (error) {
@@ -117,7 +146,14 @@ function GamesListRoute() {
         ctaOnClick={() => setIsBoardSelectorOpen(true)}
       />
       {renderContent()}
-      <BoardSelectorDialog open={isBoardSelectorOpen} onOpenChange={setIsBoardSelectorOpen} />
+      <BoardSelectorDialog
+        open={isBoardSelectorOpen}
+        onOpenChange={setIsBoardSelectorOpen}
+        boards={boards}
+        isLoading={isLoadingBoards}
+        error={boardsError}
+        onRetry={loadBoards}
+      />
     </section>
   )
 }
