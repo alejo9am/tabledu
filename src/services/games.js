@@ -1,11 +1,12 @@
 import { supabase } from '@/lib/supabase'
 import { throwIfSupabaseError } from '@/services/core/errors'
 
-/** Fetch all games for current authenticated user (RLS-scoped). */
+/** Fetch all playing games for current authenticated user (RLS-scoped). */
 export const fetchGames = async () => {
   const { data, error } = await supabase
     .from('games')
     .select('*, board:boards(name)')
+    .eq('status', 'playing')
     .order('updated_at', { ascending: false })
 
   throwIfSupabaseError(error, 'games')
