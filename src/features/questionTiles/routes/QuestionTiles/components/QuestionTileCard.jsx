@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Delete02Icon, Edit02Icon } from '@hugeicons/core-free-icons'
 
 import TileCard from '@/components/game/TileCard'
@@ -48,7 +49,11 @@ function QuestionTileCard({ tile, isDeleting, onOpen, onEdit, onDelete }) {
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-between rounded-xl border-2 border-dashed bg-muted/40 px-3 py-2">
+      <Link
+        to={`/tiles/questions/${tile.id}`}
+        className="mt-4 flex items-center justify-between rounded-xl border-2 border-dashed bg-muted/40 px-3 py-2 transition-opacity hover:opacity-90"
+        aria-label={`Open ${tile.name} question tile`}
+      >
         <span className="text-xs font-medium text-muted-foreground">Question bank size</span>
         <span className="font-display text-base font-semibold text-foreground">
           {(() => {
@@ -56,7 +61,7 @@ function QuestionTileCard({ tile, isDeleting, onOpen, onEdit, onDelete }) {
             return questionCount === 1 ? '1 question' : `${questionCount} questions`
           })()}
         </span>
-      </div>
+      </Link>
     </article>
   )
 }
