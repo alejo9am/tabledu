@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/Icon'
 import { AddCircleIcon, DiceFaces05Icon } from '@hugeicons/core-free-icons'
+import BoardSelectorDialog from './BoardSelectorDialog'
 
 function GamesListRoute() {
   const { goTo } = useAppNavigation()
@@ -24,6 +25,7 @@ function GamesListRoute() {
   const [games, setGames] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [isBoardSelectorOpen, setIsBoardSelectorOpen] = useState(false)
 
   const loadGames = useCallback(async () => {
     setIsLoading(true)
@@ -76,7 +78,7 @@ function GamesListRoute() {
               <EmptyDescription>Create a game from your boards to start playing.</EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <Button variant="warning" onClick={() => goTo('/games/new')}>
+              <Button variant="warning" onClick={() => setIsBoardSelectorOpen(true)}>
                 <Icon icon={AddCircleIcon} className="size-4" />
                 New Game
               </Button>
@@ -112,9 +114,10 @@ function GamesListRoute() {
         ctaLabel="New Game"
         ctaSubtitle="Create and configure a session"
         ctaIcon={AddCircleIcon}
-        ctaOnClick={() => goTo('/games/new')}
+        ctaOnClick={() => setIsBoardSelectorOpen(true)}
       />
       {renderContent()}
+      <BoardSelectorDialog open={isBoardSelectorOpen} onOpenChange={setIsBoardSelectorOpen} />
     </section>
   )
 }
