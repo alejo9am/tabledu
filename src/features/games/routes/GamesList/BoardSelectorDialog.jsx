@@ -12,6 +12,7 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { AddCircleIcon, DashboardSquare02Icon } from '@hugeicons/core-free-icons'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
@@ -61,21 +62,46 @@ function BoardSelectorDialog({ open, onOpenChange, boards = [], isLoading = fals
           ) : null}
 
           {!error && boards.length > 0 ? (
-            <ScrollArea className="min-h-0 flex-1">
-              <div className="px-6 py-5">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3">
-                  {boards.map((item) => (
-                    <BoardCard
-                      key={item.id}
-                      board={item}
-                      isLoading={false}
-                      linkTo={`/games/new/${item.id}`}
-                      showActions={false}
-                    />
-                  ))}
+            <TooltipProvider>
+              <ScrollArea className="min-h-0 flex-1">
+                <div className="px-6 py-5">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3">
+                    {boards.map((item) => {
+                      const isDisabled = item.emptyQuestionTileCount > 0
+
+                      if (isDisabled) {
+                        return (
+                          <Tooltip key={item.id}>
+                            <TooltipTrigger asChild>
+                              <span className="block">
+                                <BoardCard
+                                  board={item}
+                                  isLoading={false}
+                                  linkTo={`/games/new/${item.id}`}
+                                  showActions={false}
+                                  className="pointer-events-none cursor-not-allowed opacity-60 transition-none"
+                                />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">Add questions first</TooltipContent>
+                          </Tooltip>
+                        )
+                      }
+
+                      return (
+                        <BoardCard
+                          key={item.id}
+                          board={item}
+                          isLoading={false}
+                          linkTo={`/games/new/${item.id}`}
+                          showActions={false}
+                        />
+                      )
+                    })}
+                  </div>
                 </div>
-              </div>
-            </ScrollArea>
+              </ScrollArea>
+            </TooltipProvider>
           ) : null}
         </div>
       </DialogContent>

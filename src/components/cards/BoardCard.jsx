@@ -27,12 +27,14 @@ import { Icon } from '@/components/ui/Icon'
 import { Alert02Icon, ArrowDown01Icon, Delete02Icon, PlayCircleIcon } from '@hugeicons/core-free-icons'
 import useAppNavigation from '@/hooks/useAppNavigation.hook'
 import { deleteBoardById } from '@/services/boards'
+import { cn } from '@/lib/utils'
 
 function BoardCard({
   board = null,
   isLoading = false,
   linkTo = null,
   showActions = false,
+  className = '',
   onDeleted,
 }) {
   const { goTo } = useAppNavigation()
@@ -70,7 +72,10 @@ function BoardCard({
   }
 
   return (
-    <article className="flex w-full flex-col rounded-xl border bg-card animate-in fade-in">
+    <article className={cn(
+      'flex w-full flex-col rounded-xl border bg-card animate-in fade-in',
+      className
+    )}>
       <Link
         to={linkTo}
         state={{ from: location.pathname }}
