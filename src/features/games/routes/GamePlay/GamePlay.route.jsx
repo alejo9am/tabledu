@@ -72,7 +72,7 @@ function GameLoader({ children }) {
       <main className="flex min-h-dvh items-center justify-center p-6 animate-in fade-in zoom-in" aria-label="Invalid game state">
         <ErrorState
           title="This game is not ready to play"
-          description="Only games in playing status with an active team can be opened in runtime."
+          description="Only games in playing status with an active team can be opened."
           technicalDetails={`status=${game?.status ?? 'unknown'}, active_team=${game?.current_team_id ? 'set' : 'missing'}`}
           showSecondaryAction
         />
