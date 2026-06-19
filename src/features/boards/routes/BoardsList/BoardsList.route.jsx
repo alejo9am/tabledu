@@ -96,6 +96,7 @@ function BoardsListPage() {
             key={item.id}
             board={item}
             isLoading={isLoading}
+            onDeleted={(boardId) => setBoards((current) => current.filter((board) => board.id !== boardId))}
           />
         ))}
       </div>

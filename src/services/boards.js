@@ -163,3 +163,19 @@ export const updateBoardById = async ({ boardId, updates }) => {
   throwIfSupabaseError(error, 'boards', 'update')
   return data
 }
+
+/** Delete one board by id for the authenticated user. */
+export const deleteBoardById = async ({ boardId }) => {
+  if (!boardId) {
+    throw new Error('[supabase] Failed to delete board: missing board id')
+  }
+
+  const { error } = await supabase
+    .from('boards')
+    .delete()
+    .eq('id', boardId)
+
+  if (error) {
+    throwIfSupabaseError(error, 'boards', 'delete')
+  }
+}
