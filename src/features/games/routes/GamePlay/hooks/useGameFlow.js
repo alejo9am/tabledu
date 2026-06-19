@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { getRandomQuestionForTile } from "@/utils/gameUtils"
 import { TURN_PHASES } from '../constants/turnPhases'
@@ -27,6 +27,19 @@ export function useGameFlow(gameInfo) {
   const [dieValue, setDieValue] = useState(1)
   const [currentTile, setCurrentTile] = useState(null)
   const [currentQuestion, setCurrentQuestion] = useState(null)
+
+  // Disable eslint warning about setting state in effect
+  /* eslint-disable react-hooks/set-state-in-effect -- resume guard runs once on load to restore game_over state */
+  useEffect(() => {
+    const hasReachedGoal = teams.some((team) => team.position >= 30)
+
+    if (hasReachedGoal && turnPhase !== TURN_PHASES.GAME_OVER) {
+      setCurrentTile(null)
+      setCurrentQuestion(null)
+      setTurnPhase(TURN_PHASES.GAME_OVER)
+    }
+  }, [teams, turnPhase])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
 
   // ==========================================
