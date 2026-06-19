@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import BoardLayoutPreview from '@/components/game/BoardLayoutPreview'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,7 +40,9 @@ function BoardCard({
 
   const title = board?.name ?? "Unknown Board"
   const questionCount = board?.questionCount ?? 0
+  const emptyQuestionTileCount = board?.emptyQuestionTileCount ?? 0
   const questionBadgeVariant = questionCount === 0 ? 'destructive' : 'secondary'
+  const canStartGame = emptyQuestionTileCount === 0
   const layoutRows = (board?.layout ?? [])//.slice(0, 8)
 
   const handleDeleteBoard = async () => {
@@ -79,12 +82,21 @@ function BoardCard({
         <Link
           to={`/boards/${board?.id}`}
           state={{ from: location.pathname }}
+          className="min-w-0 flex-1"
           aria-label={`Open ${title} details`}
         >
           <p className="truncate font-display text-3xl font-semibold leading-tight text-primary">{title}</p>
-          <Badge variant={questionBadgeVariant} className="mt-3 mx-0 text-sm">
-            {questionCount} question{questionCount === 1 ? '' : 's'}
-          </Badge>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Badge variant={questionBadgeVariant} className="mx-0 text-sm">
+              {questionCount} question{questionCount === 1 ? '' : 's'}
+            </Badge>
+            {emptyQuestionTileCount > 0 ? (
+              <Badge variant="warning" className="flex gap-1">
+                <Icon icon={Alert02Icon} className="size-3" />
+                {emptyQuestionTileCount} tile{emptyQuestionTileCount === 1 ? '' : 's'} need questions
+              </Badge>
+            ) : null}
+          </div>
         </Link>
 
         <DropdownMenu>
@@ -101,10 +113,24 @@ function BoardCard({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onSelect={() => goTo(`/games/new/${board?.id}`)}>
-              <Icon icon={PlayCircleIcon} className="size-4" />
-              Start new game
-            </DropdownMenuItem>
+            {canStartGame ? (
+              <DropdownMenuItem onSelect={() => goTo(`/games/new/${board?.id}`)}>
+                <Icon icon={PlayCircleIcon} className="size-4" />
+                Start new game
+              </DropdownMenuItem>
+            ) : (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span>
+                    <DropdownMenuItem disabled>
+                      <Icon icon={PlayCircleIcon} className="size-4" />
+                      Start new game
+                    </DropdownMenuItem>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="left">Add questions to every question tile first.</TooltipContent>
+              </Tooltip>
+            )}
             <DropdownMenuItem variant="destructive" onSelect={() => setIsDeleteDialogOpen(true)}>
               <Icon icon={Delete02Icon} className="size-4" />
               Delete board

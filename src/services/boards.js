@@ -23,20 +23,22 @@ export const fetchBoardById = async (boardId) => {
  *
  * Returns each board row enriched with a `layout` array shaped like:
  * `{ position, name, type, icon }`.
- * It also adds `questionCount`, which sums the questions attached to the unique
- * question tiles present in that board layout.
+ * It also adds `questionCount`, which sums the total of questions in that board layout,
+ * and `emptyQuestionTileCount`.
  *
  * Example:
  * `{
  *   id: 'board-1',
  *   name: 'My Board',
  *   layout: [{ position: 1, name: 'Tile 1', type: 'question', icon: 'system/hourglass.png' }],
- *   questionCount: 12
+ *   questionCount: 12,
+ *   emptyQuestionTileCount: 0
  * }`
  *
  * @returns {Promise<Array<object & {
  *   layout: Array<{ position: number, name: string, type: string | null, icon: string | null }>,
  *   questionCount: number,
+ *   emptyQuestionTileCount: number,
  * }>>}
  */
 export const fetchBoards = async () => {
@@ -107,18 +109,26 @@ export const fetchBoards = async () => {
   }
 
   const questionCountByBoardId = new Map()
+  const emptyQuestionTileCountByBoardId = new Map()
   for (const [boardId, tileIds] of questionTileIdsByBoardId.entries()) {
     let count = 0
+    let emptyQuestionTileCount = 0
     for (const tileId of tileIds) {
-      count += questionCountByTileId.get(tileId) ?? 0
+      const tileQuestionCount = questionCountByTileId.get(tileId) ?? 0
+      count += tileQuestionCount
+      if (tileQuestionCount === 0) {
+        emptyQuestionTileCount += 1
+      }
     }
     questionCountByBoardId.set(boardId, count)
+    emptyQuestionTileCountByBoardId.set(boardId, emptyQuestionTileCount)
   }
 
   return boards.map((board) => ({
     ...board,
     layout: layoutsByBoardId.get(board.id) ?? [],
     questionCount: questionCountByBoardId.get(board.id) ?? 0,
+    emptyQuestionTileCount: emptyQuestionTileCountByBoardId.get(board.id) ?? 0,
   }))
 }
 
