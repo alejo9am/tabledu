@@ -1,11 +1,8 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import PageHeader from '@/components/layout/PageHeader'
-import useAppNavigation from '@/hooks/useAppNavigation.hook'
-import { useAuth } from '@/context/AuthContext'
-import { fetchGames } from '@/services/games'
-import { fetchBoards } from '@/services/boards'
 import ErrorState from '@/components/ui/error-state'
 import GameCard from '@/components/cards/GameCard'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Empty,
   EmptyContent,
@@ -18,68 +15,18 @@ import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/Icon'
 import { AddCircleIcon, DiceFaces05Icon } from '@hugeicons/core-free-icons'
 import BoardSelectorDialog from './BoardSelectorDialog'
+import { useGameCards } from './hooks/useGameCards.hook'
+import { useBoardsData } from './hooks/useBoardsData.hook'
 
 function GamesListRoute() {
-  const { goTo } = useAppNavigation()
-  const { user } = useAuth()
-
-  const [games, setGames] = useState([])
-  const [boards, setBoards] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isLoadingBoards, setIsLoadingBoards] = useState(true)
-  const [error, setError] = useState(null)
-  const [boardsError, setBoardsError] = useState(null)
   const [isBoardSelectorOpen, setIsBoardSelectorOpen] = useState(false)
-
-  const loadGames = useCallback(async () => {
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      if (!user?.id) {
-        setGames([])
-        return
-      }
-
-      const data = await fetchGames()
-      setGames(data)
-    } catch (error) {
-      setError({
-        technicalMessage: error?.message ?? null,
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }, [user?.id])
-
-  const loadBoards = useCallback(async () => {
-    setIsLoadingBoards(true)
-    setBoardsError(null)
-
-    try {
-      if (!user?.id) {
-        setBoards([])
-        return
-      }
-
-      const data = await fetchBoards()
-      setBoards(data)
-    } catch (error) {
-      setBoardsError({
-        technicalMessage: error?.message ?? null,
-      })
-    } finally {
-      setIsLoadingBoards(false)
-    }
-  }, [user?.id])
-
-  useEffect(() => {
-    loadGames()
-  }, [loadGames])
-
-  useEffect(() => {
-    loadBoards()
-  }, [loadBoards])
+  const { games, isLoading: isLoadingGames, error, reload: loadGames } = useGameCards()
+  const {
+    boards,
+    isLoading: isLoadingBoards,
+    error: boardsError,
+    reload: loadBoards,
+  } = useBoardsData()
 
   const renderContent = () => {
     if (error) {
@@ -95,7 +42,7 @@ function GamesListRoute() {
       )
     }
 
-    if (!isLoading && games.length === 0) {
+    if (!isLoadingGames && games.length === 0) {
       return (
         <div className="flex flex-1 flex-col items-center justify-center">
           <Empty className="w-fit rounded-xl border-3 border-dashed bg-card p-6 md:p-10">
@@ -117,20 +64,21 @@ function GamesListRoute() {
       )
     }
 
-    const placeholders = Array.from({ length: 5 }, (_, index) => ({ id: `loading-${index}` }))
-    const items = isLoading ? placeholders : games
-
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((item) => (
-          <GameCard
-            key={item.id}
-            game={item}
-            isLoading={isLoading}
-            primaryActionLabel="Open Session"
-            onPrimaryAction={() => goTo(`/games/${item.id}/play`)}
-          />
-        ))}
+        {isLoadingGames
+          ? Array.from({ length: 5 }, (_, index) => (
+              <Skeleton key={`loading-${index}`} className="h-36 w-full rounded-xl animate-in fade-in" />
+            ))
+          : games.map((item) => (
+              <GameCard
+                key={item.id}
+                game={item}
+                emptyQuestionTileCount={boards.find((board) => board.id === item.board_id)?.emptyQuestionTileCount ?? 0}
+                isLoading={isLoadingGames || isLoadingBoards}
+                onDeleted={loadGames}
+              />
+            ))}
       </div>
     )
   }

@@ -1,11 +1,12 @@
 import { supabase } from '@/lib/supabase'
 import { throwIfSupabaseError } from '@/services/core/errors'
 
-/** Fetch all games for current authenticated user (RLS-scoped). */
+/** Fetch all playing games for current authenticated user (RLS-scoped). */
 export const fetchGames = async () => {
   const { data, error } = await supabase
     .from('games')
-    .select('*')
+    .select('*, board:boards(name)')
+    .eq('status', 'playing')
     .order('updated_at', { ascending: false })
 
   throwIfSupabaseError(error, 'games')
@@ -60,6 +61,20 @@ export const updateGameById = async ({ gameId, updates }) => {
 
   throwIfSupabaseError(error, 'games', 'update')
   return data
+}
+
+/** Delete one game by id for the authenticated user. */
+export const deleteGameById = async ({ gameId }) => {
+  if (!gameId) {
+    throw new Error('[supabase] Failed to delete game: missing game id')
+  }
+
+  const { error } = await supabase
+    .from('games')
+    .delete()
+    .eq('id', gameId)
+
+  throwIfSupabaseError(error, 'games', 'delete')
 }
 
 /** Create one game for a board and user. */

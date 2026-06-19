@@ -1,69 +1,157 @@
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { Alert02Icon, Delete02Icon, Loading02Icon } from '@hugeicons/core-free-icons'
+import { Link, useLocation } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Icon } from '@/components/ui/Icon'
+import { cn } from '@/lib/utils'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { deleteGameById } from '@/services/games'
 
-const STATUS_BADGE_VARIANT = {
-  playing: 'default',
-  lobby: 'secondary',
-  finished: 'ghost',
-}
+function GameCard({ game = null, emptyQuestionTileCount, isLoading = false, onDeleted }) {
+  const location = useLocation()
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
-function formatUpdatedAt(value) {
-  if (!value) {
-    return 'No recent updates'
+  const title = game?.boardName ?? 'Unknown board'
+  const progressPercent = game?.progressPercent ?? 0
+  const lastPlayedDiff = game?.lastPlayedDiff ?? 'No recent updates'
+  const lastPlayedTitle = game?.lastPlayedTitle
+  const isGameBlocked = isLoading || emptyQuestionTileCount > 0
+
+  const handleDeleteGame = async () => {
+    try {
+      setIsDeleting(true)
+      await deleteGameById({ gameId: game?.id })
+      setIsDeleteDialogOpen(false)
+      toast.success('Game session deleted.')
+
+      if (typeof onDeleted === 'function') {
+        onDeleted(game?.id)
+      }
+    } catch (error) {
+      toast.error(error?.message ?? 'Could not delete game session.')
+    } finally {
+      setIsDeleting(false)
+    }
   }
-
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) {
-    return 'No recent updates'
-  }
-
-  return date.toLocaleString()
-}
-
-function GameCard({ game = null, isLoading = false, primaryActionLabel = 'Open Session', onPrimaryAction }) {
-  if (isLoading) {
-    return <Skeleton className="h-32 w-full rounded-xl animate-in fade-in" />
-  }
-
-  const status = game?.status ?? 'lobby'
-  const isPlayable = status === 'playing'
-  const badgeVariant = STATUS_BADGE_VARIANT[status] ?? 'outline'
-  const title = game?.pin ? `PIN ${String(game.pin).toUpperCase()}` : `Game #${game?.id}`
 
   return (
-    <article className="group relative min-h-32 overflow-hidden rounded-xl border border-primary-200/60 bg-card p-5 text-left transition hover:-translate-y-0.5 hover:border-primary-350 animate-in fade-in">
+    <article className="group relative overflow-hidden rounded-xl border bg-card text-left transition hover:-translate-y-0.5 animate-in fade-in">
       <div className="pointer-events-none absolute inset-x-0 top-0 flex h-1.5">
         <span className="h-full w-1/3 bg-primary" />
         <span className="h-full w-1/3 bg-warning" />
         <span className="h-full w-1/3 bg-destructive" />
       </div>
 
-      <div className="flex h-full flex-col">
-        <div className="flex items-start justify-between gap-3">
-          <p className="truncate text-xl leading-tight text-primary-700">{title}</p>
-          <Badge variant={badgeVariant}>{status}</Badge>
-        </div>
+      <Button
+        type="button"
+        variant="destructive-soft"
+        size="icon-xs"
+        className="absolute right-4 top-4 z-10 p-4"
+        onClick={() => setIsDeleteDialogOpen(true)}
+        aria-label={`Delete ${title}`}
+      >
+        <Icon icon={Delete02Icon} className="size-4" />
+      </Button>
 
-        <p className="mt-2 text-sm text-muted-foreground">
-          Board: {game?.board_id ?? 'Unknown'}
-        </p>
-        <p className="mt-1 text-xs text-muted-foreground/90">
-          Updated: {formatUpdatedAt(game?.updated_at)}
-        </p>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="block">
+            <Link
+              to={`/games/${game.id}/play`}
+              state={{ from: location.pathname }}
+              aria-disabled={isGameBlocked}
+              tabIndex={isGameBlocked ? -1 : 0}
+              className={cn(
+                'flex w-full flex-col gap-4 p-5',
+                isGameBlocked && 'pointer-events-none cursor-not-allowed opacity-60'
+              )}
+              aria-label={`Open ${title} session`}
+            >
+              <div className="pr-9">
+                <p className="truncate font-display text-2xl font-semibold leading-tight text-primary-700">{title}</p>
+                {isGameBlocked ? (
+                  <Badge variant="warning" className="mt-2 flex w-fit gap-1">
+                    <Icon icon={Alert02Icon} className="size-3" />
+                    {emptyQuestionTileCount} tile{emptyQuestionTileCount === 1 ? '' : 's'} need questions
+                  </Badge>
+                ) : null}
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Last played{' '}
+                  <span title={lastPlayedTitle} className="font-medium text-foreground">
+                    {lastPlayedDiff}
+                  </span>
+                </p>
+              </div>
 
-        <div className="mt-5 flex flex-wrap items-center gap-2 sm:justify-end">
-          <Button
-            type="button"
-            variant="default"
-            size="sm"
-            onClick={onPrimaryAction}
-            disabled={!isPlayable || typeof onPrimaryAction !== 'function'}
-          >
-            {primaryActionLabel}
-          </Button>
-        </div>
-      </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-3 text-xs font-semibold tracking-widest text-muted-foreground">
+                  <span>PROGRESS</span>
+                  <span>{progressPercent}%</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-muted">
+                  <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${progressPercent}%` }} />
+                </div>
+              </div>
+            </Link>
+          </span>
+        </TooltipTrigger>
+        {emptyQuestionTileCount > 0 ? (
+          <TooltipContent side="top">Add questions to every question tile first.</TooltipContent>
+        ) : null}
+      </Tooltip>
+
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={(open) => {
+          if (!open && !isDeleting) {
+            setIsDeleteDialogOpen(false)
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogMedia className="bg-destructive/10 text-destructive">
+              <Icon icon={Delete02Icon} />
+            </AlertDialogMedia>
+            <AlertDialogTitle>Delete this game session?</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <span className="block text-muted-foreground">
+                This will remove the session, its teams, and related answers.
+              </span>
+              <span className="block font-semibold text-destructive">
+                This action cannot be undone.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={(event) => {
+                event.preventDefault()
+                handleDeleteGame()
+              }}
+              disabled={isDeleting}
+            >
+              {isDeleting ? <Icon icon={Loading02Icon} className="size-4 animate-spin" /> : 'Delete session'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </article>
   )
 }
