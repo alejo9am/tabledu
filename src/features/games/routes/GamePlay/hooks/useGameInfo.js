@@ -214,12 +214,23 @@ export function useGameInfo() {
     }
   }
 
+  const finishGame = async () => {
+    if (!game) return
+
+    try {
+      await updateGameById({ gameId: game.id, updates: { status: 'finished' } })
+    } catch (error) {
+      console.error('Error al finalizar la partida:', error)
+      throw error
+    }
+  }
+
   return {
     board, game, teams, answers, tiles, layout, questions,
     isLoading, loadError,
     currentTeam, questionTiles,
     actions: {
-      updateTurn, updateScore, updatePosition, saveAnswer
+      updateTurn, updateScore, updatePosition, saveAnswer, finishGame
     }
   }
 }
