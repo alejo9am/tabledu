@@ -5,7 +5,7 @@ import { throwIfSupabaseError } from '@/services/core/errors'
 export const fetchGames = async () => {
   const { data, error } = await supabase
     .from('games')
-    .select('*')
+    .select('*, board:boards(name)')
     .order('updated_at', { ascending: false })
 
   throwIfSupabaseError(error, 'games')
@@ -60,6 +60,20 @@ export const updateGameById = async ({ gameId, updates }) => {
 
   throwIfSupabaseError(error, 'games', 'update')
   return data
+}
+
+/** Delete one game by id for the authenticated user. */
+export const deleteGameById = async ({ gameId }) => {
+  if (!gameId) {
+    throw new Error('[supabase] Failed to delete game: missing game id')
+  }
+
+  const { error } = await supabase
+    .from('games')
+    .delete()
+    .eq('id', gameId)
+
+  throwIfSupabaseError(error, 'games', 'delete')
 }
 
 /** Create one game for a board and user. */
