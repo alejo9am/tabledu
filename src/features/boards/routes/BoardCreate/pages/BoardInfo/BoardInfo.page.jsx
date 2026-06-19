@@ -20,7 +20,7 @@ function BoardInfoPage({ form }) {
               placeholder="Name your board"
               maxLength={boardTitleMaxLength}
               onChange={(event) => form.setName(event.target.value)}
-              className="h-auto rounded-none border-0 border-b-2 border-primary-200 bg-transparent px-0 py-1 font-display text-3xl font-extrabold uppercase text-primary placeholder:text-primary-200 focus-visible:ring-0 md:text-4xl"
+              className="h-auto rounded-none border-0 border-b-2 border-primary-200 bg-transparent px-0 py-1 font-display text-3xl font-extrabold text-primary placeholder:text-primary-200 focus-visible:ring-0 md:text-4xl"
             />
           </div>
 

@@ -185,32 +185,26 @@ function NewGameSetupPage({ boardId }) {
           <section className="flex flex-col justify-center py-2 lg:py-10">
             <div className="space-y-3">
               {isLoadingBoard ? (
-                <>
-                  <Skeleton className="h-10 w-40 rounded-xl" />
-                  <Skeleton className="h-12 w-full max-w-md" />
-                  <Skeleton className="h-6 w-full max-w-lg" />
-                </>
+                <Skeleton className="h-10 w-48 rounded-lg sm:h-12 sm:w-64 lg:h-14 lg:w-80" />
               ) : (
-                <>
-                  <h1 className="text-3xl font-semibold font-display text-primary sm:text-4xl lg:text-5xl">{board?.name}</h1>
-                  <p className="mt-4 max-w-xl text-sm text-muted-foreground sm:text-base">
-                    Review your board and configure your teams. When you are ready, launch immediately or keep this as a lobby.
-                  </p>
-                </>
+                <h1 className="text-3xl font-semibold font-display text-primary sm:text-4xl lg:text-5xl">{board?.name}</h1>
               )}
+              <p className="mt-4 max-w-xl text-sm text-muted-foreground sm:text-base">
+                Review your board and configure your teams. When you are ready, launch immediately the game.
+              </p>
             </div>
 
             <div className="mt-8">
-              <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Tile preview</p>
+              <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Tile selection</p>
               {isLoadingTiles ? (
-                <div className="mx-auto flex w-62 flex-wrap justify-center gap-2 sm:w-fit sm:grid sm:grid-cols-7 sm:gap-2.5 lg:gap-3">
-                  {Array.from({ length: 7 }, (_, index) => (
+                <div className="mx-auto flex max-w-dvw sm:max-w-full flex-wrap justify-center gap-2 sm:w-fit sm:gap-3">
+                  {Array.from({ length: 5 }, (_, index) => (
                     <Skeleton key={`tile-placeholder-${index}`} className="aspect-square w-14 rounded-lg sm:w-16 lg:w-17" />
                   ))}
                 </div>
               ) : (
                 <>
-                  <div className="mx-auto flex w-62 flex-wrap justify-center gap-2 sm:w-fit sm:grid sm:grid-cols-7 sm:gap-2.5 lg:gap-3">
+                  <div className="mx-auto flex max-w-dvw sm:max-w-full flex-wrap justify-center gap-2 sm:w-fit sm:gap-3">
                       {sortedTiles.map((tile) => (
                         <div key={tile.id} className="aspect-square w-14 sm:w-16 lg:w-17">
                           <Tooltip>
@@ -229,31 +223,17 @@ function NewGameSetupPage({ boardId }) {
               )}
             </div>
 
-          <div className="mt-8">
-            <p className="text-sm text-muted-foreground">Choose how you want to start this game.</p>
-
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => handleCreateSession('play-later')}
-                disabled={isLoadingBoard || isSubmitting}
-                className="h-11 w-full shadow-sm"
-              >
-                {submitIntent === 'play-later' ? <Icon icon={Loading02Icon} className="size-4 animate-spin" /> : null}
-                {submitIntent === 'play-later' ? 'Saving...' : 'Play Later'}
-              </Button>
+            <div className="mt-8 flex justify-center">
               <Button
                 type="button"
                 variant="warning"
                 onClick={() => handleCreateSession('play-now')}
                 disabled={isLoadingBoard || isSubmitting}
-                className="h-11 w-full shadow-sm"
+                className="h-11 w-1/2 shadow-sm"
               >
                 {submitIntent === 'play-now' ? <Icon icon={Loading02Icon} className="size-4 animate-spin" /> : null}
                 {submitIntent === 'play-now' ? 'Starting...' : 'Play Now'}
               </Button>
-              </div>
             </div>
           </section>
 
