@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { fetchBoards } from '@/services/boards'
 
-export function useBoardSelectorData(open) {
+export function useBoardsData() {
   const { user } = useAuth()
   const [boards, setBoards] = useState([])
   const [isLoading, setIsLoading] = useState(false)
@@ -30,10 +30,8 @@ export function useBoardSelectorData(open) {
   }, [user?.id])
 
   useEffect(() => {
-    if (open) {
-      loadBoards()
-    }
-  }, [loadBoards, open])
+    loadBoards()
+  }, [loadBoards])
 
   return {
     boards,

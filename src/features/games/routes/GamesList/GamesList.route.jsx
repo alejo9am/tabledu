@@ -16,7 +16,7 @@ import { Icon } from '@/components/ui/Icon'
 import { AddCircleIcon, DiceFaces05Icon } from '@hugeicons/core-free-icons'
 import BoardSelectorDialog from './BoardSelectorDialog'
 import { useGameCards } from './hooks/useGameCards.hook'
-import { useBoardSelectorData } from './hooks/useBoardSelectorData.hook'
+import { useBoardsData } from './hooks/useBoardsData.hook'
 
 function GamesListRoute() {
   const [isBoardSelectorOpen, setIsBoardSelectorOpen] = useState(false)
@@ -26,8 +26,7 @@ function GamesListRoute() {
     isLoading: isLoadingBoards,
     error: boardsError,
     reload: loadBoards,
-  } = useBoardSelectorData(isBoardSelectorOpen)
-  
+  } = useBoardsData()
 
   const renderContent = () => {
     if (error) {
@@ -71,7 +70,15 @@ function GamesListRoute() {
           ? Array.from({ length: 5 }, (_, index) => (
               <Skeleton key={`loading-${index}`} className="h-36 w-full rounded-xl animate-in fade-in" />
             ))
-          : games.map((item) => <GameCard key={item.id} game={item} onDeleted={loadGames} />)}
+          : games.map((item) => (
+              <GameCard
+                key={item.id}
+                game={item}
+                emptyQuestionTileCount={boards.find((board) => board.id === item.board_id)?.emptyQuestionTileCount ?? 0}
+                isLoading={isLoadingGames || isLoadingBoards}
+                onDeleted={loadGames}
+              />
+            ))}
       </div>
     )
   }
