@@ -103,6 +103,6 @@ Basado en un multiplicador de `0.625rem`:
 
 ## 6. Integración Técnica (shadcn/ui)
 
-- **Base:** `radix-maia` con personalización de variables CSS.
+- **Base:** `radix-ui` con personalización de variables CSS.
 - **Herencia:** Los componentes de shadcn usan por defecto `font-sans` (Figtree).
 - **Intervención:** `font-display` (Fredoka) se aplica solo en componentes de visualización de datos o elementos puramente interactivos del juego, para mantener el equilibrio entre herramienta y juego.
