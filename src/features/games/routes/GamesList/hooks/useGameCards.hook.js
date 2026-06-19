@@ -33,14 +33,12 @@ function buildGameInfo(game, teams = []) {
   const teamPositions = teams.map((team) => Number(team.position) || 0)
   const progressPercent = Math.round((Math.max(0, ...teamPositions) / 30) * 100)
 
-  const lastPlayedAt = game.updated_at
-
   return {
     ...game,
     boardName: game?.board?.name ?? 'Unknown board',
     progressPercent,
-    lastPlayedAt,
-    lastPlayedDiff: formatRelativeTime(lastPlayedAt),
+    lastPlayedTitle: new Date(game.updated_at).toLocaleString(),
+    lastPlayedDiff: formatRelativeTime(game.updated_at),
   }
 }
 
